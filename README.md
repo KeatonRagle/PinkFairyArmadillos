@@ -1,4 +1,4 @@
-# PinkFairyArmadillos
+# PinkFairyArmadillos [![CI](https://github.com/KeatonRagle/PinkFairyArmadillos/actions/workflows/ci.yml/badge.svg)](https://github.com/KeatonRagle/PinkFairyArmadillos/actions/workflows/ci.yml)
 
 **Pets For All** 
 
