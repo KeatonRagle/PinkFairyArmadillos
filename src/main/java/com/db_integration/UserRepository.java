@@ -1,0 +1,11 @@
+package com.db_integration;
+
+import java.util.List;
+
+import org.springframework.data.jpa.repository.JpaRepository;
+
+// Simple and plain extension on the JpaRepository interface
+public interface UserRepository extends JpaRepository<User, Long> {
+    List<User> findByName(String name);
+    User findById(long user_id);
+}
