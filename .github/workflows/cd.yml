@@ -23,7 +23,7 @@ jobs:
 
       - name: Sync code to docker apps folder
         run: |
-          APP_DIR="$HOME/docker/apps/demo-2"
+          APP_DIR="$HOME/docker/apps/pink_fairy_armadillos"
           mkdir -p "$APP_DIR"
 
           # Sync repo contents into your stable deploy folder.
@@ -37,7 +37,7 @@ jobs:
 
       - name: Build and restart containers
         run: |
-          cd "$HOME/docker/apps/demo-2"
+          cd "$HOME/docker/apps/pink_fairy_armadillos"
           docker compose up -d --build
 
       - name: Show running containers
