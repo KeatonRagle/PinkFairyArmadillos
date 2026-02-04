@@ -1,4 +1,4 @@
-package com.db_integration;
+package com.pink.pfa.db_integration;
 
 import java.util.List;
 
@@ -8,7 +8,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.web.bind.annotation.RequestMapping;
 
-import com.endpoints.UserRequest;
+import com.pink.pfa.endpoints.UserRequest;
 
 @Service
 @RequestMapping("/api/users")

@@ -1,4 +1,4 @@
-package com.db_integration;
+package com.pink.pfa.db_integration;
 
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;

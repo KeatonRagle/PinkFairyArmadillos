@@ -1,4 +1,4 @@
-package com.endpoints;
+package com.pink.pfa.endpoints;
 
 import java.time.Instant;
 import java.util.Map;
@@ -12,8 +12,8 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.db_integration.UserDTO;
-import com.db_integration.UserService;
+import com.pink.pfa.db_integration.UserDTO;
+import com.pink.pfa.db_integration.UserService;
 
 @RestController
 @RequestMapping("/api/users")

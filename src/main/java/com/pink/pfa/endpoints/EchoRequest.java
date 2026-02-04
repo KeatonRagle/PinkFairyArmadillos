@@ -1,4 +1,4 @@
-package com.endpoints;
+package com.pink.pfa.endpoints;
 
 public class EchoRequest {
     private String text;

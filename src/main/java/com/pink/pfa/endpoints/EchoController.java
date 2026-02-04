@@ -1,7 +1,7 @@
 // the endpoint must be contained in the same package or sub-package as the main class
 // this is because the @SpringBootApplication flag scans for components, but only in
 // same package or sub-package from which the flag is placed.
-package com.endpoints;
+package com.pink.pfa.endpoints;
 
 import java.util.Map;
 
