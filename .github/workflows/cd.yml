@@ -33,8 +33,6 @@ jobs:
             --exclude ".github/" \
             --exclude "target/" \
             --exclude ".env" \
-            --exclude "Dockerfile" \
-            --exclude "docker-compose.yml" \
             ./ "$APP_DIR/"
 
       - name: Build and restart containers
