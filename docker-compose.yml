@@ -11,7 +11,7 @@ services:
       - mysql_data:/var/lib/mysql
       - /home/austin/docker/data/demo-2/backups:/backups
     ports:
-      - "127.0.0.1:3307:3306"
+      - "127.0.0.1:3306:3306"
 
   app:
     build: .
@@ -23,7 +23,7 @@ services:
     depends_on:
       - db
     ports:
-      - "8081:8080"
+      - "8080:8080"
 
 volumes:
   mysql_data:
