@@ -13,8 +13,10 @@ services:
     ports:
       - "127.0.0.1:3306:3306"
 
-  app:
-    build: .
+  backend:
+    build:
+      context: ./backend
+    restart: unless-stopped
     environment:
       SPRING_PROFILES_ACTIVE: prod
       SPRING_DATASOURCE_URL: jdbc:mysql://db:3306/${MYSQL_DATABASE}
@@ -22,8 +24,36 @@ services:
       SPRING_DATASOURCE_PASSWORD: ${MYSQL_PASSWORD}
     depends_on:
       - db
-    ports:
-      - "8080:8080"
+    networks:
+      - default
+      - proxy
+    labels:
+      - traefik.enable=true
+      # Route API traffic to backend
+      - traefik.http.routers.pfa-api.rule=Host(`api.adoptpetsforall.com`)
+      - traefik.http.routers.pfa-api.entrypoints=websecure
+      - traefik.http.routers.pfa-api.tls=true
+      - traefik.http.routers.pfa-api.tls.certresolver=le
+      - traefik.http.services.pfa-api.loadbalancer.server.port=8080
+
+  frontend:
+    build:
+      context: ./frontend
+    restart: unless-stopped
+    networks:
+      - proxy
+    labels:
+      - traefik.enable=true
+      # Everything else goes to frontend
+      - traefik.http.routers.pfa-web.rule=Host(`adoptpetsforall.com`,`www.adoptpetsforall.com`)
+      - traefik.http.routers.pfa-web.entrypoints=websecure
+      - traefik.http.routers.pfa-web.tls=true
+      - traefik.http.routers.pfa-web.tls.certresolver=le
+      - traefik.http.services.pfa-web.loadbalancer.server.port=80
 
 volumes:
   mysql_data:
+
+networks:
+  proxy:
+    external: true
