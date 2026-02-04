@@ -9,7 +9,7 @@ services:
       MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD}
     volumes:
       - mysql_data:/var/lib/mysql
-      - /home/austin/docker/data/demo-2/backups:/backups
+      - /home/austin/docker/data/pink_fairy_armadillos/backups:/backups
     ports:
       - "127.0.0.1:3306:3306"
 
