@@ -9,21 +9,22 @@ services:
       MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD}
     volumes:
       - mysql_data:/var/lib/mysql
-      - /home/austin/docker/data/pink_fairy_armadillos/backups:/backups
-    ports:
-      - "127.0.0.1:3306:3306"
 
-  app:
-    build: .
+  backend:
+    build:
+      context: ./backend
+    restart: unless-stopped
     environment:
-      SPRING_PROFILES_ACTIVE: prod
-      SPRING_DATASOURCE_URL: jdbc:mysql://db:3306/${MYSQL_DATABASE}
       SPRING_DATASOURCE_USERNAME: ${MYSQL_USER}
       SPRING_DATASOURCE_PASSWORD: ${MYSQL_PASSWORD}
+      DB_NAME: ${MYSQL_DATABASE}
     depends_on:
       - db
-    ports:
-      - "8080:8080"
+
+  frontend:
+    build:
+      context: ./frontend
+    restart: unless-stopped
 
 volumes:
   mysql_data:
