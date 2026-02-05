@@ -1,0 +1,18 @@
+services:
+  db:
+    ports:
+      - "127.0.0.1:3306:3306"
+    volumes:
+      - ./backups:/backups   # local folder in repo (or remove if you don’t need it)
+
+  backend:
+    ports:
+      - "8080:8080"
+    environment:
+      SPRING_PROFILES_ACTIVE: dev
+      DB_HOST: db             # critical (so dev profile works inside Docker)
+      DB_PORT: 3306
+
+  frontend:
+    ports:
+      - "3000:80"             # or whatever your frontend serves on

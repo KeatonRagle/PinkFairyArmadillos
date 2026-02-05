@@ -1,35 +1,19 @@
 services:
   db:
-    image: mysql:8.0
-    restart: unless-stopped
-    environment:
-      MYSQL_DATABASE: ${MYSQL_DATABASE}
-      MYSQL_USER: ${MYSQL_USER}
-      MYSQL_PASSWORD: ${MYSQL_PASSWORD}
-      MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD}
     volumes:
-      - mysql_data:/var/lib/mysql
       - /home/austin/docker/data/pink_fairy_armadillos/backups:/backups
     ports:
-      - "127.0.0.1:3306:3306"
+      - "127.0.0.1:3306:3306"   # keep DB local-only on the server
 
   backend:
-    build:
-      context: ./backend
-    restart: unless-stopped
     environment:
       SPRING_PROFILES_ACTIVE: prod
-      SPRING_DATASOURCE_URL: jdbc:mysql://db:3306/${MYSQL_DATABASE}
-      SPRING_DATASOURCE_USERNAME: ${MYSQL_USER}
-      SPRING_DATASOURCE_PASSWORD: ${MYSQL_PASSWORD}
-    depends_on:
-      - db
+      SPRING_DATASOURCE_URL: jdbc:mysql://db:3306/${MYSQL_DATABASE}?useSSL=false&serverTimezone=UTC
     networks:
       - default
       - proxy
     labels:
       - traefik.enable=true
-      # Route API traffic to backend
       - traefik.http.routers.pfa-api.rule=Host(`api.adoptpetsforall.com`)
       - traefik.http.routers.pfa-api.entrypoints=websecure
       - traefik.http.routers.pfa-api.tls=true
@@ -37,22 +21,15 @@ services:
       - traefik.http.services.pfa-api.loadbalancer.server.port=8080
 
   frontend:
-    build:
-      context: ./frontend
-    restart: unless-stopped
     networks:
       - proxy
     labels:
       - traefik.enable=true
-      # Everything else goes to frontend
       - traefik.http.routers.pfa-web.rule=Host(`adoptpetsforall.com`,`www.adoptpetsforall.com`)
       - traefik.http.routers.pfa-web.entrypoints=websecure
       - traefik.http.routers.pfa-web.tls=true
       - traefik.http.routers.pfa-web.tls.certresolver=le
       - traefik.http.services.pfa-web.loadbalancer.server.port=80
-
-volumes:
-  mysql_data:
 
 networks:
   proxy:
