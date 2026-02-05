@@ -48,7 +48,6 @@ public class UserService {
         );
 
         User savedUser = userRepository.save(user);
-
         return UserDTO.fromEntity(savedUser);
     }
 }
