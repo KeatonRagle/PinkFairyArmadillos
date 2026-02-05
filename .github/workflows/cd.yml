@@ -38,7 +38,10 @@ jobs:
       - name: Build and restart containers
         run: |
           cd "$HOME/docker/apps/pink_fairy_armadillos"
-          docker compose up -d --build
+          docker compose \
+            -f compose.yml \
+            -f compose.homelab.yml \
+            up -d --build
 
       - name: Show running containers
         run: docker ps
