@@ -1,0 +1,18 @@
+services:
+  db:
+    ports:
+      - "127.0.0.1:3306:3306"
+    volumes:
+      - ./backups:/backups    
+
+  backend:
+    ports:
+      - "8080:8080"
+    environment:
+      SPRING_PROFILES_ACTIVE: dev
+      DB_HOST: db            
+      DB_PORT: 3306
+
+  frontend:
+    ports:
+      - "3000:80"           
