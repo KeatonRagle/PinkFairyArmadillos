@@ -4,6 +4,7 @@ WORKDIR /app
 
 COPY mvnw pom.xml ./
 COPY .mvn .mvn
+RUN sed -i 's/\r$//' mvnw && chmod +x mvnw
 RUN ./mvnw -B -q dependency:go-offline
 
 COPY src src
