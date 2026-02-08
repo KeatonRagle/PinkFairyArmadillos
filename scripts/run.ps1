@@ -1,8 +1,22 @@
 #!/usr/bin/env pwsh
 $ErrorActionPreference = "Stop"
-$Required = @("MYSQL_DATABASE","MYSQL_USER","MYSQL_PASSWORD","MYSQL_ROOT_PASSWORD")
+$Required = @(
+  "MYSQL_DATABASE",
+  "MYSQL_USER",
+  "MYSQL_PASSWORD",
+  "MYSQL_ROOT_PASSWORD"
+)
+
+$ScriptDir = Split-Path -Parent $MyInvocation.MyCommand.Path
+$RepoRoot  = (Resolve-Path (Join-Path $ScriptDir "..")).Path
+$EnvFile   = Join-Path $RepoRoot ".env"
+
+if (-not (Test-Path $EnvFile)) {
+  Write-Error ".env file not found at $EnvFile"
+  exit 1
+}
+
 $EnvText = Get-Content $EnvFile -Raw
-$Missing = @()
 
 # check for docker compose v2
 try {
@@ -12,9 +26,12 @@ try {
     exit 1
 }
 
-# print the keys missing
+# get missing keys 
+$Missing = @()
 foreach ($key in $Required) {
-  if ($EnvText -notmatch "(?m)^\s*$key\s*=") { $Missing += $key }
+  if ($EnvText -notmatch "(?m)^\s*(?!#)\s*$key\s*=") {
+    $Missing += $key
+  }
 }
 
 # print if .env is missing
@@ -23,17 +40,13 @@ if ($Missing.Count -gt 0) {
   exit 1
 }
 
-# resolve script directory and repo root
-$ScriptDir = Split-Path -Parent $MyInvocation.MyCommand.Path
-$RepoRoot = (Resolve-Path (Join-Path $ScriptDir "..")).Path
-Set-Location $RepoRoot
-
-# pick env file
-$EnvFile = Join-Path $RepoRoot ".env"
-
 # run compose (explicit env file + explicit compose files)
-docker compose `
-  --env-file "$EnvFile" `
-  -f (Join-Path $RepoRoot "compose.yml") `
-  -f (Join-Path $RepoRoot "compose.local.yml") `
-  up -d --build
+try {
+  docker compose `
+    --env-file "$EnvFile" `
+    -f (Join-Path $RepoRoot "compose.yml") `
+    -f (Join-Path $RepoRoot "compose.local.yml") `
+    up -d --build
+} finally {
+  Pop-Location
+}
