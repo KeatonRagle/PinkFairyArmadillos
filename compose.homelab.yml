@@ -1,17 +1,12 @@
 services:
-  db:
-    volumes:
-      - /home/austin/docker/data/pink_fairy_armadillos/backups:/backups
-    ports:
-      - "127.0.0.1:3306:3306"   # keep DB local-only on the server
-
   backend:
     environment:
       SPRING_PROFILES_ACTIVE: prod
-      SPRING_DATASOURCE_URL: jdbc:mysql://db:3306/${MYSQL_DATABASE}?useSSL=false&serverTimezone=UTC
+      SPRING_DATASOURCE_URL: jdbc:mysql://pfa-db:3306/${MYSQL_DATABASE}?useSSL=false&serverTimezone=UTC
     networks:
       - default
       - proxy
+      - pfa-db-net
     labels:
       - traefik.enable=true
       - traefik.http.routers.pfa-api.rule=Host(`api.adoptpetsforall.com`)
@@ -34,3 +29,6 @@ services:
 networks:
   proxy:
     external: true
+  pfa-db-net:
+    external: true
+

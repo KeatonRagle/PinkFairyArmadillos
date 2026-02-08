@@ -1,20 +1,4 @@
 services:
-  db:
-    image: mysql:8.0
-    restart: unless-stopped
-    environment:
-      MYSQL_DATABASE: ${MYSQL_DATABASE}
-      MYSQL_USER: ${MYSQL_USER}
-      MYSQL_PASSWORD: ${MYSQL_PASSWORD}
-      MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD}
-    healthcheck:
-      test: ["CMD", "mysqladmin", "ping", "-h", "localhost"]
-      interval: 5s
-      timeout: 5s
-      retries: 10
-    volumes:
-      - mysql_data:/var/lib/mysql
-
   backend:
     build:
       context: ./backend
@@ -23,14 +7,8 @@ services:
       SPRING_DATASOURCE_USERNAME: ${MYSQL_USER}
       SPRING_DATASOURCE_PASSWORD: ${MYSQL_PASSWORD}
       DB_NAME: ${MYSQL_DATABASE}
-    depends_on:
-      db:
-        condition: service_healthy
 
   frontend:
     build:
       context: ./frontend
     restart: unless-stopped
-
-volumes:
-  mysql_data:

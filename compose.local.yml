@@ -1,9 +1,17 @@
 services:
   db:
+    image: mysql:8.0
+    restart: unless-stopped
+    environment:
+      MYSQL_DATABASE: ${MYSQL_DATABASE}
+      MYSQL_USER: ${MYSQL_USER}
+      MYSQL_PASSWORD: ${MYSQL_PASSWORD}
+      MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD}
+    volumes:
+      - mysql_data:/var/lib/mysql
+      - ./backups:/backups    
     ports:
       - "127.0.0.1:3306:3306"
-    volumes:
-      - ./backups:/backups    
 
   backend:
     ports:
@@ -12,9 +20,15 @@ services:
       - .env
     environment:
       SPRING_PROFILES_ACTIVE: dev
+      SPRING_DATASOURCE_URL: jdbc:mysql://db:3306/${MYSQL_DATABASE}?useSSL=false&serverTimezone=UTC
       DB_HOST: db            
       DB_PORT: 3306
+    depends_on:
+      - db
 
   frontend:
     ports:
-      - "3000:80"           
+      - "3000:80"     
+
+volumes: 
+  mysql_data:
