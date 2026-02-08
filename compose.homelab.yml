@@ -9,6 +9,7 @@ services:
       - pfa-db-net
     labels:
       - traefik.enable=true
+      - traefik.docker.network=proxy 
       - traefik.http.routers.pfa-api.rule=Host(`api.adoptpetsforall.com`)
       - traefik.http.routers.pfa-api.entrypoints=websecure
       - traefik.http.routers.pfa-api.tls=true
