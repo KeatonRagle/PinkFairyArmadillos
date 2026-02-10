@@ -21,7 +21,7 @@ public class User {
     @Column(name = "role", nullable = false)
     private String role;
 
-    private String location
+    private String location;
 
     // Constructors
     public User() {
