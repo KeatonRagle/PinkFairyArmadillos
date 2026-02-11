@@ -1,6 +1,6 @@
 import '../styling/AboutUs.css'
 import HomeHeader from '../components/header'
-import HomeFooter from '../components/footer'
+import HomeFooter from '../components/footer2'
 import { useEffect } from 'react'
 
 export default function About() {
