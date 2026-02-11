@@ -16,7 +16,7 @@ import com.pink.pfa.db_integration.UserDTO;
 import com.pink.pfa.db_integration.UserService;
 
 @RestController
-@RequestMapping("/api/users")
+@RequestMapping("api/users")
 public class UserController {
     // Singleton object the controller uses to interface with the database
     private final UserService userService;
