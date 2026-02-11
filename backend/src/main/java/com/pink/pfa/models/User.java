@@ -1,7 +1,9 @@
-package com.pink.pfa.db_integration;
+package com.pink.pfa.models;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import lombok.Data;
 
@@ -10,6 +12,7 @@ import lombok.Data;
 @Entity
 public class User {
     @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer user_id;
 
     @Column(name = "name", nullable = false)
@@ -19,7 +22,7 @@ public class User {
     @Column(name = "password", nullable = false)
     private String password;
     @Column(name = "role", nullable = false)
-    private String role;
+    private String role = "USER"; // this is the default can be changed by an admin in the admin login?
 
     private String location;
 
@@ -45,7 +48,15 @@ public class User {
 
     public String getEmail() {
         return email;
-    }  
+    }
+
+    public String getPassword() {
+        return password;
+    }
+
+    public String getRole() {
+        return role;            
+    }
 
     public void setPassword(String password) {
         this.password = password;
@@ -57,5 +68,9 @@ public class User {
 
     public void setEmail(String email) {
         this.email = email;
-    }  
+    }
+
+    public void setRole(String role) {
+        this.role = role;
+    }
 }

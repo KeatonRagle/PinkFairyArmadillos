@@ -5,6 +5,7 @@ import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.http.HttpMethod;
 import org.springframework.security.authentication.AuthenticationProvider;
 import org.springframework.security.authentication.dao.DaoAuthenticationProvider;
 import org.springframework.security.config.Customizer;
@@ -32,7 +33,6 @@ public class SecurityConfig {
     /**
      * @return the passwordEncoder
      * */
-    /*
     @Bean
     public PasswordEncoder passwordEncoder() {
         return new BCryptPasswordEncoder();
@@ -77,6 +77,8 @@ public class SecurityConfig {
             .cors(Customizer.withDefaults())
             .csrf(customizer -> customizer.disable()) // disable Cross-Site Request Forgery protection since we pass auth as a header in the request
             .authorizeHttpRequests(request -> request
+                //.anyRequest().permitAll() // ONLY UNCOMMENT FOR DEBUG
+                .requestMatchers(HttpMethod.POST, "/api/users/**").permitAll() // any post request to the user service is permitted without auth
                 .requestMatchers("/api/public/**").permitAll() // any endpoint starting with /api/public is public and does not require auth
                 .anyRequest().authenticated() // any endpoint that does not start with /api/public is private and does require auth
                 )
@@ -89,11 +91,19 @@ public class SecurityConfig {
          * `curl -i http://localhost:8080/api/public/ping`
          *    - This will work even though there is no auth provided since it is a public endpoint
          * -----------------------------------------------
-         * `curl -i -u test:test http://localhost:8080/api/ping`
-         *    - This will work since it is a protected endpoint and auth was provided
+         * `curl -i -X POST http://localhost:8080/api/users -H "Content-Type: application/json" -d '{"name":"Austin","email":"austin@pfa.com","password":"test"}'`
+         *    - This will add a user to the database
+         * -----------------------------------------------
+         * `curl -i -u austin@pfa.com:test http://localhost:8080/api/users`
+         *    - This will use the email and password that we have in the db to get all users
+         * -----------------------------------------------
+         * `curl -i -u austin@pfa.com:test http://localhost:8080/api/users/1`
+         *    - This will use the email and password we have in the db to get a user by id
          * -----------------------------------------------
          * `curl -i http://localhost:8080/api/users`
          *    - This will fail since it is a protected endpoint and no auth was provided
+         * -----------------------------------------------
+         * 
          * */
 
         return http.build();
@@ -105,7 +115,6 @@ public class SecurityConfig {
      * @param passwordEncoder
      * @return 
      * */
-    /*
     @Bean
     public AuthenticationProvider authenticationProvider(
             UserDetailsService userDetailsService,
@@ -116,7 +125,6 @@ public class SecurityConfig {
         provider.setPasswordEncoder(passwordEncoder);
         return provider;
     }
-    */
 
 
 }

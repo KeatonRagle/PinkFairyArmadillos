@@ -1,4 +1,6 @@
-package com.pink.pfa.db_integration;
+package com.pink.pfa.models.datatransfer;
+
+import com.pink.pfa.models.User;
 
 // Client-facing representation of user information
 // Nothing special, but you can easily imagine the usefulness once passwords and sensitive information starts becoming a factor

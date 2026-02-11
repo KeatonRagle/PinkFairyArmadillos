@@ -1,25 +1,27 @@
-package com.pink.pfa.db_integration;
+package com.pink.pfa.services;
 
 import java.util.List;
 
 import org.springframework.boot.context.properties.source.InvalidConfigurationPropertyValueException;
-import org.springframework.security.crypto.factory.PasswordEncoderFactories;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.web.bind.annotation.RequestMapping;
 
-import com.pink.pfa.endpoints.UserRequest;
+import com.pink.pfa.controllers.requests.UserRequest;
+import com.pink.pfa.models.User;
+import com.pink.pfa.models.datatransfer.UserDTO;
+import com.pink.pfa.repos.UserRepository;
 
 @Service
-@RequestMapping("api/users")
+@RequestMapping("/api/users")
 public class UserService {
     // The singleton backend repository that takes our input and turns it into CRUD (abstracting out our data access layer)
     private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
 
-    public UserService(UserRepository userRepository) {
+    public UserService(UserRepository userRepository, PasswordEncoder passwordEncoder) {
         this.userRepository = userRepository;
-        this.passwordEncoder = PasswordEncoderFactories.createDelegatingPasswordEncoder();
+        this.passwordEncoder = passwordEncoder;
     }
 
     // Grabs a list into a stream, maps the information in the stream to a map of 
@@ -32,7 +34,7 @@ public class UserService {
     }
 
     // Finds a customer by id and converts to a DTO using the fromEntity lambda or throws an exception if it cannot be found
-    public UserDTO findById(Long id) {
+    public UserDTO findById(Integer id) {
         return userRepository.findById(id)
                 .map(UserDTO::fromEntity)
                 .orElseThrow(() -> new InvalidConfigurationPropertyValueException("Failed to Find ID", null, "User not found"));
@@ -42,7 +44,7 @@ public class UserService {
     public UserDTO createUser(UserRequest request) {
         User user = new User();
         user.setName(request.name());
-        user.setEmail(request.email());
+        user.setEmail(request.email().trim().toLowerCase());
         user.setPassword(
             passwordEncoder.encode(request.password())
         );

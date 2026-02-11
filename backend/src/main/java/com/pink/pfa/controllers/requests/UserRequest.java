@@ -1,4 +1,4 @@
-package com.pink.pfa.endpoints;
+package com.pink.pfa.controllers.requests;
 
 // Immutable class for representing a customer table request; all components are private 
 public record UserRequest(

@@ -1,4 +1,4 @@
-package com.pink.pfa.endpoints;
+package com.pink.pfa.controllers;
 
 import java.time.Instant;
 import java.util.Map;
@@ -12,11 +12,12 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.pink.pfa.db_integration.UserDTO;
-import com.pink.pfa.db_integration.UserService;
+import com.pink.pfa.models.datatransfer.UserDTO;
+import com.pink.pfa.services.UserService;
+import com.pink.pfa.controllers.requests.UserRequest;
 
 @RestController
-@RequestMapping("api/users")
+@RequestMapping("/api/users")
 public class UserController {
     // Singleton object the controller uses to interface with the database
     private final UserService userService;
@@ -35,7 +36,7 @@ public class UserController {
 
     @GetMapping("/{id}")
     public Map<String, Object> getUserById(
-        @PathVariable Long id
+        @PathVariable Integer id
     ) {
         return Map.of(
             "ID: ", userService.findById(id),
