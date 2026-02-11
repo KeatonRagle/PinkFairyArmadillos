@@ -32,6 +32,7 @@ public class SecurityConfig {
     /**
      * @return the passwordEncoder
      * */
+    /*
     @Bean
     public PasswordEncoder passwordEncoder() {
         return new BCryptPasswordEncoder();
@@ -104,6 +105,7 @@ public class SecurityConfig {
      * @param passwordEncoder
      * @return 
      * */
+    /*
     @Bean
     public AuthenticationProvider authenticationProvider(
             UserDetailsService userDetailsService,
@@ -114,7 +116,7 @@ public class SecurityConfig {
         provider.setPasswordEncoder(passwordEncoder);
         return provider;
     }
-    
+    */
 
 
 }
