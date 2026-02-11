@@ -17,7 +17,7 @@ import org.springframework.web.bind.annotation.RestController;
 @RequestMapping("/api")
 public class PingController {
     // This tells Spring to answer GET requests with this method sent to this defined address
-    @GetMapping("/ping")
+    @GetMapping("/public/ping")
     public Map<String, Object> ping () {
         // Spring will convert Java Objects to json automaticly!
         return Map.of(

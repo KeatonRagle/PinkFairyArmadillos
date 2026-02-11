@@ -11,7 +11,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import com.pink.pfa.endpoints.UserRequest;
 
 @Service
-@RequestMapping("/api/users")
+@RequestMapping("api/users")
 public class UserService {
     // The singleton backend repository that takes our input and turns it into CRUD (abstracting out our data access layer)
     private final UserRepository userRepository;
