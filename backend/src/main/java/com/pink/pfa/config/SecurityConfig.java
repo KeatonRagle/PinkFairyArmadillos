@@ -2,6 +2,7 @@ package com.pink.pfa.config;
 
 import java.util.List;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpMethod;
@@ -16,7 +17,8 @@ import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
-import org.springframework.security.web.SecurityFilterChain; 
+import org.springframework.security.web.SecurityFilterChain;
+import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.CorsConfigurationSource;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
@@ -32,19 +34,22 @@ public class SecurityConfig {
     /**
      *
      * Sets the Password Encoder. Used to encode and verify passwords
-     * @return  BCryptPasswordEncoder
+     * @return {@link BCryptPasswordEncoder} 
      * */
     @Bean
     public PasswordEncoder passwordEncoder() {
         return new BCryptPasswordEncoder();
     }
 
+    @Autowired
+    private JwtFilter jwtFilter;
+
 
     /**
      * 
      * Cross-Origin Resource Sharing configeration. Defines the rules the 
      * client browser needs to follow in order to access our website.  
-     * @return cross-origin browser ruleset and which endpoints it applys to (all)
+     * @return {@link UrlBasedCorsConfigurationSource}
      * */
     @Bean
     public CorsConfigurationSource corsConfigurationSource() {
@@ -69,7 +74,7 @@ public class SecurityConfig {
      * before it reaches its controller. This is the authentication and 
      * authorization configuration.
      * @param HttpSecurity
-     * @return the SecurityFilterChain 
+     * @return {@link SecurityFilterChain} 
      * @throws Exception 
      * */
     @Bean
@@ -79,12 +84,12 @@ public class SecurityConfig {
             .csrf(customizer -> customizer.disable()) // disable Cross-Site Request Forgery protection since we pass auth as a header in the request
             .authorizeHttpRequests(request -> request
                 //.anyRequest().permitAll() // ONLY UNCOMMENT FOR DEBUG
-                .requestMatchers(HttpMethod.POST, "/api/users/**").permitAll() // any post request to the user service is permitted without auth
-                .requestMatchers("/api/public/**").permitAll() // any endpoint starting with /api/public is public and does not require auth
+                .requestMatchers("/api/users/login", "/api/users/register", "/api/public/**").permitAll() // any endpoint starting with /api/public is public and does not require auth
                 .anyRequest().authenticated() // any endpoint that does not start with /api/public is private and does require auth
                 )
             .httpBasic(Customizer.withDefaults())
-            .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS)); // sets the api to NEVER use HTTP sessions EVER
+            .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS)) // sets the api to NEVER use HTTP sessions EVER
+            .addFilterBefore(jwtFilter, UsernamePasswordAuthenticationFilter.class);
 
         /*
          * You can test this with these curl commands
@@ -92,7 +97,7 @@ public class SecurityConfig {
          * `curl -i http://localhost:8080/api/public/ping`
          *    - This will work even though there is no auth provided since it is a public endpoint
          * -----------------------------------------------
-         * `curl -i -X POST http://localhost:8080/api/users -H "Content-Type: application/json" -d '{"name":"Austin","email":"austin@pfa.com","password":"test"}'`
+         * `curl -i -X POST http://localhost:8080/api/users/register -H "Content-Type: application/json" -d '{"name":"Austin","email":"austin@pfa.com","password":"test"}'`
          *    - This will add a user to the database
          * -----------------------------------------------
          * `curl -i -u austin@pfa.com:test http://localhost:8080/api/users`
