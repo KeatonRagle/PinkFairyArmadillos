@@ -11,13 +11,38 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.web.bind.annotation.RequestMapping;
 
-import com.pink.pfa.controllers.requests.UserRequest;
+import com.pink.pfa.controllers.requests.CreateUserRequest;
 import com.pink.pfa.models.User;
 import com.pink.pfa.models.datatransfer.UserDTO;
 import com.pink.pfa.repos.UserRepository;
 
-import io.jsonwebtoken.Jwts;
+import jakarta.transaction.Transactional;
 
+
+/**
+ * UserService<br>
+ * <br>
+ * Central service layer for user-related business logic and security workflows.
+ * <p>
+ * Responsibilities:
+ * <ul>
+ *   <li>Read users from the database via {@link UserRepository}.</li>
+ *   <li>Convert {@link User} entities to {@link UserDTO} objects to prevent exposing sensitive fields
+ *       (e.g., passwords) to controllers / clients.</li>
+ *   <li>Create new users by normalizing email input and securely hashing passwords using
+ *       {@link PasswordEncoder} before persisting.</li>
+ *   <li>Authenticate login attempts using Spring Security's {@link AuthenticationManager} and, on success,
+ *       issue a JWT via {@link JWTService} for stateless authentication.</li>
+ *   <li>Perform role updates such as promoting a user to {@code ADMIN} inside a transactional boundary.</li>
+ * </ul>
+ *
+ * Notes:
+ * <ul>
+ *   <li>This class is annotated with {@link Service}, meaning it is a Spring-managed singleton component.</li>
+ *   <li>DTO mapping is used so API responses can safely expose only the fields the client should see.</li>
+ *   <li>JWT generation is triggered only after Spring Security confirms the provided credentials are valid.</li>
+ * </ul>
+ */
 @Service
 @RequestMapping("/api/users")
 public class UserService {
@@ -36,11 +61,11 @@ public class UserService {
 
 
     /**
+     * Returns all users as a list of {@link UserDTO}s by fetching entities from the database and mapping
+     * each {@link User} to a DTO to avoid exposing sensitive fields.
      *
-     * Grabs a list into a stream, maps the information in the stream to a map of Data Transfer Objects
-     * (allows you to censor important information), before packaging back into a list
-     * @return List<{@link UserDTO}>
-     * */
+     * @return list of {@link UserDTO}
+     */
     public List<UserDTO> findAll() {
         return userRepository.findAll()
                 .stream()
@@ -48,12 +73,14 @@ public class UserService {
                 .toList();
     }
 
+
     /**
-     * 
-     * Finds a customer by id and converts to a DTO using the fromEntity lambda or throws an exception if it cannot be found
-     * @param id
-     * @return {@link UserDTO}
-     * */
+     * Fetches a single user by ID and returns it as a {@link UserDTO}.
+     * Throws an exception if the user does not exist.
+     *
+     * @param id database ID of the user
+     * @return {@link UserDTO} for the requested user
+     */    
     public UserDTO findById(Integer id) {
         return userRepository.findById(id)
                 .map(UserDTO::fromEntity)
@@ -62,12 +89,14 @@ public class UserService {
 
 
     /**
-     * 
-     * Processes creating a new Customer object, saving it to the database before returning the censored contents
-     * @param request
-     * @return {@link UserDTO}
-     * */
-    public UserDTO createUser(UserRequest request) {
+     * Creates a new user account from a {@link CreateUserRequest}.<br>
+     * The email is normalized (trimmed + lowercased) and the password is hashed using {@link PasswordEncoder}
+     * before saving the new {@link User} entity to the database. Returns a DTO representation of the saved user.
+     *
+     * @param request incoming user creation payload
+     * @return {@link UserDTO} for the newly created user
+     */
+    public UserDTO createUser(CreateUserRequest request) {
         User user = new User();
         user.setName(request.name());
         user.setEmail(request.email().trim().toLowerCase());
@@ -81,15 +110,31 @@ public class UserService {
 
 
     /**
+     * Authenticates a login attempt using the provided email and password.
+     * If authentication succeeds, generates and returns a JWT for the user's email via {@link JWTService}.
      *
-     * Verify that the user is in the database and generate a JWT 
-     * @param user
-     * @return {@link String} containing {@link Jwts}
-     * */
+     * @param user object containing login credentials (email + raw password)
+     * @return JWT string if authentication succeeds; otherwise a failure message
+     */
     public String verify(User user) {
         Authentication authentication = authManager.authenticate(new UsernamePasswordAuthenticationToken(user.getEmail(), user.getPassword()));
 
         if(authentication.isAuthenticated()) return jwtService.generateToken(user.getEmail());
         return "Nope";
+    }
+
+
+    /**
+     * Promotes the specified user to the {@code ADMIN} role.
+     * Runs within a transaction so the role change is persisted automatically when the method completes.
+     *
+     * @param userId database ID of the user to promote
+     */
+    @Transactional
+    public void promoteToAdmin(int userId) {
+        User user = userRepository.findById(userId)
+            .orElseThrow(() -> new RuntimeException("User not found"));
+
+        user.setRole(User.Role.ADMIN);
     }
 }
