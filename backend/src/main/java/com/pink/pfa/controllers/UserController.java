@@ -3,6 +3,7 @@ package com.pink.pfa.controllers;
 import java.time.Instant;
 import java.util.Map;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -14,6 +15,9 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.pink.pfa.models.datatransfer.UserDTO;
 import com.pink.pfa.services.UserService;
+
+import io.jsonwebtoken.Jwts;
+
 import com.pink.pfa.controllers.requests.UserRequest;
 import com.pink.pfa.models.User;
 
@@ -21,12 +25,14 @@ import com.pink.pfa.models.User;
 @RequestMapping("/api/users")
 public class UserController {
     // Singleton object the controller uses to interface with the database
-    private final UserService userService;
+    @Autowired
+    private UserService userService;
 
-    public UserController(UserService userService) {
-        this.userService = userService;
-    }
 
+    /**
+     * 
+     * @return {@link Map} of all users
+     * */
     @GetMapping
     public Map<String, Object> getAllUsers() {
         return Map.of(
@@ -35,6 +41,12 @@ public class UserController {
         );
     }
 
+
+    /**
+     * 
+     * @param id
+     * @return {@link Map} of user assigned to id
+     * */
     @GetMapping("/{id}")
     public Map<String, Object> getUserById(
         @PathVariable Integer id
@@ -45,6 +57,12 @@ public class UserController {
         );
     }
 
+
+    /**
+     * 
+     * @param request
+     * @return {@link ResponseEntity} <UserDTO>  
+     * */
     @PostMapping("/register")
     // @RequestBody tells Spring to create a new customer object with the request body. 
     public ResponseEntity<UserDTO> CreateUser (
@@ -58,6 +76,12 @@ public class UserController {
                 .body(createdUser);
     }
 
+
+    /**
+     * 
+     * @param user
+     * @return {@link String} containing a {@link Jwts}
+     * */
     @PostMapping("/login")
     public String login(@RequestBody User user) {
         return userService.verify(user);

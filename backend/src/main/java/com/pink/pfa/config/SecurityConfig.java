@@ -5,7 +5,6 @@ import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.http.HttpMethod;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.AuthenticationProvider;
 import org.springframework.security.authentication.dao.DaoAuthenticationProvider;
@@ -100,16 +99,17 @@ public class SecurityConfig {
          * `curl -i -X POST http://localhost:8080/api/users/register -H "Content-Type: application/json" -d '{"name":"Austin","email":"austin@pfa.com","password":"test"}'`
          *    - This will add a user to the database
          * -----------------------------------------------
-         * `curl -i -u austin@pfa.com:test http://localhost:8080/api/users`
-         *    - This will use the email and password that we have in the db to get all users
+         * `curl -i -X POST http://localhost:8080/api/users/login -H "Content-Type: application/json" -d '{"email":"austin@pfa.com","password":"test"}'`
+         *    - This will return a json web token that will be passed with all requests to protected endpoints
          * -----------------------------------------------
-         * `curl -i -u austin@pfa.com:test http://localhost:8080/api/users/1`
-         *    - This will use the email and password we have in the db to get a user by id
+         * `curl -i http://localhost:8080/api/users/1 -H "Authorization: Bearer <your-token>"`
+         *    - This will use the json web token generated for our session to get a user by id
          * -----------------------------------------------
-         * `curl -i http://localhost:8080/api/users`
+         * `curl -i http://localhost:8080/api/users/1`
          *    - This will fail since it is a protected endpoint and no auth was provided
          * -----------------------------------------------
-         * 
+         * `curl -i http://localhost:8080/api/users/1 -H "Authorization: Bearer nope"`
+         *    - This will fail since it is a protected endpoint and the json web token does not match to any user
          * */
 
         return http.build();

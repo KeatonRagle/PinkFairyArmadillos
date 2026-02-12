@@ -16,6 +16,8 @@ import com.pink.pfa.models.User;
 import com.pink.pfa.models.datatransfer.UserDTO;
 import com.pink.pfa.repos.UserRepository;
 
+import io.jsonwebtoken.Jwts;
+
 @Service
 @RequestMapping("/api/users")
 public class UserService {
@@ -33,8 +35,12 @@ public class UserService {
     private JWTService jwtService;
 
 
-    // Grabs a list into a stream, maps the information in the stream to a map of 
-    // Data Transfer Objects (allows you to censor important information), before packaging back into a list
+    /**
+     *
+     * Grabs a list into a stream, maps the information in the stream to a map of Data Transfer Objects
+     * (allows you to censor important information), before packaging back into a list
+     * @return List<{@link UserDTO}>
+     * */
     public List<UserDTO> findAll() {
         return userRepository.findAll()
                 .stream()
@@ -42,14 +48,25 @@ public class UserService {
                 .toList();
     }
 
-    // Finds a customer by id and converts to a DTO using the fromEntity lambda or throws an exception if it cannot be found
+    /**
+     * 
+     * Finds a customer by id and converts to a DTO using the fromEntity lambda or throws an exception if it cannot be found
+     * @param id
+     * @return {@link UserDTO}
+     * */
     public UserDTO findById(Integer id) {
         return userRepository.findById(id)
                 .map(UserDTO::fromEntity)
                 .orElseThrow(() -> new InvalidConfigurationPropertyValueException("Failed to Find ID", null, "User not found"));
     }
 
-    // Processes creating a new Customer object, saving it to the database before returning the censored contents
+
+    /**
+     * 
+     * Processes creating a new Customer object, saving it to the database before returning the censored contents
+     * @param request
+     * @return {@link UserDTO}
+     * */
     public UserDTO createUser(UserRequest request) {
         User user = new User();
         user.setName(request.name());
@@ -62,6 +79,13 @@ public class UserService {
         return UserDTO.fromEntity(savedUser);
     }
 
+
+    /**
+     *
+     * Verify that the user is in the database and generate a JWT 
+     * @param user
+     * @return {@link String} containing {@link Jwts}
+     * */
     public String verify(User user) {
         Authentication authentication = authManager.authenticate(new UsernamePasswordAuthenticationToken(user.getEmail(), user.getPassword()));
 

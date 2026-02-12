@@ -26,6 +26,7 @@ public class JWTService {
 
     private String key;
 
+
     /**
      * 
      * @return SecretKey
@@ -101,6 +102,7 @@ public class JWTService {
 
     /**
      * 
+     * Generate a new {@link Jwts} and return it
      * @param email
      * @return {@link Jwts}
      * */
