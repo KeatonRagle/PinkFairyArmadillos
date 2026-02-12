@@ -2,13 +2,14 @@ package com.pink.pfa.config;
 
 import java.util.List;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpMethod;
+import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.AuthenticationProvider;
 import org.springframework.security.authentication.dao.DaoAuthenticationProvider;
 import org.springframework.security.config.Customizer;
+import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.http.SessionCreationPolicy;
@@ -20,8 +21,6 @@ import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.CorsConfigurationSource;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 
-
-
 /**
  * SecurityConfig
  * The configeration for spring web security
@@ -31,7 +30,9 @@ import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 public class SecurityConfig {
 
     /**
-     * @return the passwordEncoder
+     *
+     * Sets the Password Encoder. Used to encode and verify passwords
+     * @return  BCryptPasswordEncoder
      * */
     @Bean
     public PasswordEncoder passwordEncoder() {
@@ -40,10 +41,10 @@ public class SecurityConfig {
 
 
     /**
+     * 
      * Cross-Origin Resource Sharing configeration. Defines the rules the 
      * client browser needs to follow in order to access our website.  
-     * 
-     * @return the cross-origin browser ruleset
+     * @return cross-origin browser ruleset and which endpoints it applys to (all)
      * */
     @Bean
     public CorsConfigurationSource corsConfigurationSource() {
@@ -63,11 +64,11 @@ public class SecurityConfig {
 
 
     /**
+     *
      * Defines the pipeline of filters that every HTTP request passes through
      * before it reaches its controller. This is the authentication and 
      * authorization configuration.
-     *
-     * @param HttpSecurity http
+     * @param HttpSecurity
      * @return the SecurityFilterChain 
      * @throws Exception 
      * */
@@ -111,9 +112,10 @@ public class SecurityConfig {
 
     /**
      * 
+     * Allows us to turn unauthenticated objects into authenticated ones
      * @param userDetailsService
      * @param passwordEncoder
-     * @return 
+     * @return AuthenticationProvider 
      * */
     @Bean
     public AuthenticationProvider authenticationProvider(
@@ -126,5 +128,9 @@ public class SecurityConfig {
         return provider;
     }
 
+    @Bean
+    public AuthenticationManager authenticationManager(AuthenticationConfiguration config) throws Exception {
+        return config.getAuthenticationManager();
+    }
 
 }

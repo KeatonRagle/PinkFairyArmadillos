@@ -2,7 +2,11 @@ package com.pink.pfa.services;
 
 import java.util.List;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.context.properties.source.InvalidConfigurationPropertyValueException;
+import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.Authentication;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -16,13 +20,18 @@ import com.pink.pfa.repos.UserRepository;
 @RequestMapping("/api/users")
 public class UserService {
     // The singleton backend repository that takes our input and turns it into CRUD (abstracting out our data access layer)
-    private final UserRepository userRepository;
-    private final PasswordEncoder passwordEncoder;
+    @Autowired
+    private  UserRepository userRepository;
 
-    public UserService(UserRepository userRepository, PasswordEncoder passwordEncoder) {
-        this.userRepository = userRepository;
-        this.passwordEncoder = passwordEncoder;
-    }
+    @Autowired
+    private PasswordEncoder passwordEncoder;
+
+    @Autowired
+    private AuthenticationManager authManager;
+
+    @Autowired
+    private JWTService jwtService;
+
 
     // Grabs a list into a stream, maps the information in the stream to a map of 
     // Data Transfer Objects (allows you to censor important information), before packaging back into a list
@@ -51,5 +60,12 @@ public class UserService {
 
         User savedUser = userRepository.save(user);
         return UserDTO.fromEntity(savedUser);
+    }
+
+    public String verify(User user) {
+        Authentication authentication = authManager.authenticate(new UsernamePasswordAuthenticationToken(user.getEmail(), user.getPassword()));
+
+        if(authentication.isAuthenticated()) return jwtService.generateToken(user.getEmail());
+        return "Nope";
     }
 }

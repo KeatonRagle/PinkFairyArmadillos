@@ -15,6 +15,7 @@ import org.springframework.web.bind.annotation.RestController;
 import com.pink.pfa.models.datatransfer.UserDTO;
 import com.pink.pfa.services.UserService;
 import com.pink.pfa.controllers.requests.UserRequest;
+import com.pink.pfa.models.User;
 
 @RestController
 @RequestMapping("/api/users")
@@ -44,7 +45,7 @@ public class UserController {
         );
     }
 
-    @PostMapping()
+    @PostMapping("/register")
     // @RequestBody tells Spring to create a new customer object with the request body. 
     public ResponseEntity<UserDTO> CreateUser (
         @RequestBody UserRequest request
@@ -55,5 +56,10 @@ public class UserController {
         return ResponseEntity
                 .status(HttpStatus.CREATED)
                 .body(createdUser);
+    }
+
+    @PostMapping("/login")
+    public String login(@RequestBody User user) {
+        return userService.verify(user);
     }
 }
