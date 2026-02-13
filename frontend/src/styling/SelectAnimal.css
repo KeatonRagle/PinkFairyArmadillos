@@ -1,0 +1,88 @@
+body.selectanimal-body {
+  margin: 0;
+  padding: 0;
+  display: block;
+  background: transparent;
+  overflow-x: hidden;
+}
+
+.selectanimal-page {
+  position: relative;
+  min-height: 90vh;
+  width: 100vw;
+  padding: 0;
+  margin: 0;
+  background: transparent;
+}
+
+.bg-dogs {
+  position: absolute;
+  top: 0vh;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  object-fit: cover;
+  z-index: 1;
+}
+
+
+.bg-wave {
+  position: absolute;
+  top: 40vh;
+  left: -120vh;
+  width: 180vw;
+  height: auto;
+  z-index: 2;
+}
+
+
+.ButtonRow {
+  position: absolute;
+  top: 50vh;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 10;
+
+  display: flex;
+  gap: 150px;
+  justify-content: center;
+  align-items: center;
+}
+
+.ThreeButtons {
+  width: 250px;
+  height: 250px;
+  background-color: #b44b25;
+  color: #F8F8F8;
+  border: none;
+  cursor: pointer;
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.6);
+  display: flex;
+  align-items: baseline;
+  justify-content: center;
+  overflow: hidden;
+  position: relative;
+  margin-top: -80px;
+
+}
+
+.button-icon {
+    position: absolute;
+    width: 125px;
+    height: 125px;
+    top: 40px;
+}
+
+.button-text {
+  position: absolute;
+  bottom: 20px;
+  left: 50%;
+  transform: translateX(-50%);
+  font-size: 24px;
+  font-family: 'Hind Kochi', sans-serif;
+  text-align: center;
+  font-weight: 600;
+  text-align: center;
+  white-space: nowrap;
+  
+}

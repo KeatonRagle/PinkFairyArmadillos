@@ -1,0 +1,53 @@
+.site-footer {
+  width: 100%;
+  height: 50px;
+  background-color: white;
+
+  display: flex;
+  align-items: center;
+
+  padding: 0 40px;
+  box-sizing: border-box;
+  position: absolute;
+  bottom: -135px;
+ z-index: 10;
+   justify-content: center;
+
+
+}
+
+.footer-nav {
+  font-size: 14px;
+  color: #343434;
+  font-family: 'Hind Kochi', sans-serif;
+  font-weight: 300;
+  margin-top:70px;
+
+}
+
+
+
+.footer-nav span {
+  cursor: pointer;
+  transition: color 0.2s ease;
+}
+
+.footer-nav span:hover {
+  color: #b44b25;
+}
+
+.footer-button {
+  background-color: #F8F8F8;
+  color: #b44b25;
+  cursor: pointer;
+  box-shadow: 0 0 7px rgba(0, 0, 0, 0.2);
+  box-shadow: 0 0 7px rgba(0, 0, 0, 0.2);
+  box-shadow: 0 0 7px rgba(0, 0, 0, 0.2);
+  box-shadow: 0 0 7px rgba(0, 0, 0, 0.3);
+  margin-top: 10px;
+  font-size: 15px;
+  font-weight: 300;
+  font-family: 'Hind Kochi', sans-serif;
+  border-radius: 10px;
+
+}

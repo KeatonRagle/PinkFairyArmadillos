@@ -1,0 +1,54 @@
+.site-header {
+  width: 100%;
+  height: 80px;
+  background-color: #F8F8F8;
+
+  display: flex;
+  align-items: center;
+
+
+  padding: 0 40px;
+  box-sizing: border-box;
+
+  position: sticky;
+  top: 0;
+  z-index: 1000;
+    box-shadow: 0 0 5px rgba(0,0,0,0.1);   
+    box-shadow: 0 0 5px rgba(0,0,0,0.1);
+    box-shadow: 0 0 5px rgba(0,0,0,0.1);
+}
+
+
+.header-left {
+  display: flex;
+  align-items: center;
+}
+
+.site-header .header-left img {
+  width: 80px;
+  height: auto;
+}
+
+.header-nav {
+  display: flex;
+  gap: 130px;
+  font-size: 15px;
+  color: #343434;
+  margin-left: 155px;
+  font-family: 'Hind Kochi', sans-serif;
+  font-weight: 300;
+}
+
+.header-nav span {
+  cursor: pointer;
+  transition: 0.2s ease;
+}
+
+.header-nav span:hover {
+  color: #b44b25;
+}
+
+.header-link {
+  text-decoration: none;
+  color: inherit;
+}
