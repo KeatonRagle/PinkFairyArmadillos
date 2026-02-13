@@ -1,7 +1,7 @@
 // the endpoint must be contained in the same package or sub-package as the main class
 // this is because the @SpringBootApplication flag scans for components, but only in
 // same package or sub-package from which the flag is placed.
-package com.pink.pfa.endpoints;
+package com.pink.pfa.controllers;
 
 /* 3rd Party Imports */
 import java.time.Instant;
@@ -17,7 +17,7 @@ import org.springframework.web.bind.annotation.RestController;
 @RequestMapping("/api")
 public class PingController {
     // This tells Spring to answer GET requests with this method sent to this defined address
-    @GetMapping("/ping")
+    @GetMapping("/public/ping")
     public Map<String, Object> ping () {
         // Spring will convert Java Objects to json automaticly!
         return Map.of(
