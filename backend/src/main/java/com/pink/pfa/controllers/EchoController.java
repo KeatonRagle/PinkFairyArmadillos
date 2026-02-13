@@ -1,7 +1,7 @@
 // the endpoint must be contained in the same package or sub-package as the main class
 // this is because the @SpringBootApplication flag scans for components, but only in
 // same package or sub-package from which the flag is placed.
-package com.pink.pfa.endpoints;
+package com.pink.pfa.controllers;
 
 import java.util.Map;
 
@@ -9,7 +9,8 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
-/* Java Imports */
+
+import com.pink.pfa.controllers.requests.EchoRequest;
 
 @RestController
 @RequestMapping("/api")
