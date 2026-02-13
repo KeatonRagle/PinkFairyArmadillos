@@ -8,12 +8,10 @@ body.about-body {
 .about-page {
   display: flex;
   flex-direction: column;
-  min-height: 200vh;
+  min-height: 150vh;
 }
 
-.about-main {
-  flex: 1; /* takes up all remaining space, pushes footer down */
-}
+
 
 /* Burnt orange section bar */
 .section-bar {
@@ -53,20 +51,36 @@ body.about-body {
   color: #333;
 }
 
+.the-rest {
+  position: relative; /* Add this */
+}
+
 .the-rest h2 {
   font-size: 36px;
   font-family: 'Hind Kochi', sans-serif;
   margin-bottom: 30px;
   font-weight: 600;
   color:#b44b25;
+  padding-left: 600px;
+  padding-top: 50px;
 }
 
 .the-rest p {
-  max-width: 800px;
+  max-width: 1200px;
   margin: 40px auto;  /* centers horizontally and adds top spacing */
-  padding: 0 20px;    /* side padding for smaller screens */
   font-family: 'Hind Kochi', sans-serif;
   font-size: 18px;
   line-height: 1.6;
   color: #b44b25;
+  padding-left: 600px;
+}
+
+.aboutpic { 
+  width: 350px; 
+  height: auto; 
+  position: absolute; /* Changed from relative */
+  top: 470px; /* Adjust positioning from top of parent */
+  left: 120px; 
+  border: 2px solid #b44b25; 
+  border-radius: 10px; 
 }

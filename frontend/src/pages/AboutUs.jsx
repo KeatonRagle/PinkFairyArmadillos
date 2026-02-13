@@ -40,6 +40,7 @@ export default function About() {
           problem-solving, and technical skills while building something meaningful and impactful.
         </p>
       </div>
+      <img src="/images/aboutpic.jpg" className="aboutpic" />
     </main>
       <HomeFooter />
 

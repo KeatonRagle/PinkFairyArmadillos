@@ -1,54 +1,46 @@
-.site-footer {
+.site-footer2 {
   width: 100%;
   height: 100px;
-  background-color: white;
-
-  display: flex;
-  align-items: center;
-
-  padding: 0 40px;
+  background-color: #F8F8F8;
   box-sizing: border-box;
-  position: sticky;
-  width: 100%;
-  bottom: -135px;
- z-index: 10;
-   justify-content: center;
+  position: relative; /* Changed from sticky */
+  bottom: 0;
+  z-index: 10;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center; 
 
-
+  margin-top: auto;
+  padding-top: 85px; /* Add some padding to push content down */
 }
 
-.footer-nav {
+.footer-nav2 {
   font-size: 14px;
   color: #343434;
   font-family: 'Hind Kochi', sans-serif;
   font-weight: 300;
-  margin-top:40px;
-
 }
 
-
-
-.footer-nav span {
+.footer-nav2 span {
   cursor: pointer;
   transition: color 0.2s ease;
 }
 
-.footer-nav span:hover {
+.footer-nav2 span:hover {
   color: #b44b25;
 }
 
-.footer-button {
+.footer-button2 {
   background-color: #F8F8F8;
   color: #b44b25;
   cursor: pointer;
-  box-shadow: 0 0 7px rgba(0, 0, 0, 0.2);
-  box-shadow: 0 0 7px rgba(0, 0, 0, 0.2);
-  box-shadow: 0 0 7px rgba(0, 0, 0, 0.2);
   box-shadow: 0 0 7px rgba(0, 0, 0, 0.3);
   margin-top: 10px;
   font-size: 15px;
   font-weight: 300;
   font-family: 'Hind Kochi', sans-serif;
   border-radius: 10px;
-
+  border: none;
+  padding: 10px 20px;
 }
