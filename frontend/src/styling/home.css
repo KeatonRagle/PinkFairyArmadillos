@@ -1,0 +1,106 @@
+body.home-body {
+  margin: 0;
+  padding: 0;
+  display: block;
+  background: transparent;
+  overflow-x: hidden;
+}
+
+.home-page {
+  position: relative;
+  min-height: 260vh;
+  width: 100vw;
+  padding: 0;
+  margin: 0;
+  background: transparent;
+}
+
+.bg-dogs {
+  position: absolute;
+  top: 0vh;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  object-fit: cover;
+  z-index: 1;
+}
+
+.bg-cats {
+  position: absolute;
+  top: 170vh;
+  left: 0vh;
+  width: 100vw;
+  height: 100vh;
+  object-fit: cover;
+  z-index: 1;
+}
+
+.bg-waveHome {
+  position: absolute;
+  top: 65vh;
+  left: -80vh;
+  width: 140vw;  height: auto;
+  z-index: 2;
+}
+
+.bg-inverse-wave {
+  position: absolute;
+  top: 95vh;
+  left: -40vh;
+  width: 140vw;  height: auto;
+  z-index: 2;
+}
+
+.MainButton {
+  position: absolute;
+  top: 40vh;
+  left: 50%;
+  width: 400px;
+  height: 60px;
+  transform: translateX(-50%);
+  z-index: 10;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  background-color: #F8F8F8;
+  color: #b44b25;
+  border: none;
+  padding: 17px 30px 13px 30px;
+  font-size: 30px;
+  font-family: 'Hind Kochi', sans-serif;
+  border-radius: 25px;
+  cursor: pointer;
+  box-shadow: 0 0 7px rgba(0, 0, 0, 0.5);
+}
+
+.ButtonRowHome {
+  position: absolute;
+  top: 96vh;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 10;
+  
+  display: flex;
+  gap: 100px;
+  justify-content: center;
+  align-items: center;
+}
+
+.ThreeButtonsHome {
+  width: 320px;
+  height: 400px;
+  background-color: #F8F8F8;
+  color: #b44b25;
+  border: none;
+  padding: 17px 30px 13px 30px;
+  font-size: 30px;
+  font-family: 'Hind Kochi', sans-serif;
+  border-radius: 25px;
+  cursor: pointer;
+  box-shadow: 0 0 7px rgba(0, 0, 0, 0.5);
+  display: flex;
+  align-items:baseline;
+  justify-content: center;
+}
+

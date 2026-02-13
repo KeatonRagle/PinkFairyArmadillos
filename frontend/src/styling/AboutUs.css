@@ -1,0 +1,86 @@
+body.about-body {
+  margin: 0;
+  padding: 0;
+  background-color: #F8F8F8; /* grey background */
+  overflow-x: hidden;
+}
+
+.about-page {
+  display: flex;
+  flex-direction: column;
+  min-height: 150vh;
+}
+
+
+
+/* Burnt orange section bar */
+.section-bar {
+  background-color: #b44b25;  /* burnt orange */
+  width: 100%;
+  height: 300px;
+  padding: 40px 0;             /* vertical spacing */
+  text-align: center;
+  color: white;
+}
+
+.section-bar h1 {
+  font-size: 36px;
+  font-family: 'Hind Kochi', sans-serif;
+  margin-bottom: 30px;
+
+}
+
+.section-bar p {
+  color: #ffffff; /* white text inside the burnt orange block */
+  font-size: 18px;
+  line-height: 1.6;
+  max-width: 800px;
+  margin: 0 auto; /* centers the text */
+  font-family: 'Hind Kochi', sans-serif;
+}
+
+
+/* Main content under the bar */
+.about-content {
+  max-width: 800px;
+  margin: 40px auto;  /* centers horizontally and adds top spacing */
+  padding: 0 20px;    /* side padding for smaller screens */
+  font-family: 'Hind Kochi', sans-serif;
+  font-size: 18px;
+  line-height: 1.6;
+  color: #333;
+}
+
+.the-rest {
+  position: relative; /* Add this */
+}
+
+.the-rest h2 {
+  font-size: 36px;
+  font-family: 'Hind Kochi', sans-serif;
+  margin-bottom: 30px;
+  font-weight: 600;
+  color:#b44b25;
+  padding-left: 600px;
+  padding-top: 50px;
+}
+
+.the-rest p {
+  max-width: 1200px;
+  margin: 40px auto;  /* centers horizontally and adds top spacing */
+  font-family: 'Hind Kochi', sans-serif;
+  font-size: 18px;
+  line-height: 1.6;
+  color: #b44b25;
+  padding-left: 600px;
+}
+
+.aboutpic { 
+  width: 350px; 
+  height: auto; 
+  position: absolute; /* Changed from relative */
+  top: 470px; /* Adjust positioning from top of parent */
+  left: 120px; 
+  border: 2px solid #b44b25; 
+  border-radius: 10px; 
+}

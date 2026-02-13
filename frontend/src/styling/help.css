@@ -1,0 +1,52 @@
+/* Body styling ONLY for Help page */
+body.help-body {
+  margin: 0;
+  padding: 0;
+  background-color: #F8F8F8;
+  overflow-x: hidden;
+}
+
+/* Page wrapper */
+.help-page {
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+}
+
+/* Main grows and pushes footer down */
+.help-main {
+  flex: 1;
+}
+
+/* Hero / header section */
+.help-hero {
+  background-color: #b44b25;
+  color: white;
+  text-align: center;
+  padding: 60px 20px;
+}
+
+.help-hero h1 {
+  font-size: 36px;
+  font-family: 'Hind Kochi', sans-serif;
+  margin-bottom: 15px;
+}
+
+.help-hero p {
+  font-size: 18px;
+  font-family: 'Hind Kochi', sans-serif;
+}
+
+/* Main content */
+.help-content {
+  max-width: 900px;
+  margin: 50px auto;
+  padding: 0 20px;
+  font-family: 'Hind Kochi', sans-serif;
+  line-height: 1.6;
+}
+
+.help-content h2 {
+  color: #b44b25;
+  margin-bottom: 20px;
+}

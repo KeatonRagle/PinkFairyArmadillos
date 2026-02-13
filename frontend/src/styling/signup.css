@@ -1,0 +1,85 @@
+
+body.signup-body {
+  margin: 0;
+  font-family: 'Hind Kochi', sans-serif;
+  background: #F8F8F8;
+
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 100vh;
+}
+
+
+body.signup-body .auth-layout {
+  width: 367px;
+  min-height: 450px;
+  padding: 40px;
+  background: white;
+  border-radius: 50px;
+  box-shadow: 0 0 20px rgba(0,0,0,0.1);
+}
+
+
+body.signup-body .auth-form {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 15px;
+  text-align: center;
+}
+
+
+body.signup-body h2 {
+  font-size: 20px;
+  font-weight: 300;
+}
+
+body.signup-body input {
+  width: 262px;
+  height: 34px;
+  border-radius: 50px;
+  padding-left: 15px;
+  border: 1px solid #d1d5db;
+  box-shadow: 0 0 5px rgba(0,0,0,0.1);
+}
+
+
+body.signup-body button {
+  width: 262px;
+  height: 34px;
+  border-radius: 50px;
+  border: none;
+  background-color: #b44b25;
+  color: white;
+  font-weight: 300;
+  cursor: pointer;
+  margin-top: 10px;
+}
+
+body.signup-body .card-logo {
+  display: flex;
+  justify-content: center;
+  height: 20px;
+}
+
+body.signup-body .page-logo {
+  position: fixed;
+  top: 20px;
+  left: 20px;
+  z-index: 1000;
+}
+
+body.signup-body .page-logo img {
+  width: 100px;
+}
+
+
+body.signup-body .signin-text {
+  font-size: 14px;
+}
+
+body.signup-body .signin-text a {
+  text-decoration: none;
+  color: #b44b25;
+}

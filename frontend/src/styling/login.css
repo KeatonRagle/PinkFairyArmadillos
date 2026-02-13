@@ -1,0 +1,162 @@
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body.login-body {
+  font-family: 'Hind Kochi', sans-serif;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 100vh;
+  background: #F8F8F8;
+}
+
+body.login-body .auth-layout {
+  width: 367px;
+  min-height: 367px;
+  padding: 40px;
+  background: white;
+  border-radius: 50px;
+  box-shadow: 0 0 20px rgba(0,0,0,0.1);
+
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+
+input::placeholder {
+  color: #999;
+  font-size: 14px;
+  padding-left: 0px; 
+}
+
+
+.login-form {
+  margin-top: -43px;
+}
+
+
+.logo-container {
+  text-align: center;
+  margin-bottom: 10px;
+  width: 260px;
+}
+
+.field {
+  margin-bottom: 15px;
+}
+
+button {
+  width: 262px;
+  height: 34px;
+  border-radius: 50px;
+  background-color: #b44b25;
+  color: white;
+  border: none;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+
+  display: block;
+  align-items: center;
+  justify-content: center;
+
+ margin: 0 auto 40px auto;
+ font-weight: 300;
+   
+}
+
+
+
+
+input[type="email"],
+input[type="password"] {
+  width: 262px;
+  height: 34px;
+  border-radius: 50px;
+  padding-left: 15px;
+  border: 1px solid #d1d5db;
+  display: block;
+  margin: 0 auto;
+  box-shadow: 0 0 5px rgba(0,0,0,0.1);
+}
+
+.logo img {
+  width: 120px;
+  height: auto;
+}
+
+.page-logo {
+  position: fixed;
+  top: 0px;
+  left: 20px;
+  z-index: 1000;
+}
+
+.page-logo img {
+  width: 100px;
+  height: auto;
+}
+
+.card-logo {
+  display: flex;
+  justify-content: center;
+  margin-bottom: 5px;
+  margin-top: 10px;
+}
+
+.checkbox-field {
+  display: flex;
+  align-items: center;
+  gap: 8px; 
+}
+
+input[type="checkbox"] {
+  width: 16px;
+  height: 16px;
+  cursor: pointer;
+}
+
+label {
+  font-size: 14px;
+  color: #333;
+  white-space: nowrap;
+}
+
+
+
+
+h2,
+p,
+
+.signup-text {
+  text-align: center;
+  margin-top: 2px;
+
+}
+
+
+
+h2 {
+  margin-bottom: 20px;
+  font-weight: 300;
+  font-size: 20px;
+}
+p{
+    padding-bottom: 5;
+    font-size: 15px;
+    font-weight: 300;
+    color: gray;
+
+}
+
+.remember-forgot-section {
+  width: 100%;
+}
+a {
+  text-decoration: none;
+}
