@@ -89,7 +89,7 @@ public class SecurityConfig {
         // set what cross-origin browsers are allowed to do
         config.setAllowedOrigins(List.of(
             "http://localhost:3000",
-            "https://www.adoptpetsforall.com"
+            "https://adoptpetsforall.com"
         ));
         config.setAllowedMethods(List.of("GET","POST","PUT","DELETE","OPTIONS"));
         config.setAllowedHeaders(List.of("Authorization","Content-Type"));
