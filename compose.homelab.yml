@@ -17,6 +17,10 @@ services:
       - traefik.http.services.pfa-api.loadbalancer.server.port=8080
 
   frontend:
+    build:
+      context: ./frontend
+      args:
+        VITE_API_BASE_URL: https://api.adoptpetsforall.com
     networks:
       - proxy
     labels:

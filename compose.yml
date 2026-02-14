@@ -9,6 +9,4 @@ services:
       DB_NAME: ${MYSQL_DATABASE}
 
   frontend:
-    build:
-      context: ./frontend
     restart: unless-stopped
