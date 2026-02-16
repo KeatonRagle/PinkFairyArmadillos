@@ -28,11 +28,12 @@ body.selectanimal-body {
 
 .bg-wave {
   position: absolute;
-  top: 40vh;
-  left: -120vh;
-  width: 180vw;
-  height: auto;
+  top: 35vh;
+  left: -15vw;
+  width: 120vw;
+  height: 65vh;
   z-index: 2;
+  object-fit: cover;
 }
 
 

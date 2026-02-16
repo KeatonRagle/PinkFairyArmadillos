@@ -35,20 +35,25 @@ body.home-body {
   z-index: 1;
 }
 
+
 .bg-waveHome {
   position: absolute;
   top: 65vh;
-  left: -80vh;
-  width: 140vw;  height: auto;
+  left: -35vw;
+  width: 140vw;
+  height: auto;
   z-index: 2;
+  object-fit: cover;
 }
 
 .bg-inverse-wave {
   position: absolute;
   top: 95vh;
-  left: -40vh;
-  width: 140vw;  height: auto;
+  left: -10vw;
+  width: 120vw;
+  height: auto;
   z-index: 2;
+  object-fit: cover;
 }
 
 .MainButton {
