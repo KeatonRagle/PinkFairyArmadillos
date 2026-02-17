@@ -8,19 +8,25 @@ body.home-body {
 
 .home-page {
   position: relative;
-  min-height: 260vh;
+  min-height: 300vh;
   width: 100vw;
   padding: 0;
   margin: 0;
   background: transparent;
 }
 
-.bg-dogs {
+@media (max-height: 800px) {
+  .home-page {
+    min-height: 285vh;
+  }
+}
+
+.home-body .bg-dogs, body.home-body .bg-dogs {
   position: absolute;
   top: 0vh;
-  left: 0;
-  width: 100vw;
-  height: 100vh;
+  left: -15vw;
+  width: 130vw;
+  height: 130vh;
   object-fit: cover;
   z-index: 1;
 }
@@ -51,18 +57,9 @@ body.home-body {
 
 
 
-.bg-waveHome {
+.bg-bothWaves {
   position: absolute;
   top: 65vh;
-  left: 0;
-  width: 100%;
-  height: auto;
-  z-index: 2;
-}
-
-.bg-inverse-wave {
-  position: absolute;
-  top: 95vh;
   left: 0;
   width: 100%;
   height: auto;

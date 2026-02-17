@@ -14,7 +14,6 @@ export default function SelectAnimal() {
     <div className="selectanimal-page">
 
       <HomeHeader />
-      <HomeFooter />
 
       <div className="ButtonRow">
         <button className="ThreeButtons">
@@ -34,6 +33,7 @@ export default function SelectAnimal() {
       <img src="/images/dogs.jpg" className="bg-dogs" />
       <img src="/images/waveShort.png" className="bg-wave" />
 
+      <HomeFooter />
 
     </div>
   )

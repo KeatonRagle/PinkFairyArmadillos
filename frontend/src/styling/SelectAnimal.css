@@ -8,12 +8,14 @@ body.selectanimal-body {
 
 .selectanimal-page {
   position: relative;
-  min-height: 90vh;
+  min-height: 100vh;
   width: 100vw;
   padding: 0;
   margin: 0 0 -5px 0;
   background: transparent;
 }
+
+
 
 .bg-dogs {
   position: absolute;
@@ -28,7 +30,7 @@ body.selectanimal-body {
 
 .bg-wave {
   position: absolute;
-  bottom: -60px;
+  bottom: 80px;
   left: 0;
   width: 100%;
   height: 50vh;
