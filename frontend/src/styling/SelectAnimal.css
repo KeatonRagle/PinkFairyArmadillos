@@ -11,7 +11,7 @@ body.selectanimal-body {
   min-height: 90vh;
   width: 100vw;
   padding: 0;
-  margin: 0;
+  margin: 0 0 -5px 0;
   background: transparent;
 }
 
@@ -28,12 +28,11 @@ body.selectanimal-body {
 
 .bg-wave {
   position: absolute;
-  top: 35vh;
-  left: -15vw;
-  width: 120vw;
-  height: 65vh;
+  bottom: -60px;
+  left: 0;
+  width: 100%;
+  height: 50vh;
   z-index: 2;
-  object-fit: cover;
 }
 
 

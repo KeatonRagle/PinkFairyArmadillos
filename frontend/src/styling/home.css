@@ -27,7 +27,7 @@ body.home-body {
 
 .bg-cats {
   position: absolute;
-  top: 170vh;
+  top: 180vh;
   left: 0vh;
   width: 100vw;
   height: 100vh;
@@ -35,25 +35,38 @@ body.home-body {
   z-index: 1;
 }
 
+@media (min-height: 801px) {
+  .bg-cats {
+    top: 200vh;
+    height: 100vh;
+  }
+}
+
+@media (max-height: 800px) {
+  .bg-cats {
+    top: 132vh;
+    height: 150vh;
+  }
+}
+
+
 
 .bg-waveHome {
   position: absolute;
   top: 65vh;
-  left: -35vw;
-  width: 140vw;
+  left: 0;
+  width: 100%;
   height: auto;
   z-index: 2;
-  object-fit: cover;
 }
 
 .bg-inverse-wave {
   position: absolute;
   top: 95vh;
-  left: -10vw;
-  width: 120vw;
+  left: 0;
+  width: 100%;
   height: auto;
   z-index: 2;
-  object-fit: cover;
 }
 
 .MainButton {

@@ -32,7 +32,7 @@ export default function SelectAnimal() {
       </div>
 
       <img src="/images/dogs.jpg" className="bg-dogs" />
-      <img src="/images/waveShort.svg" className="bg-wave" />
+      <img src="/images/waveShort.png" className="bg-wave" />
 
 
     </div>
