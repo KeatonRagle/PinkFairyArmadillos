@@ -16,6 +16,9 @@ target/
 ### env ###
 .env
 
+### compose ###
+compose.override.yml
+
 ### IntelliJ IDEA ###
 .idea
 *.iws

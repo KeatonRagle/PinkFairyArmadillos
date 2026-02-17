@@ -1,3 +1,5 @@
+name: pfa
+
 services:
   backend:
     build:
