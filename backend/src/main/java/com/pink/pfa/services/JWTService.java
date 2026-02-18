@@ -200,12 +200,10 @@ public class JWTService {
      * @return the extracted email if present and valid; otherwise {@code null}
      */
     public String extractEmailFromHeader(String authHeader) {
-        String token = null;
         String email = null;
         if (authHeader.startsWith("Bearer ")) {
-            token = authHeader.substring(7);
             try {
-                email = extractEmail(token);
+                email = extractEmail(authHeader.substring(7));
             } catch (Exception e) {
                 // TODO: handle exception
             }
