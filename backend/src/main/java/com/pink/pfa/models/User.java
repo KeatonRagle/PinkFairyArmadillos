@@ -62,7 +62,7 @@ public class User {
     /** Authorization role determining user permissions. */
     @Column(name = "role", nullable = false)
     @Enumerated(EnumType.STRING)
-    private Role role = Role.USER; // this is the default can be changed by an admin in the admin login?
+    private Role role = Role.ROLE_USER; // this is the default can be changed by an admin in the admin login?
 
 
     /** Optional location metadata associated with the user. */
@@ -74,7 +74,7 @@ public class User {
      * USER represents a standard authenticated user.
      * ADMIN represents a privileged user with elevated permissions.
      */
-    public enum Role { USER, ADMIN }
+    public enum Role { ROLE_USER, ROLE_ADMIN }
 
     /** Default constructor required by JPA. */
     public User() {

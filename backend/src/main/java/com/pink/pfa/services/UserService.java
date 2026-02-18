@@ -7,6 +7,7 @@ import org.springframework.boot.context.properties.source.InvalidConfigurationPr
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -16,6 +17,7 @@ import com.pink.pfa.models.User;
 import com.pink.pfa.models.datatransfer.UserDTO;
 import com.pink.pfa.repos.UserRepository;
 
+import jakarta.servlet.http.HttpServletRequest;
 import jakarta.transaction.Transactional;
 
 
@@ -89,6 +91,29 @@ public class UserService {
 
 
     /**
+     * Retrieves a {@link UserDTO} based on the JWT provided in the
+     * {@code Authorization} header of the given {@link HttpServletRequest}.
+     *
+     * <p>This method extracts the JWT from the request header, parses the
+     * user's email using {@code jwtService}, and looks up the corresponding
+     * user in the repository. If a matching user is found, it is converted
+     * to a {@link UserDTO}. If no user exists with the extracted email,
+     * a {@link UsernameNotFoundException} is thrown.</p>
+     *
+     * @param request the incoming HTTP request containing the Authorization header
+     * @return the {@link UserDTO} corresponding to the authenticated user
+     * @throws UsernameNotFoundException if no user is found for the extracted email
+     */
+    public UserDTO findByJWT(HttpServletRequest request) {
+        String authHeader = request.getHeader("Authorization");
+        String email = jwtService.extractEmailFromHeader(authHeader);
+        return userRepository.findByEmail(email)
+                .map(UserDTO::fromEntity)
+                .orElseThrow(() -> new UsernameNotFoundException("lol"));
+    }
+
+
+    /**
      * Creates a new user account from a {@link CreateUserRequest}.<br>
      * The email is normalized (trimmed + lowercased) and the password is hashed using {@link PasswordEncoder}
      * before saving the new {@link User} entity to the database. Returns a DTO representation of the saved user.
@@ -103,6 +128,7 @@ public class UserService {
         user.setPassword(
             passwordEncoder.encode(request.password())
         );
+        user.setRole(User.Role.ROLE_USER);
 
         User savedUser = userRepository.save(user);
         return UserDTO.fromEntity(savedUser);
@@ -135,6 +161,6 @@ public class UserService {
         User user = userRepository.findById(userId)
             .orElseThrow(() -> new RuntimeException("User not found"));
 
-        user.setRole(User.Role.ADMIN);
+        user.setRole(User.Role.ROLE_ADMIN);
     }
 }
