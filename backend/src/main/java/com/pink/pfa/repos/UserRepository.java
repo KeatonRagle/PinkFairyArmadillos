@@ -1,6 +1,7 @@
 package com.pink.pfa.repos;
 
 import java.util.List;
+import java.util.Optional;
 
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
@@ -47,8 +48,8 @@ public interface UserRepository extends JpaRepository<User, Integer> {
      * @param email unique email identifier
      * @return {@link User} if found, otherwise null
      */
-    User findByEmail(String email);
 
+    Optional<User> findByEmail(String email);
     
     //User findById(Integer user_id);
 }
