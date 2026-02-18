@@ -21,7 +21,7 @@ CREATE TABLE pet (
     name VARCHAR(100) NOT NULL,
     breed VARCHAR(100) NOT NULL,
     age VARCHAR(50) NOT NULL,
-    sex VARCHAR(10) NOT NULL,
+    gender VARCHAR(10) NOT NULL,
     pet_type VARCHAR(50) NOT NULL,
     price DOUBLE NOT NULL,
     pet_status VARCHAR(50) NOT NULL,
