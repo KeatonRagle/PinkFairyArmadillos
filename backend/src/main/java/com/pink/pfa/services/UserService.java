@@ -113,7 +113,7 @@ public class UserService {
                 // if this exception gets thrown then 3 things could have happened 
                 // 1. the packet degraded during transit
                 // 2. the jwt sent is expired
-                // 2. (more concerning) someone is generating their own JWTs and sending them to us
+                // 3. (more concerning) someone is generating their own JWTs and sending them to us
                 .orElseThrow(() -> new UsernameNotFoundException("Failed to find user by JWT"));
     }
 
