@@ -8,46 +8,61 @@ body.home-body {
 
 .home-page {
   position: relative;
-  min-height: 260vh;
+  min-height: 250vh;
   width: 100vw;
   padding: 0;
   margin: 0;
   background: transparent;
 }
 
-.bg-dogs {
+@media (max-height: 800px) {
+  .home-page {
+    min-height: 285vh;
+  }
+}
+
+.home-body .bg-dogs, body.home-body .bg-dogs {
   position: absolute;
   top: 0vh;
-  left: 0;
-  width: 100vw;
-  height: 100vh;
+  left: -15vw;
+  width: 130vw;
+  height: 130vh;
   object-fit: cover;
   z-index: 1;
 }
 
 .bg-cats {
   position: absolute;
-  top: 170vh;
+  top: 180vh;
   left: 0vh;
-  width: 100vw;
-  height: 100vh;
+  width: 130vw;
+  height: 130vh;
   object-fit: cover;
   z-index: 1;
 }
 
-.bg-waveHome {
-  position: absolute;
-  top: 65vh;
-  left: -80vh;
-  width: 140vw;  height: auto;
-  z-index: 2;
+@media (min-height: 801px) {
+  .bg-cats {
+    top: 150vh;
+    height: 100vh;
+  }
 }
 
-.bg-inverse-wave {
+@media (max-height: 800px) {
+  .bg-cats {
+    top: 132vh;
+    height: 150vh;
+  }
+}
+
+
+
+.bg-bothWaves {
   position: absolute;
-  top: 95vh;
-  left: -40vh;
-  width: 140vw;  height: auto;
+  top: 65vh;
+  left: 0;
+  width: 100%;
+  height: auto;
   z-index: 2;
 }
 
