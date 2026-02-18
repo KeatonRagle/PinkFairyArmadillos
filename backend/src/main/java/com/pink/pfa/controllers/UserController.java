@@ -8,7 +8,6 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -20,6 +19,7 @@ import com.pink.pfa.models.User;
 import com.pink.pfa.models.datatransfer.UserDTO;
 import com.pink.pfa.services.UserService;
 
+import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
 
 
@@ -35,7 +35,6 @@ import jakarta.validation.Valid;
  *   <li>Register new users.</li>
  *   <li>Authenticate users and issue JWTs.</li>
  *   <li>Retrieve user data (restricted by role where applicable).</li>
- *   <li>Promote users to ADMIN role (admin-only operation).</li>
  * </ul>
  *
  * Security:
@@ -54,24 +53,6 @@ public class UserController {
  
 
     /**
-     * Retrieves all registered users.
-     * <p>
-     * Access is restricted to ADMIN users via role-based authorization.
-     * Returns a structured response containing the user list and a timestamp.
-     *
-     * @return map containing list of users and request timestamp
-     */
-    @GetMapping
-    @PreAuthorize("hasRole('ADMIN')")
-    public Map<String, Object> getAllUsers() {
-        return Map.of(
-            "Users: ", userService.findAll(),
-            "TimeStamp", Instant.now().toString()
-        );
-    }
-
-
-    /**
      * Retrieves a specific user by their unique ID.
      * <p>
      * Returns a structured response containing the user data and timestamp.
@@ -85,6 +66,32 @@ public class UserController {
     ) {
         return Map.of(
             "ID: ", userService.findById(id),
+            "TimeStamp", Instant.now().toString()
+        );
+    }
+
+
+    /**
+     * Retrieves the currently authenticated user's information based on the
+     * JWT provided in the request's Authorization header.
+     *
+     * <p>This endpoint extracts the JWT from the incoming {@link HttpServletRequest},
+     * delegates user resolution to {@code userService}, and returns a response map
+     * containing the authenticated user's data along with the current timestamp.</p>
+     *
+     * @param request the HTTP request containing the Authorization header with a Bearer token
+     * @return a {@link Map} containing:
+     *         <ul>
+     *             <li>"User: " – the {@link UserDTO} of the authenticated user</li>
+     *             <li>"TimeStamp" – the current timestamp in ISO-8601 string format</li>
+     *         </ul>
+     */
+    @GetMapping("/findMe")
+    public Map<String, Object> getUserByJWT(
+        HttpServletRequest request
+    ) {
+        return Map.of(
+            "User: ", userService.findByJWT(request),
             "TimeStamp", Instant.now().toString()
         );
     }
@@ -130,19 +137,4 @@ public class UserController {
     }
 
 
-    /**
-     * Promotes a user to ADMIN role.
-     * <p>
-     * Access is restricted to existing ADMIN users.
-     * Returns HTTP 204 (No Content) upon successful promotion.
-     *
-     * @param id ID of the user to promote
-     * @return empty {@link ResponseEntity} with 204 status
-     */
-    @PatchMapping("/admin/{id}/promote")
-    @PreAuthorize("hasRole('ADMIN')")
-    public ResponseEntity<Void> promote(@PathVariable int id) {
-        userService.promoteToAdmin(id);
-        return ResponseEntity.noContent().build();
-    }
 }
