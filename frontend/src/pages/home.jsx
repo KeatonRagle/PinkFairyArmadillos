@@ -2,7 +2,7 @@ import '../styling/home.css'
 import { useEffect } from 'react'
 import HomeHeader from "../components/header"
 import HomeFooter from "../components/footer"
-import { Link, useNavigate } from 'react-router-dom'
+import { useNavigate } from 'react-router-dom'
 
 export default function Home() {
 
@@ -17,6 +17,15 @@ export default function Home() {
     e.preventDefault()
     navigate('/select-animal')
   }
+
+  const handleNewestArrivalsClick = () => {
+    navigate('/animal-filter')
+  }
+
+  const handleDiscussionBoardClick = () => {
+    navigate('/discussion-board')
+  }
+
   return (
     <div className="home-page">
 
@@ -25,8 +34,8 @@ export default function Home() {
       
       <button className="MainButton" onClick={handleSubmit} >Find Your Future Pet</button>
       <div className = "ButtonRowHome">
-        <button className="ThreeButtonsHome">Newest Arrivals</button>
-        <button className="ThreeButtonsHome">Discussion Board</button>
+        <button className="ThreeButtonsHome" onClick={handleNewestArrivalsClick}>Newest Arrivals</button>
+        <button className="ThreeButtonsHome" onClick={handleDiscussionBoardClick}>Discussion Board</button>
         <button className="ThreeButtonsHome">Shelter Info</button>
       </div>
     
