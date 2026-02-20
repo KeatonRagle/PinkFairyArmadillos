@@ -26,6 +26,10 @@ export default function Home() {
     navigate('/discussion-board')
   }
 
+  const handleShelterInfoClick = () => {
+    navigate('/shelter-info')
+  }
+
   return (
     <div className="home-page">
 
@@ -36,7 +40,7 @@ export default function Home() {
       <div className = "ButtonRowHome">
         <button className="ThreeButtonsHome" onClick={handleNewestArrivalsClick}>Newest Arrivals</button>
         <button className="ThreeButtonsHome" onClick={handleDiscussionBoardClick}>Discussion Board</button>
-        <button className="ThreeButtonsHome">Shelter Info</button>
+        <button className="ThreeButtonsHome" onClick={handleShelterInfoClick}>Shelter Info</button>
       </div>
     
       <img src="/images/dogs.jpg" className="bg-dogs" />
