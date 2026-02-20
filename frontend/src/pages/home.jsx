@@ -38,9 +38,25 @@ export default function Home() {
       
       <button className="MainButton" onClick={handleSubmit} >Find Your Future Pet</button>
       <div className = "ButtonRowHome">
-        <button className="ThreeButtonsHome" onClick={handleNewestArrivalsClick}>Newest Arrivals</button>
-        <button className="ThreeButtonsHome" onClick={handleDiscussionBoardClick}>Discussion Board</button>
-        <button className="ThreeButtonsHome" onClick={handleShelterInfoClick}>Shelter Info</button>
+        <button className="ThreeButtonsHome newest-arrivals-button" onClick={handleNewestArrivalsClick}>
+          <span className="newest-arrivals-title">Newest Arrivals</span>
+          <ul className="newest-arrivals-list">
+            <li>Meet the newest animals to join us!</li>
+            <li>recent arrivals you can learn about, visit, or adopt.</li>
+          </ul>
+        </button>
+        <button className="ThreeButtonsHome discussion-board-button" onClick={handleDiscussionBoardClick}>
+          <span className="discussion-board-title">Discussion Board</span>
+          <ul className="discussion-board-list">
+            <li>Share your thoughts, ask questions, and chat with others about animals, care tips, and experiences.</li>
+          </ul>
+        </button>
+        <button className="ThreeButtonsHome shelter-info-button" onClick={handleShelterInfoClick}>
+          <span className="shelter-info-title">Shelter Info</span>
+          <ul className="shelter-info-list">
+            <li>Learn about different shelters including hours, locations, policies etc.</li>
+          </ul>
+        </button>
       </div>
     
       <img src="/images/dogs.jpg" className="bg-dogs" />

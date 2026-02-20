@@ -119,3 +119,75 @@ body.home-body {
   justify-content: center;
 }
 
+.newest-arrivals-button {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  justify-content: flex-start;
+  text-align: left;
+  gap: 40px;
+  padding-top: 28px;
+}
+
+.newest-arrivals-title {
+  color: #b44b25;
+  font-size: 30px;
+  line-height: 1.1;
+}
+
+.newest-arrivals-list {
+  margin: 0;
+  padding-left: 20px;
+  color: #2e2e2e;
+  font-size: 24px;
+  line-height: 2;
+}
+
+.discussion-board-button {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  justify-content: flex-start;
+  text-align: left;
+  gap: 40px;
+  padding-top: 28px;
+}
+
+.discussion-board-title {
+  color: #b44b25;
+  font-size: 30px;
+  line-height: 1.1;
+}
+
+.discussion-board-list {
+  margin: 0;
+  padding-left: 20px;
+  color: #2e2e2e;
+  font-size: 24px;
+  line-height: 2;
+}
+
+.shelter-info-button {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  justify-content: flex-start;
+  text-align: left;
+  gap: 40px;
+  padding-top: 28px;
+}
+
+.shelter-info-title {
+  color: #b44b25;
+  font-size: 30px;
+  line-height: 1.1;
+}
+
+.shelter-info-list {
+  margin: 0;
+  padding-left: 20px;
+  color: #2e2e2e;
+  font-size: 24px;
+  line-height: 2;
+}
+
