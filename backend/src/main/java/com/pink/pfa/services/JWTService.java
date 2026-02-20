@@ -187,4 +187,28 @@ public class JWTService {
     public String extractEmail(String token) {
         return extractClaim(token, Claims::getSubject);
     }
+
+
+    /**
+     * Extracts the user's email from an Authorization header containing a Bearer token.
+     *
+     * <p>If the header starts with {@code "Bearer "}, the token portion is extracted
+     * and parsed to retrieve the email (subject claim). If the header is invalid,
+     * malformed, or token parsing fails, {@code null} is returned.</p>
+     *
+     * @param authHeader the value of the HTTP Authorization header
+     * @return the extracted email if present and valid; otherwise {@code null}
+     */
+    public String extractEmailFromHeader(String authHeader) {
+        String email = null;
+        if (authHeader.startsWith("Bearer ")) {
+            try {
+                email = extractEmail(authHeader.substring(7));
+            } catch (Exception e) {
+                // TODO: handle exception
+            }
+        }
+
+        return email;
+    }
 }

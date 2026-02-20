@@ -33,7 +33,7 @@ export default function Login() {
     setLoading(true)
     try {
       const data = await login({ email, password })
-      localStorage.setItem("token", data.token)
+      localStorage.setItem("token", data)
 
       navigate('/home')
     } catch (err) {
