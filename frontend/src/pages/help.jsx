@@ -19,14 +19,10 @@ export default function Help() {
 
         <section className="help-hero">
           <h1>Help & Support</h1>
-          <p>this is placeholder text</p>
+          <h2>Frequently Asked Questions</h2>
         </section>
 
         <section className="help-content">
-          <h2>Frequently Asked Questions</h2>
-          <p>
-            placeholder for asked questions.
-          </p>
         </section>
 
       </main>
