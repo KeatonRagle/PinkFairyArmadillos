@@ -1,0 +1,87 @@
+package com.pink.pfa.models;
+
+import java.time.LocalDate;
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
+import lombok.Data;
+
+
+/**
+ * JPA entity representing a submissions record in the database.
+ * <p>
+ * This class maps directly to the underlying submissions table and defines
+ * the schema used for persistence. It is used by Spring Data JPA
+ * through {@link jakarta.persistence.Entity}.
+ *
+ * Responsibilities:
+ * <ul>
+ *   <li>Store submission information (pet info, pet status).</li>
+ * </ul>
+ */
+@Data
+@Entity
+public class Submissions {
+	
+	
+	/** Primary key identifier for the submission (auto-generated). */
+	@Id
+	@GeneratedValue(strategy = GenerationType.IDENTITY)
+	private Integer submission_id;
+	
+	
+	@ManyToOne
+	@JoinColumn(name = "user_id")
+	private User user;
+	
+	
+	/** Submitted pet's info. */
+	@Column(name = "pet information", nullable = false)
+	private String pet_info;
+	
+	
+	/** Submitted pet's status. */
+	@Column(name = "pet status", nullable = false)
+	private String pet_status;
+	
+	
+	/** Default constructor required by JPA. */
+	public Submissions() {
+	}
+	
+	
+	/**
+     * Constructs a fully initialized Submissions entity.
+     *
+     * @param pet_info user submitted pet information
+     * @param pet_status status of pet submitted
+     */
+	public Submissions(String pet_info, String pet_status) {
+		this.pet_info = pet_info;
+		this.pet_status = pet_status;
+	}
+	
+	
+	/*+++ Getters +++*/
+	public String getPet_info() {
+		return pet_info;
+	}
+	
+	public String getPet_status() {
+		return pet_status;
+	}
+	
+	
+	/*+++ Setters +++*/
+	public void setPet_info(String pet_info) {
+		this.pet_info = pet_info;
+	}
+	
+	public void setPet_status(String pet_status) {
+		this.pet_status = pet_status;
+	}
+}

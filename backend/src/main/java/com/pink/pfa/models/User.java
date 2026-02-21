@@ -42,8 +42,8 @@ public class User {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer user_id;
-
-
+	
+	
     /** User's display name (required). */
     @Column(name = "name", nullable = false)
     private String name;
