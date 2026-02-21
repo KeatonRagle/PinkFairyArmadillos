@@ -1,6 +1,6 @@
 import { useEffect } from "react"
 import HomeHeader from "../components/header"
-import HomeFooter from "../components/footer2"
+import HomeFooter from "../components/footer"
 import "../styling/help.css"
 
 export default function Help() {

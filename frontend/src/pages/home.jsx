@@ -32,8 +32,8 @@ export default function Home() {
     
       <img src="/images/dogs.jpg" className="bg-dogs" />
       <img src="/images/cats.jpg" className="bg-cats" />
-      <img src="/images/wave.png" className="bg-waveHome" />
-      <img src="/images/inversewave.png" className="bg-inverse-wave" />
+      <img src="/images/bothWaves.svg" className="bg-bothWaves" /> 
+
       <HomeFooter />
     
 

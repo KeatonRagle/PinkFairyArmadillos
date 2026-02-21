@@ -27,7 +27,8 @@ import com.pink.pfa.models.User;
 public record UserDTO(
         Integer id,
         String name,
-        String email
+        String email,
+        User.Role role
 ) {
 
 
@@ -44,7 +45,8 @@ public record UserDTO(
         return new UserDTO(
             user.getUser_id(),
             user.getName(),
-            user.getEmail()
+            user.getEmail(),
+            user.getRole()
         );
     }
 }
