@@ -28,8 +28,6 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
  */
 @SpringBootApplication
 public class PfaApplication {
-
-	
 	/**
 	 * Main method used to launch the Spring Boot application.
 	 * Delegates to {@link SpringApplication#run(Class, String...)} which
