@@ -33,7 +33,7 @@ CREATE TABLE featuredPets (
 	pet_id INT AUTO_INCREMENT PRIMARY KEY,
     start_date DATE NOT NULL,
     end_date DATE NOT NULL,
-    reason VARCHAR(255) NOT NULL,
+    reason TEXT NOT NULL,
     FOREIGN KEY (pet_id) REFERENCES pet(pet_id)
 );
 
@@ -52,8 +52,8 @@ CREATE TABLE reviews (
     user_id INT NOT NULL,
     center_id INT NOT NULL,
     rating DOUBLE PRECISION NOT NULL,
-    rt_comment TEXT NOT NULL,
-    rt_date DATE NOT NULL,
+    rw_comment TEXT NOT NULL,
+    rw_date DATE NOT NULL,
     FOREIGN KEY (user_id) REFERENCES user(user_id),
     FOREIGN KEY (center_id) REFERENCES adoptionCenter(center_id)
 );
