@@ -26,10 +26,6 @@ export default function SelectAnimal() {
         <img src="/images/cat png.png" alt="Cat" className="button-icon" />
         <span className="button-text">Cats</span>
         </button>
-        <button className="ThreeButtons" onClick={() => navigate('/animal-filter')}>
-        <img src="/images/bunny.png" alt="Other" className="button-icon" />
-        <span className="button-text">Other Animals</span>
-        </button>
       </div>
 
       <img src="/images/dogs.jpg" className="bg-dogs" />

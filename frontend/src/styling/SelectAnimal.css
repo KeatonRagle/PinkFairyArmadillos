@@ -46,14 +46,14 @@ body.selectanimal-body {
   z-index: 10;
 
   display: flex;
-  gap: 150px;
+  gap: 200px;
   justify-content: center;
   align-items: center;
 }
 
 .ThreeButtons {
-  width: 250px;
-  height: 250px;
+  width: 350px;
+  height: 225px;
   background-color: #b44b25;
   color: #F8F8F8;
   border: none;

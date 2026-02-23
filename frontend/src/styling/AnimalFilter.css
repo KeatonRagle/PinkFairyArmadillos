@@ -1,15 +1,18 @@
+/* Page body styles */
 body.animalfilter-body {
 	margin: 0;
 	font-family: 'Hind Kochi', sans-serif;
 	background: #F8F8F8;
 }
 
+/* Page wrapper */
 .animalfilter-page {
 	min-height: 150vh;
 	position: relative;
 	padding-bottom: 180px;
 }
 
+/* Main layout: filter panel + results grid */
 .animalfilter-main {
 	display: flex;
 	justify-content: flex-start;
@@ -20,6 +23,7 @@ body.animalfilter-body {
 	padding-right: 48px;
 }
 
+/* Left filter panel */
 .animalfilter-panel {
 	width: 300px;
 	background: #F8F8F8;
@@ -31,6 +35,7 @@ body.animalfilter-body {
 	gap: 14px;
 }
 
+/* Filter panel heading */
 .animalfilter-panel h1 {
 	margin: 0;
 	font-size: 24px;
@@ -38,6 +43,7 @@ body.animalfilter-body {
 	color: #343434;
 }
 
+/* Results grid container */
 .animal-results {
 	flex: 1;
 	display: grid;
@@ -47,6 +53,7 @@ body.animalfilter-body {
 	min-height: calc(100vh - 260px);
 }
 
+/* Next page button */
 .animal-results-next {
 	height: 48px;
 	width: 48px;
@@ -64,6 +71,7 @@ body.animalfilter-body {
 
 /* ai added these comments, this is for the api stuff */
 /* Animal card container: keep this background orange for the theme card behind image + text. */
+/* Result card styles */
 .animal-card {
 	background: #b44b25;
 	border-radius: 18px;
@@ -75,6 +83,7 @@ body.animalfilter-body {
 	min-height: 300px;
 }
 
+/* Card image wrapper */
 .animal-card-image-wrap {
 	width: 100%;
 	height: 170px;
@@ -86,12 +95,14 @@ body.animalfilter-body {
 	overflow: hidden;
 }
 
+/* Card image */
 .animal-card-image {
 	width: 100%;
 	height: 100%;
 	object-fit: cover;
 }
 
+/* Card text block */
 .animal-card-info {
 	color: #f8f8f8;
 	display: flex;
@@ -99,29 +110,35 @@ body.animalfilter-body {
 	gap: 4px;
 }
 
+/* Card name */
 .animal-card-info h2 {
 	margin: 0;
 	font-size: 22px;
 	font-weight: 500;
 }
 
+/* Card metadata lines */
 .animal-card-info p {
 	margin: 0;
 	font-size: 16px;
 }
 
+/* Placeholder card state */
 .animal-card-placeholder {
 	opacity: 0.55;
 }
 
+/* Placeholder image block */
 .animal-placeholder-image {
 	background: #e5e7eb;
 }
 
+/* Placeholder text block */
 .animal-placeholder-info {
 	gap: 10px;
 }
 
+/* Placeholder line */
 .animal-placeholder-line {
 	height: 14px;
 	width: 100%;
@@ -129,12 +146,14 @@ body.animalfilter-body {
 	background: rgba(248, 248, 248, 0.5);
 }
 
+/* Placeholder title line */
 .animal-placeholder-title {
 	width: 70%;
 	height: 18px;
 }
 
 
+/* Shared dropdown button style */
 .filter-dropdown {
 	display: block;
 	width: 100%;
@@ -156,12 +175,14 @@ body.animalfilter-body {
 	
 }
 
+/* Gender filter: toggle button */
 .gender-toggle {
 	position: relative;
 	text-align: left;
 	cursor: pointer;
 }
 
+/* Gender filter: group wrapper */
 .gender-filter-group {
 	--gender-extend-height: 105px;
 	position: relative;
@@ -170,16 +191,19 @@ body.animalfilter-body {
 	gap: 0;
 }
 
+/* Gender filter: open state stacking */
 .gender-filter-group.open {
 	z-index: 20;
 }
 
+/* Gender filter: open-state toggle style */
 .gender-filter-group.open .gender-toggle {
 	border-bottom-left-radius: 0;
 	border-bottom-right-radius: 0;
 	background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath d='M1 6l5-5 5 5' fill='none' stroke='%23b44b25' stroke-width='1.5' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E");
 }
 
+/* Gender filter: dropdown container extension */
 .gender-filter-group.open .gender-toggle::after {
 	content: '';
 	position: absolute;
@@ -198,6 +222,7 @@ body.animalfilter-body {
 
 
 
+/* Gender filter: options list */
 .gender-options {
 	position: absolute;
 	top: 46px;
@@ -211,6 +236,7 @@ body.animalfilter-body {
 	z-index: 2;
 }
 
+/* Gender filter: option button */
 .gender-option-button {
 	width: 85%;
 	height: 32px;
@@ -228,12 +254,14 @@ body.animalfilter-body {
 	cursor: pointer;
 }
 
+/* Breed filter: toggle button */
 .breed-toggle {
 	position: relative;
 	text-align: left;
 	cursor: pointer;
 }
 
+/* Breed filter: group wrapper */
 .breed-filter-group {
 	--breed-extend-height: 55px;
 	position: relative;
@@ -242,16 +270,19 @@ body.animalfilter-body {
 	gap: 0;
 }
 
+/* Breed filter: open state stacking */
 .breed-filter-group.open {
 	z-index: 20;
 }
 
+/* Breed filter: open-state toggle style */
 .breed-filter-group.open .breed-toggle {
 	border-bottom-left-radius: 0;
 	border-bottom-right-radius: 0;
 	background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath d='M1 6l5-5 5 5' fill='none' stroke='%23b44b25' stroke-width='1.5' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E");
 }
 
+/* Breed filter: dropdown container extension */
 .breed-filter-group.open .breed-toggle::after {
 	content: '';
 	position: absolute;
@@ -268,6 +299,7 @@ body.animalfilter-body {
 	z-index: 1;
 }
 
+/* Breed filter: options list */
 .breed-options {
 	position: absolute;
 	top: 46px;
@@ -282,6 +314,7 @@ body.animalfilter-body {
 	padding-top: 6px;
 }
 
+/* Shared text input styles for breed and shelter */
 .breed-search-input,
 .shelter-search-input {
 	width: 85%;
@@ -299,18 +332,21 @@ body.animalfilter-body {
 	outline: none;
 }
 
+/* Shared placeholder text styles */
 .breed-search-input::placeholder,
 .shelter-search-input::placeholder {
 	color: #b44b25;
 	opacity: 0.8;
 }
 
+/* Size filter: toggle button */
 .size-toggle {
 	position: relative;
 	text-align: left;
 	cursor: pointer;
 }
 
+/* Size filter: group wrapper */
 .size-filter-group {
 	--size-extend-height: 160px;
 	position: relative;
@@ -319,16 +355,19 @@ body.animalfilter-body {
 	gap: 0;
 }
 
+/* Size filter: open state stacking */
 .size-filter-group.open {
 	z-index: 20;
 }
 
+/* Size filter: open-state toggle style */
 .size-filter-group.open .size-toggle {
 	border-bottom-left-radius: 0;
 	border-bottom-right-radius: 0;
 	background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath d='M1 6l5-5 5 5' fill='none' stroke='%23b44b25' stroke-width='1.5' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E");
 }
 
+/* Size filter: dropdown container extension */
 .size-filter-group.open .size-toggle::after {
 	content: '';
 	position: absolute;
@@ -345,6 +384,7 @@ body.animalfilter-body {
 	z-index: 1;
 }
 
+/* Size filter: options list */
 .size-options {
 	position: absolute;
 	top: 46px;
@@ -358,6 +398,7 @@ body.animalfilter-body {
 	z-index: 2;
 }
 
+/* Size filter: option button */
 .size-option-button {
 	width: 85%;
 	height: 32px;
@@ -375,12 +416,14 @@ body.animalfilter-body {
 	cursor: pointer;
 }
 
+/* Age filter: toggle button */
 .age-toggle {
 	position: relative;
 	text-align: left;
 	cursor: pointer;
 }
 
+/* Age filter: group wrapper */
 .age-filter-group {
 	--age-extend-height: 215px;
 	position: relative;
@@ -389,16 +432,19 @@ body.animalfilter-body {
 	gap: 0;
 }
 
+/* Age filter: open state stacking */
 .age-filter-group.open {
 	z-index: 20;
 }
 
+/* Age filter: open-state toggle style */
 .age-filter-group.open .age-toggle {
 	border-bottom-left-radius: 0;
 	border-bottom-right-radius: 0;
 	background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath d='M1 6l5-5 5 5' fill='none' stroke='%23b44b25' stroke-width='1.5' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E");
 }
 
+/* Age filter: dropdown container extension */
 .age-filter-group.open .age-toggle::after {
 	content: '';
 	position: absolute;
@@ -415,6 +461,7 @@ body.animalfilter-body {
 	z-index: 1;
 }
 
+/* Age filter: options list */
 .age-options {
 	position: absolute;
 	top: 46px;
@@ -428,6 +475,7 @@ body.animalfilter-body {
 	z-index: 2;
 }
 
+/* Age filter: option button */
 .age-option-button {
 	width: 85%;
 	height: 32px;
@@ -445,12 +493,14 @@ body.animalfilter-body {
 	cursor: pointer;
 }
 
+/* Compatibility filter: toggle button */
 .compatibility-toggle {
 	position: relative;
 	text-align: left;
 	cursor: pointer;
 }
 
+/* Compatibility filter: group wrapper */
 .compatibility-filter-group {
 	--compatibility-extend-height: 235px;
 	position: relative;
@@ -459,16 +509,19 @@ body.animalfilter-body {
 	gap: 0;
 }
 
+/* Compatibility filter: open state stacking */
 .compatibility-filter-group.open {
 	z-index: 20;
 }
 
+/* Compatibility filter: open-state toggle style */
 .compatibility-filter-group.open .compatibility-toggle {
 	border-bottom-left-radius: 0;
 	border-bottom-right-radius: 0;
 	background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath d='M1 6l5-5 5 5' fill='none' stroke='%23b44b25' stroke-width='1.5' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E");
 }
 
+/* Compatibility filter: dropdown container extension */
 .compatibility-filter-group.open .compatibility-toggle::after {
 	content: '';
 	position: absolute;
@@ -485,6 +538,7 @@ body.animalfilter-body {
 	z-index: 1;
 }
 
+/* Compatibility filter: options list */
 .compatibility-options {
 	position: absolute;
 	top: 46px;
@@ -499,6 +553,7 @@ body.animalfilter-body {
 	padding-top: 6px;
 }
 
+/* Compatibility filter: option row */
 .compatibility-option-item {
 	width: 85%;
 	height: 32px;
@@ -518,6 +573,7 @@ body.animalfilter-body {
 	cursor: pointer;
 }
 
+/* Compatibility filter: checkbox style */
 .compatibility-option-item input[type='checkbox'] {
 	accent-color: #b44b25;
 	width: 14px;
@@ -525,12 +581,14 @@ body.animalfilter-body {
 	margin: 0;
 }
 
+/* Shelter filter: toggle button */
 .shelter-toggle {
 	position: relative;
 	text-align: left;
 	cursor: pointer;
 }
 
+/* Shelter filter: group wrapper */
 .shelter-filter-group {
 	--shelter-extend-height: 55px;
 	position: relative;
@@ -539,16 +597,19 @@ body.animalfilter-body {
 	gap: 0;
 }
 
+/* Shelter filter: open state stacking */
 .shelter-filter-group.open {
 	z-index: 20;
 }
 
+/* Shelter filter: open-state toggle style */
 .shelter-filter-group.open .shelter-toggle {
 	border-bottom-left-radius: 0;
 	border-bottom-right-radius: 0;
 	background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath d='M1 6l5-5 5 5' fill='none' stroke='%23b44b25' stroke-width='1.5' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E");
 }
 
+/* Shelter filter: dropdown container extension */
 .shelter-filter-group.open .shelter-toggle::after {
 	content: '';
 	position: absolute;
@@ -565,6 +626,7 @@ body.animalfilter-body {
 	z-index: 1;
 }
 
+/* Shelter filter: options list */
 .shelter-options {
 	position: absolute;
 	top: 46px;
@@ -579,12 +641,14 @@ body.animalfilter-body {
 	padding-top: 6px;
 }
 
+/* Price filter: toggle button */
 .price-toggle {
 	position: relative;
 	text-align: left;
 	cursor: pointer;
 }
 
+/* Price filter: group wrapper */
 .price-filter-group {
 	--price-extend-height: 160px;
 	position: relative;
@@ -593,16 +657,19 @@ body.animalfilter-body {
 	gap: 0;
 }
 
+/* Price filter: open state stacking */
 .price-filter-group.open {
 	z-index: 20;
 }
 
+/* Price filter: open-state toggle style */
 .price-filter-group.open .price-toggle {
 	border-bottom-left-radius: 0;
 	border-bottom-right-radius: 0;
 	background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath d='M1 6l5-5 5 5' fill='none' stroke='%23b44b25' stroke-width='1.5' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E");
 }
 
+/* Price filter: dropdown container extension */
 .price-filter-group.open .price-toggle::after {
 	content: '';
 	position: absolute;
@@ -619,6 +686,7 @@ body.animalfilter-body {
 	z-index: 1;
 }
 
+/* Price filter: options list */
 .price-options {
 	position: absolute;
 	top: 46px;
@@ -632,6 +700,7 @@ body.animalfilter-body {
 	z-index: 2;
 }
 
+/* Price filter: option button */
 .price-option-button {
 	width: 85%;
 	height: 32px;

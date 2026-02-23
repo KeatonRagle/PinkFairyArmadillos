@@ -4,9 +4,12 @@ import HomeFooter from '../components/footer'
 import '../styling/AnimalFilter.css'
 
 export default function AnimalFilter() {
+	// State: filter panel and search inputs
 	const [openFilter, setOpenFilter] = useState(null)
 	const [breedSearchText, setBreedSearchText] = useState('')
 	const [shelterSearchText, setShelterSearchText] = useState('')
+
+	// State: results and pagination
 	const [isLoading] = useState(false)
 	const [currentPage, setCurrentPage] = useState(1)
 	const animalsPerPage = 6
@@ -14,8 +17,12 @@ export default function AnimalFilter() {
 	// Data contract for API results:
 	// Each animal should include: id, name, breed, age, gender, image
 	// If backend field names differ, map them to these names before rendering cards.
+
+	// State: animal data and placeholders
 	const [animals] = useState([])
 	const placeholderCards = [1, 2, 3, 4, 5, 6]
+
+	// State: compatibility options
 	const [compatibilitySelections, setCompatibilitySelections] = useState({
 		dogs: false,
 		cats: false,
@@ -24,6 +31,7 @@ export default function AnimalFilter() {
 		children: false,
 	})
 
+	// Config: compatibility labels
 	const compatibilityOptions = [
 		{ key: 'dogs', label: 'Dogs' },
 		{ key: 'cats', label: 'Cats' },
@@ -32,6 +40,7 @@ export default function AnimalFilter() {
 		{ key: 'children', label: 'Children' },
 	]
 
+	// Handler: toggle compatibility checkbox
 	const toggleCompatibilitySelection = (key) => {
 		setCompatibilitySelections((previous) => ({
 			...previous,
@@ -39,21 +48,25 @@ export default function AnimalFilter() {
 		}))
 	}
 
+	// Handler: open/close active filter dropdown
 	const toggleFilter = (filterName) => {
 		setOpenFilter((currentFilter) =>
 			currentFilter === filterName ? null : filterName,
 		)
 	}
 
+	// Effect: page-specific body class
 	useEffect(() => {
 		document.body.classList.add('animalfilter-body')
 		return () => document.body.classList.remove('animalfilter-body')
 	}, [])
 
+	// Derived data: pagination values
 	const totalPages = Math.max(1, Math.ceil(animals.length / animalsPerPage))
 	const startIndex = (currentPage - 1) * animalsPerPage
 	const paginatedAnimals = animals.slice(startIndex, startIndex + animalsPerPage)
 
+	// Effect: keep current page in valid range
 	useEffect(() => {
 		if (currentPage > totalPages) {
 			setCurrentPage(totalPages)
@@ -67,13 +80,17 @@ export default function AnimalFilter() {
 	// 3) set loading false after response/error
 
 	return (
+		// Layout: page wrapper
 		<div className="animalfilter-page">
 			<HomeHeader />
 
+			{/* Layout: main content area */}
 			<main className="animalfilter-main">
+				{/* Section: filter controls */}
 				<section className="animalfilter-panel">
 					<h1>Filters</h1>
 
+					{/* Filter: gender */}
 					<div className={`gender-filter-group ${openFilter === 'gender' ? 'open' : ''}`}>
 						<button
 							type="button"
@@ -90,6 +107,7 @@ export default function AnimalFilter() {
 						)}
 					</div>
 
+					{/* Filter: breed */}
 					<div className={`breed-filter-group ${openFilter === 'breed' ? 'open' : ''}`}>
 						<button
 							type="button"
@@ -111,6 +129,7 @@ export default function AnimalFilter() {
 						)}
 					</div>
 
+					{/* Filter: size */}
 					<div className={`size-filter-group ${openFilter === 'size' ? 'open' : ''}`}>
 						<button
 							type="button"
@@ -128,6 +147,7 @@ export default function AnimalFilter() {
 						)}
 					</div>
 
+					{/* Filter: age */}
 					<div className={`age-filter-group ${openFilter === 'age' ? 'open' : ''}`}>
 						<button
 							type="button"
@@ -146,6 +166,7 @@ export default function AnimalFilter() {
 						)}
 					</div>
 
+					{/* Filter: compatibility */}
 					<div className={`compatibility-filter-group ${openFilter === 'compatibility' ? 'open' : ''}`}>
 						<button
 							type="button"
@@ -170,6 +191,7 @@ export default function AnimalFilter() {
 						)}
 					</div>
 
+					{/* Filter: shelter */}
 					<div className={`shelter-filter-group ${openFilter === 'shelter' ? 'open' : ''}`}>
 						<button
 							type="button"
@@ -191,6 +213,7 @@ export default function AnimalFilter() {
 						)}
 					</div>
 
+					{/* Filter: price */}
 					<div className={`price-filter-group ${openFilter === 'price' ? 'open' : ''}`}>
 						<button
 							type="button"
@@ -209,7 +232,9 @@ export default function AnimalFilter() {
 					</div>
 				</section>
 
+				{/* Section: result cards */}
 				<section className="animal-results" aria-label="Animal results">
+					{/* State: loading/empty placeholders */}
 					{isLoading || animals.length === 0 ? (
 						placeholderCards.map((cardId) => (
 							<article key={cardId} className="animal-card animal-card-placeholder" aria-hidden="true">
@@ -223,6 +248,7 @@ export default function AnimalFilter() {
 							</article>
 						))
 					) : (
+						/* State: loaded animal cards */
 						paginatedAnimals.map((animal) => (
 							<article key={animal.id} className="animal-card">
 								<div className="animal-card-image-wrap">
@@ -238,6 +264,7 @@ export default function AnimalFilter() {
 						))
 					)}
 
+					{/* Control: next page button */}
 					{!isLoading && animals.length > animalsPerPage && currentPage < totalPages && (
 						<button
 							type="button"
