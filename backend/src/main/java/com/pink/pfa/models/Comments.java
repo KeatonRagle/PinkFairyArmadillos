@@ -34,6 +34,7 @@ public class Comments {
 	private Integer comment_id;
 	
 	
+	/** Foreign key identifier for the user. */
 	@ManyToOne
 	@JoinColumn(name = "user_id")
 	private User user;

@@ -34,11 +34,13 @@ public class PetRating {
 	private Double rating_id;
 	
 	
+	/** Foreign key identifier for the user. */
 	@ManyToOne
 	@JoinColumn(name = "user_id")
 	private User user;
 	
 	
+	/** Foreign key identifier for the pet. */
 	@ManyToOne
 	@JoinColumn(name = "pet_id")
 	private Pet pet;

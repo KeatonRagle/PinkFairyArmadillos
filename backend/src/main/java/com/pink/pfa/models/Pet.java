@@ -41,9 +41,10 @@ import lombok.Data;
     private Integer pet_id;
 	
 	
+	/** Foreign key identifier for the adoptionSite. */
 	@ManyToOne
-	@JoinColumn(name = "center_id")
-	private AdoptionCenter center;
+	@JoinColumn(name = "site_id")
+	private AdoptionSite site;
 	
 	
 	/** Pet's display name (required). */
@@ -69,6 +70,11 @@ import lombok.Data;
 	/** Type of pet. */
 	@Column(name = "type", nullable = false)
 	private String pet_type;
+	
+	
+	/** Location of pet. */
+	@Column(name = "type", nullable = false)
+	private String location;
 	
 	
 	/** Pet's price. */
@@ -99,16 +105,18 @@ import lombok.Data;
      * @param age pet's listed age
      * @param gender pet's listed gender
      * @param pet_type is the pet a dog or cat
+	 * @param location website pet is on
 	 * @param price pet's listed price
      * @param pet_status pet's adoption status
      * @param compatability_score pet's listed compatability score
      */
-	public Pet(String name, String breed, int age, char gender, String pet_type, double price, String pet_status, int compatability_score) {
+	public Pet(String name, String breed, int age, char gender, String pet_type, String location, double price, String pet_status, int compatability_score) {
 		this.name = name;
 		this.breed = breed;
 		this.age = age;
 		this.gender = gender;
 		this.pet_type = pet_type;
+		this.location = location
 		this.price = price;
 		this.pet_status = pet_status;
 		this.compatability_score = compatability_score;
@@ -138,6 +146,10 @@ import lombok.Data;
 	
 	public String getPet_type() {
 		return pet_type;
+	}
+	
+	public String getLocation() {
+		return location;
 	}
 	
 	public double getPrice() {
@@ -172,6 +184,10 @@ import lombok.Data;
 	
 	public void setPet_type(String pet_type) {
 		this.pet_type = pet_type;
+	}
+	
+	public void setLocation(String location) {
+		this.location = location;
 	}
 	
 	public void setPrice(double price) {

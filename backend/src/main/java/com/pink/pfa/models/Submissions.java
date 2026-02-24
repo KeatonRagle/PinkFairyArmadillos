@@ -34,6 +34,7 @@ public class Submissions {
 	private Integer submission_id;
 	
 	
+	/** Foreign key identifier for the user. */
 	@ManyToOne
 	@JoinColumn(name = "user_id")
 	private User user;
@@ -42,6 +43,11 @@ public class Submissions {
 	/** Submitted pet's info. */
 	@Column(name = "pet information", nullable = false)
 	private String pet_info;
+	
+	
+	/** Submission date. */
+	@Column(name = "submission date", nullable = false)
+	private LocalDate sb_date;
 	
 	
 	/** Submitted pet's status. */
@@ -58,10 +64,12 @@ public class Submissions {
      * Constructs a fully initialized Submissions entity.
      *
      * @param pet_info user submitted pet information
-     * @param pet_status status of pet submitted
+     * @param sb_date date of user submission
+	 * @param pet_status status of pet submitted
      */
-	public Submissions(String pet_info, String pet_status) {
+	public Submissions(String pet_info, LocalDate sb_date, String pet_status) {
 		this.pet_info = pet_info;
+		this.sb_date = sb_date;
 		this.pet_status = pet_status;
 	}
 	
@@ -69,6 +77,10 @@ public class Submissions {
 	/*+++ Getters +++*/
 	public String getPet_info() {
 		return pet_info;
+	}
+	
+	public LocalDate getSb_date() {
+		return sb_date;
 	}
 	
 	public String getPet_status() {
@@ -79,6 +91,10 @@ public class Submissions {
 	/*+++ Setters +++*/
 	public void setPet_info(String pet_info) {
 		this.pet_info = pet_info;
+	}
+	
+	public void setSb_date(LocalDate sb_date) {
+		this.sb_date = sb_date;
 	}
 	
 	public void setPet_status(String pet_status) {

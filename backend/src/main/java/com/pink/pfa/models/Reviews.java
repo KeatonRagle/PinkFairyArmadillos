@@ -34,14 +34,16 @@ public class Reviews {
 	private Integer review_id;
 	
 	
+	/** Foreign key identifier for the user. */
 	@ManyToOne
 	@JoinColumn(name = "user_id")
 	private User user;
 	
 	
+	/** Foreign key identifier for the adoptionSite. */
 	@ManyToOne
-	@JoinColumn(name = "center_id")
-	private AdoptionCenter center;
+	@JoinColumn(name = "site_id")
+	private AdoptionSite site;
 	
 	
 	/** Review's listed rating. */

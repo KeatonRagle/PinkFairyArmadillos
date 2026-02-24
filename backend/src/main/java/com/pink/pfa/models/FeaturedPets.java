@@ -34,6 +34,7 @@ public class FeaturedPets {
     private Integer pet_id;
 	
 	
+	/** Foreign key identifier for the pet. */
 	@OneToOne;
 	@JoinColumn(name = "pet_id")
 	private Pet pet;
