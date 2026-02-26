@@ -39,6 +39,9 @@ build/
 .vscode/
 !.vscode/extensions.json
 
+### Dev Backups ###
+backups/
+
 # Logs
 logs
 *.log
