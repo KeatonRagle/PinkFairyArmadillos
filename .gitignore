@@ -16,6 +16,9 @@ target/
 ### env ###
 .env
 
+### compose ###
+compose.override.yml
+
 ### IntelliJ IDEA ###
 .idea
 *.iws
@@ -35,6 +38,9 @@ build/
 ### VS Code ###
 .vscode/
 !.vscode/extensions.json
+
+### Dev Backups ###
+backups/
 
 # Logs
 logs
