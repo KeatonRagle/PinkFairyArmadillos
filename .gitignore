@@ -16,6 +16,8 @@ target/
 ### env ###
 .env
 
+### compose ###
+
 ### IntelliJ IDEA ###
 .idea
 *.iws

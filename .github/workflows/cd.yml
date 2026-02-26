@@ -33,27 +33,16 @@ jobs:
             --exclude ".github/" \
             --exclude "target/" \
             --exclude ".env" \
+            --exclude "compose.override.yml" \
             ./ "$APP_DIR/"
 
       - name: Build and restart containers
         run: |
           cd "$HOME/docker/apps/pink_fairy_armadillos"
-          docker compose \
-            -f compose.yml \
-            -f compose.homelab.yml \
-            up -d --build
+          docker compose up -d --build
 
       - name: Show running containers
         run: |
           cd "$HOME/docker/apps/pink_fairy_armadillos"
           docker compose ps
           docker ps --format 'table {{.Names}}\t{{.Status}}\t{{.Ports}}' | sed -n '1p;/pfa-db/p;/pinkfairyarmadillos/p'
-
-      - name: Show Backend Logs
-        run: docker compose logs backend
-
-      - name: Show Website Logs
-        run: docker compose logs frontend
-
-      - name: Show DataBase Logs
-        run: docker logs pfa-db

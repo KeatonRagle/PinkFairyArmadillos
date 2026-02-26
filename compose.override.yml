@@ -1,18 +1,4 @@
 services:
-  db:
-    image: mysql:8.0
-    restart: unless-stopped
-    environment:
-      MYSQL_DATABASE: ${MYSQL_DATABASE}
-      MYSQL_USER: ${MYSQL_USER}
-      MYSQL_PASSWORD: ${MYSQL_PASSWORD}
-      MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD}
-    volumes:
-      - mysql_data:/var/lib/mysql
-      - ./backups:/backups    
-    ports:
-      - "127.0.0.1:3306:3306"
-
   backend:
     ports:
       - "8080:8080"
@@ -29,6 +15,11 @@ services:
   frontend:
     ports:
       - "3000:80"
+
+  db:
+    volumes:
+      - mysql_data:/var/lib/mysql
+      - ./backups:/backups    
 
 volumes: 
   mysql_data:
