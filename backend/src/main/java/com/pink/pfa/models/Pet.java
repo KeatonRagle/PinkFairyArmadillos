@@ -116,7 +116,7 @@ import lombok.Data;
 		this.age = age;
 		this.gender = gender;
 		this.pet_type = pet_type;
-		this.location = location
+		this.location = location;
 		this.price = price;
 		this.pet_status = pet_status;
 		this.compatability_score = compatability_score;
@@ -179,7 +179,7 @@ import lombok.Data;
 	}
 	
 	public void setGender(char gender) {
-		this.gender = gender
+		this.gender = gender;
 	}
 	
 	public void setPet_type(String pet_type) {
@@ -199,6 +199,6 @@ import lombok.Data;
 	}
 	
 	public void setCompatability_score(int compatability_score) {
-		this.compatability_score = compatability_score
+		this.compatability_score = compatability_score;
 	}
  }
