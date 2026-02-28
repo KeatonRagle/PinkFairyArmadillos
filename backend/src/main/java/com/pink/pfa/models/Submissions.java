@@ -5,6 +5,8 @@ import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
+import jakarta.persistence.ManyToOne;
+import jakarta.persistence.JoinColumn;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
@@ -35,23 +37,23 @@ public class Submissions {
 	
 	
 	/** Foreign key identifier for the user. */
-	@ManyToOne
-	@JoinColumn(name = "user_id")
+	@ManyToOne(fetch = FetchType.LAZY)
+	@JoinColumn(name = "user_id", nullable = false)
 	private User user;
 	
 	
 	/** Submitted pet's info. */
-	@Column(name = "pet information", nullable = false)
+	@Column(name = "pet_information", nullable = false)
 	private String pet_info;
 	
 	
 	/** Submission date. */
-	@Column(name = "submission date", nullable = false)
+	@Column(name = "submission_date", nullable = false)
 	private LocalDate sb_date;
 	
 	
 	/** Submitted pet's status. */
-	@Column(name = "pet status", nullable = false)
+	@Column(name = "pet_status", nullable = false)
 	private String pet_status;
 	
 	

@@ -40,7 +40,7 @@ public class AdoptionSite {
 	
 	
 	/** Site's listed contact info. */
-	@Column(name = "contact information", nullable = false)
+	@Column(name = "contact_information", nullable = false)
 	private String contact_info;
 	
 	
@@ -75,7 +75,7 @@ public class AdoptionSite {
 	
 	
 	/*+++ Getters +++*/
-	public Integers getSite_id() {
+	public Integer getSite_id() {
 		return site_id;
 	}
 	

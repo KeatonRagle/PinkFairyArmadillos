@@ -5,6 +5,8 @@ import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
+import jakarta.persistence.ManyToOne;
+import jakarta.persistence.JoinColumn;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
@@ -35,13 +37,13 @@ public class Comments {
 	
 	
 	/** Foreign key identifier for the user. */
-	@ManyToOne
-	@JoinColumn(name = "user_id")
+	@ManyToOne(fetch = FetchType.LAZY)
+	@JoinColumn(name = "user_id", nullable = false)
 	private User user;
 	
 	
 	/** Comment's date. */
-	@Column(name = "comment date", nullable = false)
+	@Column(name = "comment_date", nullable = false)
 	private LocalDate ct_date;
 	
 	

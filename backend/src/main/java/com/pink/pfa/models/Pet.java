@@ -4,6 +4,8 @@ import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
+import jakarta.persistence.ManyToOne;
+import jakarta.persistence.JoinColumn;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
@@ -42,8 +44,8 @@ import lombok.Data;
 	
 	
 	/** Foreign key identifier for the adoptionSite. */
-	@ManyToOne
-	@JoinColumn(name = "site_id")
+	@ManyToOne(fetch = FetchType.LAZY)
+	@JoinColumn(name = "site_id", nullable = false)
 	private AdoptionSite site;
 	
 	
@@ -88,7 +90,7 @@ import lombok.Data;
 	
 	
 	/** Pet's compatability score with User. */
-	@Column(name = "compatability score", nullable = true)
+	@Column(name = "compatability_score", nullable = true)
 	private int compatability_score;
 	
 	

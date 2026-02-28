@@ -5,6 +5,8 @@ import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
+import jakarta.persistence.OneToOne;
+import jakarta.persistence.JoinColumn;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
@@ -35,18 +37,18 @@ public class FeaturedPets {
 	
 	
 	/** Foreign key identifier for the pet. */
-	@OneToOne
-	@JoinColumn(name = "pet_id")
+	@OneToOne(fetch = FetchType.LAZY)
+	@JoinColumn(name = "pet_id", nullable = false)
 	private Pet pet;
 	
 	
 	/** Featured pet's listed start date. */
-	@Column(name = "start date", nullable = false)
+	@Column(name = "start_date", nullable = false)
 	private LocalDate start_date;
 	
 	
 	/** Featured pet's listed end date. */
-	@Column(name = "end date", nullable = false)
+	@Column(name = "end_date", nullable = false)
 	private LocalDate end_date;
 	
 	
@@ -75,7 +77,7 @@ public class FeaturedPets {
 	
 	
 	/*+++ Getters +++*/
-	public Integers getPet_id() {
+	public Integer getPet_id() {
 		return pet_id;
 	}
 	

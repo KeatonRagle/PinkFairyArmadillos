@@ -5,6 +5,8 @@ import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
+import jakarta.persistence.ManyToOne;
+import jakarta.persistence.JoinColumn;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
@@ -31,23 +33,23 @@ public class PetRating {
 	/** Primary key identifier for the pet rating (auto-generated). */
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
-	private Double rating_id;
+	private Long rating_id;
 	
 	
 	/** Foreign key identifier for the user. */
-	@ManyToOne
-	@JoinColumn(name = "user_id")
+	@ManyToOne(fetch = FetchType.LAZY)
+	@JoinColumn(name = "user_id", nullable = false)
 	private User user;
 	
 	
 	/** Foreign key identifier for the pet. */
-	@ManyToOne
-	@JoinColumn(name = "pet_id")
+	@ManyToOne(fetch = FetchType.LAZY)
+	@JoinColumn(name = "pet_id", nullable = false)
 	private Pet pet;
 	
 	
 	/** Pet rating's listed rating date. */
-	@Column(name = "rating date", nullable = false)
+	@Column(name = "rating_date", nullable = false)
 	private LocalDate rating_date;
 	
 	
