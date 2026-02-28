@@ -2,6 +2,7 @@ package com.pink.pfa;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.scheduling.annotation.EnableScheduling;
 
 
 /**
@@ -27,6 +28,7 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
  * and begins listening for incoming API requests.
  */
 @SpringBootApplication
+@EnableScheduling
 public class PfaApplication {
 	/**
 	 * Main method used to launch the Spring Boot application.
