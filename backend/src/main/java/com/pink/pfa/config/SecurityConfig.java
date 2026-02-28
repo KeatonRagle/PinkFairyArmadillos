@@ -87,7 +87,10 @@ public class SecurityConfig {
     public CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration config = new CorsConfiguration();
         // set what cross-origin browsers are allowed to do
-        config.setAllowedOrigins(List.of("https://www.adoptpetsforall.com"));
+        config.setAllowedOrigins(List.of(
+            "http://localhost:3000",
+            "https://adoptpetsforall.com"
+        ));
         config.setAllowedMethods(List.of("GET","POST","PUT","DELETE","OPTIONS"));
         config.setAllowedHeaders(List.of("Authorization","Content-Type"));
         // uncomment if we want to use cookies/session auth
