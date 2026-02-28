@@ -8,21 +8,41 @@ import { Strong, Text, TextLink } from '../components/text'
 import { Logo } from '../components/logo'
 import { Link, useNavigate } from 'react-router-dom'
 import '../styling/login.css'
-import { useEffect } from 'react'
+import { useEffect, useState } from 'react'
+import { login } from '../fetch/api'
 
 export default function Login() {
 
   const navigate = useNavigate()
+
+  const [email, setEmail] = useState("")
+  const [password, setPassword] = useState("")
+  const [error, setError] = useState("")
+  const [loading, setLoading] = useState(false)
+
 
   useEffect(() => {
     document.body.classList.add('login-body')
     return () => document.body.classList.remove('login-body')
   }, [])
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault()
-    navigate('/home')
+    setError("")
+
+    setLoading(true)
+    try {
+      const data = await login({ email, password })
+      localStorage.setItem("token", data)
+
+      navigate('/home')
+    } catch (err) {
+      setError(err?.message || "Login Failed")
+    } finally {
+      setLoading(false)
+    }
   }
+
   return (
     <AuthLayout>
 
@@ -35,15 +55,35 @@ export default function Login() {
         <Heading>Sign in with your PFA ID</Heading>
 
         <Field>
-          <Input type="email" name="email" placeholder="PFA ID" />
+          <Input
+            type="email"
+            name="email"
+            placeholder="Email"
+            value={email}
+            onChange={(e) => setEmail(e.target.value)}
+            required
+          />
         </Field>
 
         <Field>
-          <Input type="password" name="password" placeholder="Password"/>
+          <Input 
+            type="password"
+            name="password" 
+            placeholder="Password"
+            value={password}
+            onChange={(e) => setPassword(e.target.value)}
+            required
+          />
         </Field>
 
-        <Button type="submit">
-          Login
+        {error && (
+          <Text className="error-text">
+            <Strong>{error}</Strong>
+          </Text>
+        )}
+
+        <Button type="submit" disabled={loading}>
+          {loading ? "Logging in..." : "Login"}
         </Button>
 
         <Text className="signup-text">

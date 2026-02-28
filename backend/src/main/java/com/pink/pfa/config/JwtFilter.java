@@ -80,14 +80,9 @@ public class JwtFilter extends OncePerRequestFilter {
         String token = null;
         String email = null;
 
-        // if the authentication field in the request header is valid, then we grab the email from the token
-        if (authHeader != null && authHeader.startsWith("Bearer ")) {
+        if (authHeader != null) {
             token = authHeader.substring(7);
-            try {
-                email = jwtService.extractEmail(token);
-            } catch (Exception e) {
-                // TODO: handle exception
-            }
+            email = jwtService.extractEmailFromHeader(authHeader);
         }
 
         // if the email was extracted from the token and there is no security context, continue to set security context
