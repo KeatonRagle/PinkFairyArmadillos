@@ -30,7 +30,7 @@ CREATE TABLE featuredPets (
 );
 
 CREATE TABLE petRating (
-	rating_id LONG AUTO_INCREMENT PRIMARY KEY,
+	rating_id INT AUTO_INCREMENT PRIMARY KEY,
     user_id INT NOT NULL,
     pet_id INT NOT NULL,
     rating_date DATE NOT NULL,
