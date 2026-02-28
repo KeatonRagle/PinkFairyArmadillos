@@ -3,8 +3,6 @@ package com.pink.pfa.models;
 import java.time.LocalDate;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
-import jakarta.persistence.EnumType;
-import jakarta.persistence.Enumerated;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.FetchType;
@@ -45,7 +43,7 @@ public class Reviews {
 	
 	/** Foreign key identifier for the adoptionSite. */
 	@ManyToOne
-	@JoinColumn(name = "site_id")
+	@JoinColumn(name = "site_id", nullable = false)
 	private AdoptionSite site;
 	
 	
@@ -55,12 +53,12 @@ public class Reviews {
 	
 	
 	/** Listed review date. */
-	@Column(name = "review_comment", nullable = false)
+	@Column(name = "rw_comment", nullable = false)
 	private String rw_comment;
 	
 	
 	/** review date. */
-	@Column(name = "review_date", nullable = false)
+	@Column(name = "rw_date", nullable = false)
 	private LocalDate rw_date;
 	
 	

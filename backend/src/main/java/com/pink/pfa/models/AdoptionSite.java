@@ -2,8 +2,6 @@ package com.pink.pfa.models;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
-import jakarta.persistence.EnumType;
-import jakarta.persistence.Enumerated;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
@@ -40,7 +38,7 @@ public class AdoptionSite {
 	
 	
 	/** Site's listed contact info. */
-	@Column(name = "contact_information", nullable = false)
+	@Column(name = "contact_info", nullable = false)
 	private String contact_info;
 	
 	

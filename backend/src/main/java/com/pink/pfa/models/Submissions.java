@@ -3,8 +3,6 @@ package com.pink.pfa.models;
 import java.time.LocalDate;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
-import jakarta.persistence.EnumType;
-import jakarta.persistence.Enumerated;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.FetchType;
@@ -39,17 +37,17 @@ public class Submissions {
 	
 	/** Foreign key identifier for the user. */
 	@ManyToOne(fetch = FetchType.LAZY)
-	@JoinColumn(name = "user_id", nullable = false)
+	@JoinColumn(name = "contributor_id", nullable = false)
 	private User user;
 	
 	
 	/** Submitted pet's info. */
-	@Column(name = "pet_information", nullable = false)
+	@Column(name = "pet_info", nullable = false)
 	private String pet_info;
 	
 	
 	/** Submission date. */
-	@Column(name = "submission_date", nullable = false)
+	@Column(name = "sb_date", nullable = false)
 	private LocalDate sb_date;
 	
 	

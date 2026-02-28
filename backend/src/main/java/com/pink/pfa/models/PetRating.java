@@ -3,8 +3,6 @@ package com.pink.pfa.models;
 import java.time.LocalDate;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
-import jakarta.persistence.EnumType;
-import jakarta.persistence.Enumerated;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.FetchType;
@@ -34,7 +32,7 @@ public class PetRating {
 	/** Primary key identifier for the pet rating (auto-generated). */
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
-	private Long rating_id;
+	private int rating_id;
 	
 	
 	/** Foreign key identifier for the user. */
@@ -56,7 +54,7 @@ public class PetRating {
 	
 	/** Pet's rating. */
 	@Column(name = "rating", nullable = false)
-	private double rating;
+	private Double rating;
 	
 	
 	/** Default constructor required by JPA. */

@@ -3,8 +3,6 @@ package com.pink.pfa.models;
 import java.time.LocalDate;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
-import jakarta.persistence.EnumType;
-import jakarta.persistence.Enumerated;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.FetchType;
@@ -44,12 +42,12 @@ public class Comments {
 	
 	
 	/** Comment's date. */
-	@Column(name = "comment_date", nullable = false)
+	@Column(name = "ct_date", nullable = false)
 	private LocalDate ct_date;
 	
 	
 	/** Comment's comment. */
-	@Column(name = "comment", nullable = false)
+	@Column(name = "ct_comment", nullable = false)
 	private String ct_comment;
 	
 	

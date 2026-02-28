@@ -2,8 +2,6 @@ package com.pink.pfa.models;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
-import jakarta.persistence.EnumType;
-import jakarta.persistence.Enumerated;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.FetchType;
@@ -71,12 +69,12 @@ import lombok.Data;
 	
 	
 	/** Type of pet. */
-	@Column(name = "type", nullable = false)
+	@Column(name = "pet_type", nullable = false)
 	private String pet_type;
 	
 	
 	/** Location of pet. */
-	@Column(name = "type", nullable = false)
+	@Column(name = "location", nullable = false)
 	private String location;
 	
 	
@@ -86,12 +84,12 @@ import lombok.Data;
 	
 	
 	/** Pet's status. */
-	@Column(name = "status", nullable = false)
+	@Column(name = "pet_status", nullable = false)
 	private String pet_status;
 	
 	
 	/** Pet's compatability score with User. */
-	@Column(name = "compatability_score", nullable = true)
+	@Column(name = "compatibility_score", nullable = true)
 	private int compatability_score;
 	
 	

@@ -1,4 +1,4 @@
-CREATE TABLE adoptionSite (
+CREATE TABLE adoption_site (
 	site_id INT AUTO_INCREMENT PRIMARY KEY,
     name VARCHAR(255) NOT NULL,
     contact_info VARCHAR(255) NOT NULL UNIQUE,
@@ -11,17 +11,17 @@ CREATE TABLE pet (
     site_id INT NOT NULL,
     name VARCHAR(100) NOT NULL,
     breed VARCHAR(100) NOT NULL,
-    age VARCHAR(50) NOT NULL,
+    age INT NOT NULL,
     gender VARCHAR(10) NOT NULL,
     pet_type VARCHAR(50) NOT NULL,
     location VARCHAR(255) NOT NULL,
     price DOUBLE NOT NULL,
     pet_status VARCHAR(50) NOT NULL,
     compatibility_score INT,
-    FOREIGN KEY (site_id) REFERENCES adoptionSite(site_id)
+    FOREIGN KEY (site_id) REFERENCES adoption_site(site_id)
 );
 
-CREATE TABLE featuredPets (
+CREATE TABLE featured_pets (
 	pet_id INT AUTO_INCREMENT PRIMARY KEY,
     start_date DATE NOT NULL,
     end_date DATE NOT NULL,
@@ -29,7 +29,7 @@ CREATE TABLE featuredPets (
     FOREIGN KEY (pet_id) REFERENCES pet(pet_id)
 );
 
-CREATE TABLE petRating (
+CREATE TABLE pet_rating (
 	rating_id INT AUTO_INCREMENT PRIMARY KEY,
     user_id INT NOT NULL,
     pet_id INT NOT NULL,
@@ -47,7 +47,7 @@ CREATE TABLE reviews (
     rw_comment TEXT NOT NULL,
     rw_date DATE NOT NULL,
     FOREIGN KEY (user_id) REFERENCES user(user_id),
-    FOREIGN KEY (site_id) REFERENCES adoptionSite(site_id)
+    FOREIGN KEY (site_id) REFERENCES adoption_site(site_id)
 );
 
 CREATE TABLE comments (
