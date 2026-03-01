@@ -79,7 +79,7 @@ import lombok.Data;
 	
 	
 	/** Pet's price. */
-	@Column(name = "price")
+	@Column(name = "price", nullable = true)
 	private double price;
 	
 	
