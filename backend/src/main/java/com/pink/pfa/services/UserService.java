@@ -50,7 +50,7 @@ import jakarta.transaction.Transactional;
 public class UserService {
     // The singleton backend repository that takes our input and turns it into CRUD (abstracting out our data access layer)
     @Autowired
-    private  UserRepository userRepository;
+    private UserRepository userRepository;
 
     @Autowired
     private PasswordEncoder passwordEncoder;
@@ -121,12 +121,12 @@ public class UserService {
     /**
      * Creates a new user account from a {@link CreateUserRequest}.<br>
      * The email is normalized (trimmed + lowercased) and the password is hashed using {@link PasswordEncoder}
-     * before saving the new {@link User} entity to the database. Returns a DTO representation of the saved user.
+     * before saving the new {@link User} entity to the database.
      *
      * @param request incoming user creation payload
-     * @return {@link UserDTO} for the newly created user
+     * @return {@link User} for the newly created user
      */
-    public UserDTO createUser(CreateUserRequest request) {
+    public User createUser(CreateUserRequest request) {
         User user = new User();
         user.setName(request.name());
         user.setEmail(request.email().trim().toLowerCase());
@@ -136,7 +136,7 @@ public class UserService {
         user.setRole(User.Role.ROLE_USER);
 
         User savedUser = userRepository.save(user);
-        return UserDTO.fromEntity(savedUser);
+        return savedUser;
     }
 
 

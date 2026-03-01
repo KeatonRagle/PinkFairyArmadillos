@@ -66,7 +66,7 @@ public class UserController {
     ) {
         return Map.of(
             "ID: ", userService.findById(id),
-            "TimeStamp", Instant.now().toString()
+            "TimeStamp: ", Instant.now().toString()
         );
     }
 
@@ -110,15 +110,17 @@ public class UserController {
      */
     @PostMapping("/register")
     // @RequestBody tells Spring to create a new customer object with the request body. 
-    public ResponseEntity<UserDTO> CreateUser (
+    public Map<String, Object> CreateUser (
         @Valid @RequestBody CreateUserRequest request
     ) {
-        UserDTO createdUser = userService.createUser(request);
+        User createdUser = userService.createUser(request);
         // Acts as a regular Java object with the added flavor of having the entire HTTP response instead of default 200 (OK)
         // Also lets you use the Builder pattern to do what I did here
-        return ResponseEntity
-                .status(HttpStatus.CREATED)
-                .body(createdUser);
+        String JWT = userService.verify(createdUser);
+        return Map.of(
+            "user", userService.findById(createdUser.getUser_id()),
+            "token", JWT
+        );
     }
 
 
@@ -132,8 +134,8 @@ public class UserController {
      * @return signed JWT string
      */
     @PostMapping("/login")
-    public String login(@RequestBody User user) {
-        return userService.verify(user);
+    public Map<String, Object> login(@RequestBody User user) {
+        return Map.of("user", user, "token", userService.verify(user));
     }
 
 
