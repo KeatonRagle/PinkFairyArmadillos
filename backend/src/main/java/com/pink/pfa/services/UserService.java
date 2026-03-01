@@ -12,7 +12,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.web.bind.annotation.RequestMapping;
 
-import com.pink.pfa.controllers.requests.CreateUserRequest;
+import com.pink.pfa.controllers.requests.UserRequest;
 import com.pink.pfa.models.User;
 import com.pink.pfa.models.datatransfer.UserDTO;
 import com.pink.pfa.repos.UserRepository;
@@ -88,6 +88,20 @@ public class UserService {
                 .map(UserDTO::fromEntity)
                 .orElseThrow(() -> new InvalidConfigurationPropertyValueException("Failed to Find ID", null, "User not found"));
     }
+ 
+
+    /**
+     * Fetches a single user by Email and returns it as a {@link UserDTO}.
+     * Throws an exception if the user does not exist.
+     *
+     * @param emal database email of the user
+     * @return {@link UserDTO} for the requested user
+     */    
+    public UserDTO findByEmail(String email) {
+        return userRepository.findByEmail(email)
+                .map(UserDTO::fromEntity)
+                .orElseThrow(() -> new InvalidConfigurationPropertyValueException("Failed to Find ID", null, "User not found"));
+    }
 
 
     /**
@@ -126,7 +140,7 @@ public class UserService {
      * @param request incoming user creation payload
      * @return {@link User} for the newly created user
      */
-    public User createUser(CreateUserRequest request) {
+    public User createUser(UserRequest request) {
         User user = new User();
         user.setName(request.name());
         user.setEmail(request.email().trim().toLowerCase());
@@ -147,10 +161,10 @@ public class UserService {
      * @param user object containing login credentials (email + raw password)
      * @return JWT string if authentication succeeds; otherwise a failure message
      */
-    public String verify(User user) {
-        Authentication authentication = authManager.authenticate(new UsernamePasswordAuthenticationToken(user.getEmail(), user.getPassword()));
+    public String verify(UserRequest userRequest) {
+        Authentication authentication = authManager.authenticate(new UsernamePasswordAuthenticationToken(userRequest.email(), userRequest.password()));
 
-        if(authentication.isAuthenticated()) return jwtService.generateToken(user.getEmail());
+        if(authentication.isAuthenticated()) return jwtService.generateToken(userRequest.email());
         return "Nope";
     }
 

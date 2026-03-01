@@ -5,6 +5,7 @@ import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.http.HttpMethod;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.AuthenticationProvider;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -22,6 +23,8 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.CorsConfigurationSource;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
+
+//import static org.springframework.security.web.util.matcher.AntPathRequestMatcher.antMatcher;
 
 /**
  * Central Spring Security configuration for the application.
@@ -93,6 +96,7 @@ public class SecurityConfig {
         ));
         config.setAllowedMethods(List.of("GET","POST","PUT","DELETE","OPTIONS"));
         config.setAllowedHeaders(List.of("Authorization","Content-Type"));
+        config.setExposedHeaders(List.of("Authorization"));
         // uncomment if we want to use cookies/session auth
         // config.setAllowCredentials(true);
 
@@ -126,10 +130,13 @@ public class SecurityConfig {
             .cors(Customizer.withDefaults())
             .csrf(customizer -> customizer.disable()) // disable Cross-Site Request Forgery protection since we pass auth as a header in the request
             .authorizeHttpRequests(request -> request
-                //.anyRequest().permitAll() // ONLY UNCOMMENT FOR DEBUG
-                .requestMatchers("/api/users/login", "/api/users/register", "/api/public/**").permitAll() // any endpoint starting with /api/public is public and does not require auth
-                .requestMatchers("/api/admin/**").hasRole("ADMIN")
-                .anyRequest().authenticated() // any endpoint that does not start with /api/public is private and does require auth
+                .anyRequest().permitAll() // ONLY UNCOMMENT FOR DEBUG
+                //.requestMatchers(HttpMethod.OPTIONS, "/**").permitAll()
+                //.requestMatchers(antMatcher("/api/users/login")).permitAll()
+                //.requestMatchers(antMatcher("/api/users/register")).permitAll()
+                //.requestMatchers(antMatcher("/api/public/**")).permitAll()
+                //.requestMatchers(antMatcher("/api/admin/**")).hasRole("ADMIN")
+                //.anyRequest().authenticated()// any endpoint that does not start with /api/public is private and does require auth
                 )
             .httpBasic(basic -> basic.disable())
             .formLogin(form -> form.disable())

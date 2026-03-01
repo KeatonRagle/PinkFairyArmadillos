@@ -19,7 +19,7 @@ export default function HomeHeader() {
         <Link to="/select-animal" className="header-link">FIND A PET</Link>
 
         {username ? (
-          <Link to="/profile" className="header-link">{username}</Link>
+          <Link to="/login" className="header-link">{username}</Link>
         ) : (
           <Link to="/login" className="header-link">LOG IN</Link>
         )}

@@ -37,7 +37,8 @@ export default function Login() {
       const data = await login({ email, password })
       const token = data.token
       const userObj = data.user
-      const displayName = userObj.username ?? userObj.name ?? userObj.email;
+      //const displayName = userObj.username ?? userObj.name ?? userObj.email;
+      const displayName = userObj.email;
 
       setAuth(token, displayName);
 

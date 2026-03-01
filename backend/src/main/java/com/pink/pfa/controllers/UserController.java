@@ -14,7 +14,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.pink.pfa.controllers.requests.CreateUserRequest;
+import com.pink.pfa.controllers.requests.UserRequest;
 import com.pink.pfa.models.User;
 import com.pink.pfa.models.datatransfer.UserDTO;
 import com.pink.pfa.services.UserService;
@@ -109,18 +109,16 @@ public class UserController {
      * @return {@link ResponseEntity} containing created {@link UserDTO}
      */
     @PostMapping("/register")
-    // @RequestBody tells Spring to create a new customer object with the request body. 
-    public Map<String, Object> CreateUser (
-        @Valid @RequestBody CreateUserRequest request
-    ) {
+    public ResponseEntity<?> register(@Valid @RequestBody UserRequest request) {
         User createdUser = userService.createUser(request);
-        // Acts as a regular Java object with the added flavor of having the entire HTTP response instead of default 200 (OK)
-        // Also lets you use the Builder pattern to do what I did here
-        String JWT = userService.verify(createdUser);
-        return Map.of(
+
+        // Generate token from createdUser identity + roles
+        String jwt = userService.verify(request);
+
+        return ResponseEntity.status(HttpStatus.CREATED).body(Map.of(
             "user", userService.findById(createdUser.getUser_id()),
-            "token", JWT
-        );
+            "token", jwt
+        ));
     }
 
 
@@ -130,12 +128,15 @@ public class UserController {
      * Delegates credential verification to {@link UserService}. If authentication
      * succeeds, a signed JWT is returned for use in subsequent authenticated requests.
      *
-     * @param user object containing login credentials (email and password)
-     * @return signed JWT string
+     * @param UserRequest object containing login credentials (email and password)
+     * @return {@link Map} of {@link UserDTO} and signed JWT string
      */
     @PostMapping("/login")
-    public Map<String, Object> login(@RequestBody User user) {
-        return Map.of("user", user, "token", userService.verify(user));
+    public Map<String, Object> login(@RequestBody UserRequest request) {
+        String token = userService.verify(request);
+        UserDTO userDTO = userService.findByEmail(request.email());
+        
+        return Map.of("user", userDTO, "token", token);
     }
 
 

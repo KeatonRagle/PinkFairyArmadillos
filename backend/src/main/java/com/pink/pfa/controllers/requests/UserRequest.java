@@ -25,7 +25,7 @@ import jakarta.validation.constraints.Size;
  * @param email    email address used as login identifier
  * @param password raw password provided during registration (will be hashed before storage)
  */
-public record CreateUserRequest(
+public record UserRequest(
 
         String name, 
 
