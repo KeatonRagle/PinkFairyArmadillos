@@ -79,8 +79,8 @@ import lombok.Data;
 	
 	
 	/** Pet's price. */
-	@Column(name = "price", nullable = false)
-	private double price;
+	@Column(name = "price", nullable = true)
+	private Double price;
 	
 	
 	/** Pet's status. */
