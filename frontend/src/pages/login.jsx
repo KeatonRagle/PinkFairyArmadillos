@@ -10,10 +10,12 @@ import { Link, useNavigate } from 'react-router-dom'
 import '../styling/login.css'
 import { useEffect, useState } from 'react'
 import { login } from '../fetch/api'
+import { useAuth } from "../auth/AuthContext";
 
 export default function Login() {
 
   const navigate = useNavigate()
+  const { setAuth } = useAuth();
 
   const [email, setEmail] = useState("")
   const [password, setPassword] = useState("")
@@ -33,7 +35,11 @@ export default function Login() {
     setLoading(true)
     try {
       const data = await login({ email, password })
-      localStorage.setItem("token", data)
+      const token = data.token
+      const userObj = data.user
+      const displayName = userObj.username ?? userObj.name ?? userObj.email;
+
+      setAuth(token, displayName);
 
       navigate('/home')
     } catch (err) {

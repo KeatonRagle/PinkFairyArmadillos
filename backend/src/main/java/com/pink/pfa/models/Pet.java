@@ -90,7 +90,7 @@ import lombok.Data;
 	
 	/** Pet's compatability score with User. */
 	@Column(name = "compatibility_score", nullable = true)
-	private int compatability_score;
+	private int compatibility_score;
 	
 	
 	/** Default constructor required by JPA. */
@@ -120,7 +120,7 @@ import lombok.Data;
 		this.location = location;
 		this.price = price;
 		this.pet_status = pet_status;
-		this.compatability_score = compatability_score;
+		this.compatibility_score = compatability_score;
 	}
 	
 	
@@ -162,7 +162,7 @@ import lombok.Data;
 	}
 	
 	public int getCompatability_score() {
-		return compatability_score;
+		return compatibility_score;
 	}
 	
 	
@@ -200,6 +200,6 @@ import lombok.Data;
 	}
 	
 	public void setCompatability_score(int compatability_score) {
-		this.compatability_score = compatability_score;
+		this.compatibility_score = compatability_score;
 	}
  }

@@ -131,7 +131,8 @@ public class SecurityConfig {
                 .requestMatchers("/api/admin/**").hasRole("ADMIN")
                 .anyRequest().authenticated() // any endpoint that does not start with /api/public is private and does require auth
                 )
-            .httpBasic(Customizer.withDefaults())
+            .httpBasic(basic -> basic.disable())
+            .formLogin(form -> form.disable())
             .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS)) // sets the api to NEVER use HTTP sessions EVER
             .addFilterBefore(jwtFilter, UsernamePasswordAuthenticationFilter.class);
 
