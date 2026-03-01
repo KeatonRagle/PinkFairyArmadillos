@@ -9,11 +9,12 @@ import { Link, useNavigate } from 'react-router-dom'
 import '../styling/signup.css'
 import { useEffect, useState } from 'react'
 import { registerUser } from '../fetch/api'
-
+import { useAuth } from "../auth/AuthContext";
 
 
 export default function Signup() {
   const navigate = useNavigate()
+  const { setAuth } = useAuth();
 
     const [email, setEmail] = useState("")
     const [password, setPassword] = useState("")
@@ -38,7 +39,12 @@ export default function Signup() {
     setLoading(true)
     try {
       const data = await registerUser({ name: "User", email, password })
-      localStorage.setItem("token", data.token)
+      const token = data.token
+      const userObj = data.user
+      //const displayName = userObj.username ?? userObj.name ?? userObj.email;
+      const displayName = userObj.email;
+
+      setAuth(token, displayName);
 
       navigate('/home')
     } catch (err) {

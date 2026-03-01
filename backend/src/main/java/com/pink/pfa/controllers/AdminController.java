@@ -29,7 +29,7 @@ public class AdminController {
      *
      * @return map containing list of users and request timestamp
      */
-    @GetMapping("/getAllUsers")
+    @GetMapping("/getAll")
     public Map<String, Object> getAllUsers() {
         return Map.of(
             "Users: ", userService.findAll(),
