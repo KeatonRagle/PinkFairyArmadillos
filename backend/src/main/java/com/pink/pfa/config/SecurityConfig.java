@@ -130,13 +130,10 @@ public class SecurityConfig {
             .cors(Customizer.withDefaults())
             .csrf(customizer -> customizer.disable()) // disable Cross-Site Request Forgery protection since we pass auth as a header in the request
             .authorizeHttpRequests(request -> request
-                .anyRequest().permitAll() // ONLY UNCOMMENT FOR DEBUG
-                //.requestMatchers(HttpMethod.OPTIONS, "/**").permitAll()
-                //.requestMatchers(antMatcher("/api/users/login")).permitAll()
-                //.requestMatchers(antMatcher("/api/users/register")).permitAll()
-                //.requestMatchers(antMatcher("/api/public/**")).permitAll()
-                //.requestMatchers(antMatcher("/api/admin/**")).hasRole("ADMIN")
-                //.anyRequest().authenticated()// any endpoint that does not start with /api/public is private and does require auth
+                //.anyRequest().permitAll() // ONLY UNCOMMENT FOR DEBUG
+                .requestMatchers("/api/users/login", "/api/users/register", "/api/public/**").permitAll() // any endpoint starting with /api/public is public and does not require auth
+                .requestMatchers("/api/admin/**").hasRole("ADMIN")
+                .anyRequest().authenticated() // any endpoint that does not start with /api/public is private and does require auth
                 )
             .httpBasic(basic -> basic.disable())
             .formLogin(form -> form.disable())
