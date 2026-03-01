@@ -1,13 +1,7 @@
 package com.pink.pfa;
 
-import java.util.Map;
-
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
-
-import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
-import com.pink.pfa.services.WebScraperService;
 
 
 /**
@@ -43,11 +37,5 @@ public class PfaApplication {
 	 */
 	public static void main(String[] args) {
 		SpringApplication.run(PfaApplication.class, args);
-
-		Gson gson = new GsonBuilder().setPrettyPrinting().create();
-		WebScraperService scraperService = new WebScraperService();
-		Map<String, Object> pets = scraperService.ScrapeSite("https://hsdallascounty.org");
-		String jsonString = gson.toJson(pets);
-		System.out.println(jsonString);
 	}
 }
