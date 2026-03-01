@@ -61,13 +61,7 @@ public class CustomUserDetailsService implements UserDetailsService {
     @Override
     public UserDetails loadUserByUsername(String email) throws UsernameNotFoundException {
         String normalized = email.trim().toLowerCase(); // normalize by trimming white space and lowercasing all chars
-        User user = repo.findByEmail(normalized); // find user from the database
-
-        // throw exception and debug log if the user is not found
-        if (user == null) {
-            System.out.println("User not found" + email);
-            throw new UsernameNotFoundException("User not found: " + email);
-        }
+        User user = repo.findByEmail(normalized).orElseThrow(() -> new UsernameNotFoundException("User not found: " + email)); // find user from the database
 
         // wrap the user in a UserPrincipal object for spring security
         return new UserPrincipal(user);  

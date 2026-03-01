@@ -1,0 +1,14 @@
+body.shelterinfo-body {
+	margin: 0;
+	background-color: #F8F8F8;
+}
+
+.shelterinfo-page {
+	display: flex;
+	flex-direction: column;
+	min-height: 100vh;
+}
+
+.shelterinfo-main {
+	flex: 1;
+}

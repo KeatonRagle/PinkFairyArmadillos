@@ -1,7 +1,7 @@
 body.about-body {
   margin: 0;
   padding: 0;
-  background-color: #F8F8F8; /* grey background */
+  background-color: #F8F8F8;
   overflow-x: hidden;
 }
 
@@ -9,16 +9,16 @@ body.about-body {
   display: flex;
   flex-direction: column;
   min-height: 150vh;
+  position: relative;
 }
 
 
 
-/* Burnt orange section bar */
 .section-bar {
-  background-color: #b44b25;  /* burnt orange */
+  background-color: #b44b25;
   width: 100%;
   height: 300px;
-  padding: 40px 0;             /* vertical spacing */
+  padding: 40px 0;
   text-align: center;
   color: white;
 }
@@ -31,20 +31,20 @@ body.about-body {
 }
 
 .section-bar p {
-  color: #ffffff; /* white text inside the burnt orange block */
+  color: #ffffff;
   font-size: 18px;
   line-height: 1.6;
   max-width: 800px;
-  margin: 0 auto; /* centers the text */
+  margin: 0 auto;
   font-family: 'Hind Kochi', sans-serif;
 }
 
 
-/* Main content under the bar */
+
 .about-content {
   max-width: 800px;
-  margin: 40px auto;  /* centers horizontally and adds top spacing */
-  padding: 0 20px;    /* side padding for smaller screens */
+  margin: 40px auto;
+  padding: 0 20px;
   font-family: 'Hind Kochi', sans-serif;
   font-size: 18px;
   line-height: 1.6;
@@ -52,7 +52,7 @@ body.about-body {
 }
 
 .the-rest {
-  position: relative; /* Add this */
+  position: relative;
 }
 
 .the-rest h2 {
@@ -67,7 +67,7 @@ body.about-body {
 
 .the-rest p {
   max-width: 1200px;
-  margin: 40px auto;  /* centers horizontally and adds top spacing */
+  margin: 40px auto;
   font-family: 'Hind Kochi', sans-serif;
   font-size: 18px;
   line-height: 1.6;
@@ -78,8 +78,8 @@ body.about-body {
 .aboutpic { 
   width: 350px; 
   height: auto; 
-  position: absolute; /* Changed from relative */
-  top: 470px; /* Adjust positioning from top of parent */
+  position: absolute;
+  top: 470px;
   left: 120px; 
   border: 2px solid #b44b25; 
   border-radius: 10px; 

@@ -1,0 +1,719 @@
+/* Page body styles */
+body.animalfilter-body {
+	margin: 0;
+	font-family: 'Hind Kochi', sans-serif;
+	background: #F8F8F8;
+}
+
+/* Page wrapper */
+.animalfilter-page {
+	min-height: 150vh;
+	position: relative;
+	padding-bottom: 180px;
+}
+
+/* Main layout: filter panel + results grid */
+.animalfilter-main {
+	display: flex;
+	justify-content: flex-start;
+	align-items: flex-start;
+	gap: 28px;
+	padding-top: 40px;
+	padding-left: 48px;
+	padding-right: 48px;
+}
+
+/* Left filter panel */
+.animalfilter-panel {
+	width: 300px;
+	background: #F8F8F8;
+	border-radius: 40px;
+	box-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
+	padding: 32px;
+	display: flex;
+	flex-direction: column;
+	gap: 14px;
+}
+
+/* Filter panel heading */
+.animalfilter-panel h1 {
+	margin: 0;
+	font-size: 24px;
+	font-weight: 300;
+	color: #343434;
+}
+
+/* Results grid container */
+.animal-results {
+	flex: 1;
+	display: grid;
+	grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+	gap: 20px;
+	align-content: start;
+	min-height: calc(100vh - 260px);
+}
+
+/* Next page button */
+.animal-results-next {
+	height: 48px;
+	width: 48px;
+	border-radius: 9999px;
+	border: 1px solid #d1d5db;
+	background: #f8f8f8;
+	color: #b44b25;
+	font-size: 28px;
+	line-height: 1;
+	cursor: pointer;
+	box-shadow: 0 1px 2px rgba(0, 0, 0, 0.2);
+	justify-self: end;
+	align-self: center;
+}
+
+/* ai added these comments, this is for the api stuff */
+/* Animal card container: keep this background orange for the theme card behind image + text. */
+/* Result card styles */
+.animal-card {
+	background: #b44b25;
+	border-radius: 18px;
+	padding: 16px;
+	box-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
+	display: flex;
+	flex-direction: column;
+	gap: 12px;
+	min-height: 300px;
+}
+
+/* Card image wrapper */
+.animal-card-image-wrap {
+	width: 100%;
+	height: 170px;
+	border-radius: 12px;
+	background: #f8f8f8;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	overflow: hidden;
+}
+
+/* Card image */
+.animal-card-image {
+	width: 100%;
+	height: 100%;
+	object-fit: cover;
+}
+
+/* Card text block */
+.animal-card-info {
+	color: #f8f8f8;
+	display: flex;
+	flex-direction: column;
+	gap: 4px;
+}
+
+/* Card name */
+.animal-card-info h2 {
+	margin: 0;
+	font-size: 22px;
+	font-weight: 500;
+}
+
+/* Card metadata lines */
+.animal-card-info p {
+	margin: 0;
+	font-size: 16px;
+}
+
+/* Placeholder card state */
+.animal-card-placeholder {
+	opacity: 0.55;
+}
+
+/* Placeholder image block */
+.animal-placeholder-image {
+	background: #e5e7eb;
+}
+
+/* Placeholder text block */
+.animal-placeholder-info {
+	gap: 10px;
+}
+
+/* Placeholder line */
+.animal-placeholder-line {
+	height: 14px;
+	width: 100%;
+	border-radius: 8px;
+	background: rgba(248, 248, 248, 0.5);
+}
+
+/* Placeholder title line */
+.animal-placeholder-title {
+	width: 70%;
+	height: 18px;
+}
+
+
+/* Shared dropdown button style */
+.filter-dropdown {
+	display: block;
+	width: 100%;
+	height: 38px;
+	margin: 0;
+	border-radius: 10px;
+	border: 1px solid #d1d5db;
+	padding: 0 36px 0 14px;
+	background: #F8F8F8;
+	appearance: none;
+
+	background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath d='M1 1l5 5 5-5' fill='none' stroke='%23b44b25' stroke-width='1.5' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E");
+	background-repeat: no-repeat;
+	background-position: calc(100% - 16px) center;
+	color: #b44b25;
+	font-size: 17px;
+	font-family: 'Hind Kochi', sans-serif;
+	box-shadow: 0 1px 2px rgba(0, 0, 0, 0.2);
+	
+}
+
+/* Gender filter: toggle button */
+.gender-toggle {
+	position: relative;
+	text-align: left;
+	cursor: pointer;
+}
+
+/* Gender filter: group wrapper */
+.gender-filter-group {
+	--gender-extend-height: 105px;
+	position: relative;
+	display: flex;
+	flex-direction: column;
+	gap: 0;
+}
+
+/* Gender filter: open state stacking */
+.gender-filter-group.open {
+	z-index: 20;
+}
+
+/* Gender filter: open-state toggle style */
+.gender-filter-group.open .gender-toggle {
+	border-bottom-left-radius: 0;
+	border-bottom-right-radius: 0;
+	background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath d='M1 6l5-5 5 5' fill='none' stroke='%23b44b25' stroke-width='1.5' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E");
+}
+
+/* Gender filter: dropdown container extension */
+.gender-filter-group.open .gender-toggle::after {
+	content: '';
+	position: absolute;
+	left: -1px;
+	right: -1px;
+	top: 100%;
+	height: var(--gender-extend-height);
+	background: #F8F8F8;
+	border: 1px solid #d1d5db;
+	border-top: none;
+	border-bottom-left-radius: 10px;
+	border-bottom-right-radius: 10px;
+	box-shadow: 0 1px 2px rgba(0, 0, 0, 0.2);
+	z-index: 1;
+}
+
+
+
+/* Gender filter: options list */
+.gender-options {
+	position: absolute;
+	top: 46px;
+	left: 0;
+	width: 100%;
+	display: flex;
+	flex-direction: column;
+	align-items: flex-start;
+	gap: 10px;
+	margin-top: 0;
+	z-index: 2;
+}
+
+/* Gender filter: option button */
+.gender-option-button {
+	width: 85%;
+	height: 32px;
+	margin: 0;
+	margin-left: 15px;
+	border-radius: 10px;
+	border: 1px solid #d1d5db;
+	padding: 0 12px;
+	background: #F8F8F8;
+	color: #b44b25;
+	font-size: 16px;
+	font-family: 'Hind Kochi', sans-serif;
+	box-shadow: 0 1px 2px rgba(0, 0, 0, 0.2);
+	text-align: left;
+	cursor: pointer;
+}
+
+/* Breed filter: toggle button */
+.breed-toggle {
+	position: relative;
+	text-align: left;
+	cursor: pointer;
+}
+
+/* Breed filter: group wrapper */
+.breed-filter-group {
+	--breed-extend-height: 55px;
+	position: relative;
+	display: flex;
+	flex-direction: column;
+	gap: 0;
+}
+
+/* Breed filter: open state stacking */
+.breed-filter-group.open {
+	z-index: 20;
+}
+
+/* Breed filter: open-state toggle style */
+.breed-filter-group.open .breed-toggle {
+	border-bottom-left-radius: 0;
+	border-bottom-right-radius: 0;
+	background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath d='M1 6l5-5 5 5' fill='none' stroke='%23b44b25' stroke-width='1.5' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E");
+}
+
+/* Breed filter: dropdown container extension */
+.breed-filter-group.open .breed-toggle::after {
+	content: '';
+	position: absolute;
+	left: -1px;
+	right: -1px;
+	top: 100%;
+	height: var(--breed-extend-height);
+	background: #F8F8F8;
+	border: 1px solid #d1d5db;
+	border-top: none;
+	border-bottom-left-radius: 10px;
+	border-bottom-right-radius: 10px;
+	box-shadow: 0 1px 2px rgba(0, 0, 0, 0.2);
+	z-index: 1;
+}
+
+/* Breed filter: options list */
+.breed-options {
+	position: absolute;
+	top: 46px;
+	left: 0;
+	width: 100%;
+	display: flex;
+	flex-direction: column;
+	align-items: flex-start;
+	gap: 10px;
+	margin-top: 0;
+	z-index: 2;
+	padding-top: 6px;
+}
+
+/* Shared text input styles for breed and shelter */
+.breed-search-input,
+.shelter-search-input {
+	width: 85%;
+	height: 32px;
+	margin: 0;
+	margin-left: 15px;
+	border-radius: 10px;
+	border: 1px solid #d1d5db;
+	padding: 0 12px;
+	background: #F8F8F8;
+	color: #b44b25;
+	font-size: 16px;
+	font-family: 'Hind Kochi', sans-serif;
+	box-shadow: 0 1px 2px rgba(0, 0, 0, 0.2);
+	outline: none;
+}
+
+/* Shared placeholder text styles */
+.breed-search-input::placeholder,
+.shelter-search-input::placeholder {
+	color: #b44b25;
+	opacity: 0.8;
+}
+
+/* Size filter: toggle button */
+.size-toggle {
+	position: relative;
+	text-align: left;
+	cursor: pointer;
+}
+
+/* Size filter: group wrapper */
+.size-filter-group {
+	--size-extend-height: 160px;
+	position: relative;
+	display: flex;
+	flex-direction: column;
+	gap: 0;
+}
+
+/* Size filter: open state stacking */
+.size-filter-group.open {
+	z-index: 20;
+}
+
+/* Size filter: open-state toggle style */
+.size-filter-group.open .size-toggle {
+	border-bottom-left-radius: 0;
+	border-bottom-right-radius: 0;
+	background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath d='M1 6l5-5 5 5' fill='none' stroke='%23b44b25' stroke-width='1.5' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E");
+}
+
+/* Size filter: dropdown container extension */
+.size-filter-group.open .size-toggle::after {
+	content: '';
+	position: absolute;
+	left: -1px;
+	right: -1px;
+	top: 100%;
+	height: var(--size-extend-height);
+	background: #F8F8F8;
+	border: 1px solid #d1d5db;
+	border-top: none;
+	border-bottom-left-radius: 10px;
+	border-bottom-right-radius: 10px;
+	box-shadow: 0 1px 2px rgba(0, 0, 0, 0.2);
+	z-index: 1;
+}
+
+/* Size filter: options list */
+.size-options {
+	position: absolute;
+	top: 46px;
+	left: 0;
+	width: 100%;
+	display: flex;
+	flex-direction: column;
+	align-items: flex-start;
+	gap: 15px;
+	margin-top: 0;
+	z-index: 2;
+}
+
+/* Size filter: option button */
+.size-option-button {
+	width: 85%;
+	height: 32px;
+	margin: 0;
+	margin-left: 15px;
+	border-radius: 10px;
+	border: 1px solid #d1d5db;
+	padding: 0 12px;
+	background: #F8F8F8;
+	color: #b44b25;
+	font-size: 16px;
+	font-family: 'Hind Kochi', sans-serif;
+	box-shadow: 0 1px 2px rgba(0, 0, 0, 0.2);
+	text-align: left;
+	cursor: pointer;
+}
+
+/* Age filter: toggle button */
+.age-toggle {
+	position: relative;
+	text-align: left;
+	cursor: pointer;
+}
+
+/* Age filter: group wrapper */
+.age-filter-group {
+	--age-extend-height: 215px;
+	position: relative;
+	display: flex;
+	flex-direction: column;
+	gap: 0;
+}
+
+/* Age filter: open state stacking */
+.age-filter-group.open {
+	z-index: 20;
+}
+
+/* Age filter: open-state toggle style */
+.age-filter-group.open .age-toggle {
+	border-bottom-left-radius: 0;
+	border-bottom-right-radius: 0;
+	background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath d='M1 6l5-5 5 5' fill='none' stroke='%23b44b25' stroke-width='1.5' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E");
+}
+
+/* Age filter: dropdown container extension */
+.age-filter-group.open .age-toggle::after {
+	content: '';
+	position: absolute;
+	left: -1px;
+	right: -1px;
+	top: 100%;
+	height: var(--age-extend-height);
+	background: #F8F8F8;
+	border: 1px solid #d1d5db;
+	border-top: none;
+	border-bottom-left-radius: 10px;
+	border-bottom-right-radius: 10px;
+	box-shadow: 0 1px 2px rgba(0, 0, 0, 0.2);
+	z-index: 1;
+}
+
+/* Age filter: options list */
+.age-options {
+	position: absolute;
+	top: 46px;
+	left: 0;
+	width: 100%;
+	display: flex;
+	flex-direction: column;
+	align-items: flex-start;
+	gap: 15px;
+	margin-top: 0;
+	z-index: 2;
+}
+
+/* Age filter: option button */
+.age-option-button {
+	width: 85%;
+	height: 32px;
+	margin: 0;
+	margin-left: 15px;
+	border-radius: 10px;
+	border: 1px solid #d1d5db;
+	padding: 0 12px;
+	background: #F8F8F8;
+	color: #b44b25;
+	font-size: 16px;
+	font-family: 'Hind Kochi', sans-serif;
+	box-shadow: 0 1px 2px rgba(0, 0, 0, 0.2);
+	text-align: left;
+	cursor: pointer;
+}
+
+/* Compatibility filter: toggle button */
+.compatibility-toggle {
+	position: relative;
+	text-align: left;
+	cursor: pointer;
+}
+
+/* Compatibility filter: group wrapper */
+.compatibility-filter-group {
+	--compatibility-extend-height: 235px;
+	position: relative;
+	display: flex;
+	flex-direction: column;
+	gap: 0;
+}
+
+/* Compatibility filter: open state stacking */
+.compatibility-filter-group.open {
+	z-index: 20;
+}
+
+/* Compatibility filter: open-state toggle style */
+.compatibility-filter-group.open .compatibility-toggle {
+	border-bottom-left-radius: 0;
+	border-bottom-right-radius: 0;
+	background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath d='M1 6l5-5 5 5' fill='none' stroke='%23b44b25' stroke-width='1.5' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E");
+}
+
+/* Compatibility filter: dropdown container extension */
+.compatibility-filter-group.open .compatibility-toggle::after {
+	content: '';
+	position: absolute;
+	left: -1px;
+	right: -1px;
+	top: 100%;
+	height: var(--compatibility-extend-height);
+	background: #F8F8F8;
+	border: 1px solid #d1d5db;
+	border-top: none;
+	border-bottom-left-radius: 10px;
+	border-bottom-right-radius: 10px;
+	box-shadow: 0 1px 2px rgba(0, 0, 0, 0.2);
+	z-index: 1;
+}
+
+/* Compatibility filter: options list */
+.compatibility-options {
+	position: absolute;
+	top: 46px;
+	left: 0;
+	width: 100%;
+	display: flex;
+	flex-direction: column;
+	align-items: flex-start;
+	gap: 10px;
+	margin-top: 0;
+	z-index: 2;
+	padding-top: 6px;
+}
+
+/* Compatibility filter: option row */
+.compatibility-option-item {
+	width: 85%;
+	height: 32px;
+	margin: 0;
+	margin-left: 15px;
+	border-radius: 10px;
+	border: 1px solid #d1d5db;
+	padding: 0 12px;
+	background: #F8F8F8;
+	color: #b44b25;
+	font-size: 16px;
+	font-family: 'Hind Kochi', sans-serif;
+	box-shadow: 0 1px 2px rgba(0, 0, 0, 0.2);
+	display: flex;
+	align-items: center;
+	gap: 10px;
+	cursor: pointer;
+}
+
+/* Compatibility filter: checkbox style */
+.compatibility-option-item input[type='checkbox'] {
+	accent-color: #b44b25;
+	width: 14px;
+	height: 14px;
+	margin: 0;
+}
+
+/* Shelter filter: toggle button */
+.shelter-toggle {
+	position: relative;
+	text-align: left;
+	cursor: pointer;
+}
+
+/* Shelter filter: group wrapper */
+.shelter-filter-group {
+	--shelter-extend-height: 55px;
+	position: relative;
+	display: flex;
+	flex-direction: column;
+	gap: 0;
+}
+
+/* Shelter filter: open state stacking */
+.shelter-filter-group.open {
+	z-index: 20;
+}
+
+/* Shelter filter: open-state toggle style */
+.shelter-filter-group.open .shelter-toggle {
+	border-bottom-left-radius: 0;
+	border-bottom-right-radius: 0;
+	background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath d='M1 6l5-5 5 5' fill='none' stroke='%23b44b25' stroke-width='1.5' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E");
+}
+
+/* Shelter filter: dropdown container extension */
+.shelter-filter-group.open .shelter-toggle::after {
+	content: '';
+	position: absolute;
+	left: -1px;
+	right: -1px;
+	top: 100%;
+	height: var(--shelter-extend-height);
+	background: #F8F8F8;
+	border: 1px solid #d1d5db;
+	border-top: none;
+	border-bottom-left-radius: 10px;
+	border-bottom-right-radius: 10px;
+	box-shadow: 0 1px 2px rgba(0, 0, 0, 0.2);
+	z-index: 1;
+}
+
+/* Shelter filter: options list */
+.shelter-options {
+	position: absolute;
+	top: 46px;
+	left: 0;
+	width: 100%;
+	display: flex;
+	flex-direction: column;
+	align-items: flex-start;
+	gap: 10px;
+	margin-top: 0;
+	z-index: 2;
+	padding-top: 6px;
+}
+
+/* Price filter: toggle button */
+.price-toggle {
+	position: relative;
+	text-align: left;
+	cursor: pointer;
+}
+
+/* Price filter: group wrapper */
+.price-filter-group {
+	--price-extend-height: 160px;
+	position: relative;
+	display: flex;
+	flex-direction: column;
+	gap: 0;
+}
+
+/* Price filter: open state stacking */
+.price-filter-group.open {
+	z-index: 20;
+}
+
+/* Price filter: open-state toggle style */
+.price-filter-group.open .price-toggle {
+	border-bottom-left-radius: 0;
+	border-bottom-right-radius: 0;
+	background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath d='M1 6l5-5 5 5' fill='none' stroke='%23b44b25' stroke-width='1.5' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E");
+}
+
+/* Price filter: dropdown container extension */
+.price-filter-group.open .price-toggle::after {
+	content: '';
+	position: absolute;
+	left: -1px;
+	right: -1px;
+	top: 100%;
+	height: var(--price-extend-height);
+	background: #F8F8F8;
+	border: 1px solid #d1d5db;
+	border-top: none;
+	border-bottom-left-radius: 10px;
+	border-bottom-right-radius: 10px;
+	box-shadow: 0 1px 2px rgba(0, 0, 0, 0.2);
+	z-index: 1;
+}
+
+/* Price filter: options list */
+.price-options {
+	position: absolute;
+	top: 46px;
+	left: 0;
+	width: 100%;
+	display: flex;
+	flex-direction: column;
+	align-items: flex-start;
+	gap: 15px;
+	margin-top: 0;
+	z-index: 2;
+}
+
+/* Price filter: option button */
+.price-option-button {
+	width: 85%;
+	height: 32px;
+	margin: 0;
+	margin-left: 15px;
+	border-radius: 10px;
+	border: 1px solid #d1d5db;
+	padding: 0 12px;
+	background: #F8F8F8;
+	color: #b44b25;
+	font-size: 16px;
+	font-family: 'Hind Kochi', sans-serif;
+	box-shadow: 0 1px 2px rgba(0, 0, 0, 0.2);
+	text-align: left;
+	cursor: pointer;
+}
