@@ -7,6 +7,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -110,15 +111,20 @@ public class UserController {
      */
     @PostMapping("/register")
     public ResponseEntity<?> register(@Valid @RequestBody UserRequest request) {
-        User createdUser = userService.createUser(request);
+        try {
+            User createdUser = userService.createUser(request);
 
-        // Generate token from createdUser identity + roles
-        String jwt = userService.verify(request);
+            // Generate token from createdUser identity + roles
+            String jwt = userService.verify(request);
 
-        return ResponseEntity.status(HttpStatus.CREATED).body(Map.of(
-            "user", userService.findById(createdUser.getUser_id()),
-            "token", jwt
-        ));
+            return ResponseEntity.status(HttpStatus.CREATED).body(Map.of(
+                "user", userService.findById(createdUser.getUser_id()),
+                "token", jwt
+            ));
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
+            .body(Map.of("message", "Invalid Response"));
+        }
     }
 
 
@@ -132,11 +138,16 @@ public class UserController {
      * @return {@link Map} of {@link UserDTO} and signed JWT string
      */
     @PostMapping("/login")
-    public Map<String, Object> login(@RequestBody UserRequest request) {
-        String token = userService.verify(request);
-        UserDTO userDTO = userService.findByEmail(request.email());
-        
-        return Map.of("user", userDTO, "token", token);
+    public ResponseEntity<?> login(@RequestBody UserRequest request) {
+        try {
+            String token = userService.verify(request);
+            UserDTO userDTO = userService.findByEmail(request.email());
+            
+            return ResponseEntity.ok(Map.of("user", userDTO, "token", token));
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
+            .body(Map.of("message", "Invalid email or password"));
+        }
     }
 
 

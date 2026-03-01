@@ -13,8 +13,17 @@ export async function apiFetch(path, options = {}) {
     });
 
     if (!res.ok) {
+      let message = "Something went wrong";
+
+      try {
+        const data = await res.json();
+        message = data.message || data.error || message;
+      } catch {
         const text = await res.text();
-        throw new Error(`${res.status} ${res.statusText}: ${text}`);
+        if (text) message = text;
+      }
+
+      throw new Error(message);
     }
 
     // if empty response body (204), avoid json() crash
