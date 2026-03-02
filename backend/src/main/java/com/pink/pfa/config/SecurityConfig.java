@@ -5,6 +5,7 @@ import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.http.HttpMethod;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.AuthenticationProvider;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -22,6 +23,8 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.CorsConfigurationSource;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
+
+//import static org.springframework.security.web.util.matcher.AntPathRequestMatcher.antMatcher;
 
 /**
  * Central Spring Security configuration for the application.
@@ -93,6 +96,7 @@ public class SecurityConfig {
         ));
         config.setAllowedMethods(List.of("GET","POST","PUT","DELETE","OPTIONS"));
         config.setAllowedHeaders(List.of("Authorization","Content-Type"));
+        config.setExposedHeaders(List.of("Authorization"));
         // uncomment if we want to use cookies/session auth
         // config.setAllowCredentials(true);
 
@@ -131,7 +135,8 @@ public class SecurityConfig {
                 .requestMatchers("/api/admin/**").hasRole("ADMIN")
                 .anyRequest().authenticated() // any endpoint that does not start with /api/public is private and does require auth
                 )
-            .httpBasic(Customizer.withDefaults())
+            .httpBasic(basic -> basic.disable())
+            .formLogin(form -> form.disable())
             .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS)) // sets the api to NEVER use HTTP sessions EVER
             .addFilterBefore(jwtFilter, UsernamePasswordAuthenticationFilter.class);
 

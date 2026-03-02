@@ -80,6 +80,11 @@ public class JwtFilter extends OncePerRequestFilter {
         String token = null;
         String email = null;
 
+        if (authHeader == null || !authHeader.startsWith("Bearer ")) {
+            filterChain.doFilter(request, response);
+            return;
+        }
+
         if (authHeader != null) {
             token = authHeader.substring(7);
             email = jwtService.extractEmailFromHeader(authHeader);

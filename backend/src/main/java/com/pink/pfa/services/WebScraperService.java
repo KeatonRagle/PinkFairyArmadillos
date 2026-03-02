@@ -1,6 +1,7 @@
 package com.pink.pfa.services;
 
 import java.io.IOException;
+import java.net.MalformedURLException;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.time.Duration;
@@ -23,8 +24,8 @@ import org.jsoup.select.Elements;
 import org.openqa.selenium.By;
 import org.openqa.selenium.TimeoutException;
 import org.openqa.selenium.WebDriver;
-import org.openqa.selenium.chrome.ChromeDriver;
 import org.openqa.selenium.chrome.ChromeOptions;
+import org.openqa.selenium.remote.RemoteWebDriver;
 import org.openqa.selenium.support.ui.ExpectedConditions;
 import org.openqa.selenium.support.ui.WebDriverWait;
 import org.springframework.stereotype.Service;
@@ -412,75 +413,85 @@ public class WebScraperService {
      * @return Map containing a list of successfully scraped pet data under key {@code "data"}.
      */
     public Map<String, Object> ScrapeSite(String url) {
-        Logger.getLogger("org.openqa.selenium.devtools.CdpVersionFinder").setLevel(Level.OFF);
-        ChromeOptions options = new ChromeOptions();
-        options.addArguments("--headless=new");
-        options.addArguments("--window-size=1920,1080");
-        options.addArguments("--disable-gpu");
-        WebDriver driver = new ChromeDriver(options);
-
         List<Map<String, Object>> scrappedData = new ArrayList();
-        Queue<String> urlBFSQueue = new ArrayDeque<>();
-        Set<String> seenUrls = new HashSet<>();
-        urlBFSQueue.add(url);
-        seenUrls.add(url);
 
-        Queue<List<String>> embedBatchQueue = new ArrayDeque<>();
-        while (!urlBFSQueue.isEmpty()) {
-            try {
-                String currUrl = urlBFSQueue.remove();
+        // 2. Connect to the Docker container
+        // Use "http://localhost:4444/wd/hub" if running script on host
+        // Use "http://chrome:4444/wd/hub" if script is also in a Docker container
+        try {
+            Logger.getLogger("org.openqa.selenium.devtools.CdpVersionFinder").setLevel(Level.OFF);
+            ChromeOptions options = new ChromeOptions();
+            options.addArguments("--no-sandbox");
+            options.addArguments("--disable-dev-shm-usage");
 
-                String iframeClass = "";
-                String anchorClass = "";
-                String hostname = "";
-                String embedUrl = "";
-                PetDisplayMethod displayMethod = FindPetDisplayMethod(currUrl);
-                switch (displayMethod) {
-                    case PetDisplayMethod.SHELTER_LUV: {
-                        iframeClass = "shelterluv";
-                        embedUrl = "new.shelterluv.com/embed/animal/";
-                        hostname = "new.shelterluv.com";
-                        
-                        break;
+            RemoteWebDriver driver = new RemoteWebDriver(URI.create("http://chrome:4444/wd/hub").toURL(), options);
+
+            Queue<String> urlBFSQueue = new ArrayDeque<>();
+            Set<String> seenUrls = new HashSet<>();
+            urlBFSQueue.add(url);
+            seenUrls.add(url);
+
+            Queue<List<String>> embedBatchQueue = new ArrayDeque<>();
+            while (!urlBFSQueue.isEmpty()) {
+                try {
+                    String currUrl = urlBFSQueue.remove();
+
+                    String iframeClass = "";
+                    String anchorClass = "";
+                    String hostname = "";
+                    String embedUrl = "";
+                    PetDisplayMethod displayMethod = FindPetDisplayMethod(currUrl);
+                    switch (displayMethod) {
+                        case PetDisplayMethod.SHELTER_LUV: {
+                            iframeClass = "shelterluv";
+                            embedUrl = "new.shelterluv.com/embed/animal/";
+                            hostname = "new.shelterluv.com";
+                            
+                            break;
+                        }
+                        default: break;
                     }
-                    default: break;
-                }
 
-                System.out.println("Curr URL - " + currUrl);
-                List<String> newUrls = FindURLS(currUrl, iframeClass, anchorClass, driver);
-                URI origUri = new URI(url);
-                for (String newUrl : newUrls) {
-                    if (newUrl.contains(embedUrl) && !embedUrl.equals("")) {
-                        System.out.println("New URL - " + newUrl);
-                        embedBatchQueue.add(List.of(currUrl, newUrl));
-                        seenUrls.add(newUrl);
-                    } else {
-                        URI uri = new URI(newUrl);
-                        if (newUrl.contains("https://") && (uri.getHost().equals(origUri.getHost()) || uri.getHost().equals(hostname)) && !seenUrls.contains(newUrl)) {
+                    System.out.println("Curr URL - " + currUrl);
+                    List<String> newUrls = FindURLS(currUrl, iframeClass, anchorClass, driver);
+                    URI origUri = new URI(url);
+                    for (String newUrl : newUrls) {
+                        if (newUrl.contains(embedUrl) && !embedUrl.equals("")) {
                             System.out.println("New URL - " + newUrl);
-                            urlBFSQueue.add(newUrl);
+                            embedBatchQueue.add(List.of(currUrl, newUrl));
                             seenUrls.add(newUrl);
+                        } else {
+                            URI uri = new URI(newUrl);
+                            if (newUrl.contains("https://") && (uri.getHost().equals(origUri.getHost()) || uri.getHost().equals(hostname)) && !seenUrls.contains(newUrl)) {
+                                System.out.println("New URL - " + newUrl);
+                                urlBFSQueue.add(newUrl);
+                                seenUrls.add(newUrl);
+                            }
                         }
                     }
+                } catch (URISyntaxException e) {
+                    System.out.println("URISyntaxException thrown for the following reason - " + e.getMessage());
                 }
-            } catch (URISyntaxException e) {
-                System.out.println("URISyntaxException thrown for the following reason - " + e.getMessage());
             }
-        }
 
-        while (!embedBatchQueue.isEmpty()) {
-            List<String> embedUrlList = embedBatchQueue.remove();
-            String parentUrl = embedUrlList.get(0);
-            String childUrl = embedUrlList.get(1);
+            while (!embedBatchQueue.isEmpty()) {
+                List<String> embedUrlList = embedBatchQueue.remove();
+                String parentUrl = embedUrlList.get(0);
+                String childUrl = embedUrlList.get(1);
 
-            System.out.println("Curr URL - " + childUrl);
-            Map<String, Object> potentialData = AttemptScrape(parentUrl, childUrl, driver);
-            if (!potentialData.containsKey("error") && !potentialData.containsKey("empty")) {
-                scrappedData.add(potentialData);
+                System.out.println("Curr URL - " + childUrl);
+                Map<String, Object> potentialData = AttemptScrape(parentUrl, childUrl, driver);
+                if (!potentialData.containsKey("error") && !potentialData.containsKey("empty")) {
+                    scrappedData.add(potentialData);
+                }
             }
+            
+            driver.quit();
+
+        } catch (MalformedURLException e) {
+            
         }
         
-        driver.quit();
         
         return Map.of(
             "data", scrappedData
