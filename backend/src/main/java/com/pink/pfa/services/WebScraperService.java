@@ -13,8 +13,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Queue;
 import java.util.Set;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import java.util.stream.Collectors;
 
 import org.jsoup.Jsoup;
@@ -30,6 +28,14 @@ import org.openqa.selenium.support.ui.ExpectedConditions;
 import org.openqa.selenium.support.ui.WebDriverWait;
 import org.springframework.stereotype.Service;
 
+import com.pink.pfa.models.Pet;
+import com.pink.pfa.models.datatransfer.ScrapedPetDTO;
+
+import jakarta.persistence.NoResultException;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 /**
  * Service responsible for scraping pet adoption websites.
  * <p>
@@ -44,6 +50,10 @@ import org.springframework.stereotype.Service;
  */
 @Service
 public class WebScraperService {
+
+
+    private static final Logger log = LoggerFactory.getLogger(WebScraperService.class);
+
     public WebScraperService() {}
 
     /**
@@ -400,7 +410,7 @@ public class WebScraperService {
     }
 
     /**
-     * Main entry point for scraping a pet adoption website.
+     * Scrapes A site for all pet data.
      * <p>
      * Performs:
      * <ul>
@@ -412,14 +422,13 @@ public class WebScraperService {
      * @param url Root URL of the adoption website.
      * @return Map containing a list of successfully scraped pet data under key {@code "data"}.
      */
-    public Map<String, Object> ScrapeSite(String url) {
-        List<Map<String, Object>> scrappedData = new ArrayList();
+    public List<Pet> ScrapeSite(String url) {
+        List<Pet> scrappedData = new ArrayList<>();
 
         // 2. Connect to the Docker container
         // Use "http://localhost:4444/wd/hub" if running script on host
         // Use "http://chrome:4444/wd/hub" if script is also in a Docker container
         try {
-            Logger.getLogger("org.openqa.selenium.devtools.CdpVersionFinder").setLevel(Level.OFF);
             ChromeOptions options = new ChromeOptions();
             options.addArguments("--no-sandbox");
             options.addArguments("--disable-dev-shm-usage");
@@ -482,7 +491,11 @@ public class WebScraperService {
                 System.out.println("Curr URL - " + childUrl);
                 Map<String, Object> potentialData = AttemptScrape(parentUrl, childUrl, driver);
                 if (!potentialData.containsKey("error") && !potentialData.containsKey("empty")) {
-                    scrappedData.add(potentialData);
+                    try {
+                        scrappedData.add(ScrapedPetDTO.fromMap(potentialData).toEntity());
+                    } catch (Exception e) {
+                        log.warn("Failed to convert scraped data to Pet: {}", e.getMessage());
+                    }
                 }
             }
             
@@ -493,8 +506,41 @@ public class WebScraperService {
         }
         
         
-        return Map.of(
-            "data", scrappedData
-        );
+        return scrappedData;
+    }
+
+
+
+
+    /**
+     * Main entry point for the scraper service.
+     * Scrapes pet listings from one or more adoption sites and returns the aggregated results.
+     *
+     * <p>Iterates over each provided URL, invoking the web scraper service and converting
+     * raw results into {@link Pet} entities via {@link ScrapedPetDTO}. Individual pet
+     * conversion failures are logged and skipped; however, a site-level failure will
+     * immediately halt processing and return a 500 response.
+     *
+     * @param siteUrls a list of adoption site URLs to scrape
+     * @return a {@code pets} list
+     */
+    public List<Pet> runScraper(List<String> siteUrls) {
+        List<Pet> allScrapedPets = new ArrayList<>();
+
+        // scrape each site
+        for (String siteUrl : siteUrls) {
+            try {
+                allScrapedPets.addAll(ScrapeSite(siteUrl));
+            } catch (Exception e) {
+                log.error("Failed to scrape {}: {}", siteUrl, e.getMessage());
+            }
+        }
+
+        if (allScrapedPets.isEmpty()) {
+            throw new NoResultException();
+        }
+
+        // return a status code OK along with all the pet objects
+        return allScrapedPets;
     }
 }

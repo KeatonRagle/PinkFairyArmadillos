@@ -3,7 +3,6 @@ package com.pink.pfa.controllers;
 import java.time.Instant;
 import java.util.Map;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -47,9 +46,12 @@ import jakarta.validation.Valid;
 @RestController
 @RequestMapping("/api/users")
 public class UserController {
-    // Singleton object the controller uses to interface with the database
-    @Autowired
-    private UserService userService;
+
+    private final UserService userService;
+
+    public UserController (UserService userService) {
+        this.userService = userService;
+    }
  
 
     /**

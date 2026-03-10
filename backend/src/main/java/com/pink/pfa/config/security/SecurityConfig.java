@@ -1,11 +1,9 @@
-package com.pink.pfa.config;
+package com.pink.pfa.config.security;
 
 import java.util.List;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.http.HttpMethod;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.AuthenticationProvider;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -24,7 +22,6 @@ import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.CorsConfigurationSource;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 
-//import static org.springframework.security.web.util.matcher.AntPathRequestMatcher.antMatcher;
 
 /**
  * Central Spring Security configuration for the application.
@@ -58,7 +55,13 @@ import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 @EnableWebSecurity
 public class SecurityConfig {
 
-    
+    private final JwtFilter jwtFilter;
+
+    public SecurityConfig (JwtFilter jwtFilter) {
+        this.jwtFilter = jwtFilter;
+    }
+
+
     /**
      * Provides the {@link PasswordEncoder} used to hash and verify user passwords.
      * <p>
@@ -71,9 +74,6 @@ public class SecurityConfig {
     public PasswordEncoder passwordEncoder() {
         return new BCryptPasswordEncoder(12);
     }
-
-    @Autowired
-    private JwtFilter jwtFilter;
 
 
     /**
@@ -131,7 +131,12 @@ public class SecurityConfig {
             .csrf(customizer -> customizer.disable()) // disable Cross-Site Request Forgery protection since we pass auth as a header in the request
             .authorizeHttpRequests(request -> request
                 //.anyRequest().permitAll() // ONLY UNCOMMENT FOR DEBUG
-                .requestMatchers("/api/users/login", "/api/users/register", "/api/public/**").permitAll() // any endpoint starting with /api/public is public and does not require auth
+                .requestMatchers(
+                    "/api/users/login",
+                    "/api/users/register",
+                    "/api/pets/**",
+                    "/api/public/**"
+                ).permitAll() // any endpoint starting with /api/public is public and does not require auth
                 .requestMatchers("/api/admin/**").hasRole("ADMIN")
                 .anyRequest().authenticated() // any endpoint that does not start with /api/public is private and does require auth
                 )

@@ -2,7 +2,6 @@ package com.pink.pfa.services;
 
 import java.util.List;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.context.properties.source.InvalidConfigurationPropertyValueException;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -48,18 +47,23 @@ import jakarta.transaction.Transactional;
 @Service
 @RequestMapping("/api/users")
 public class UserService {
-    // The singleton backend repository that takes our input and turns it into CRUD (abstracting out our data access layer)
-    @Autowired
-    private UserRepository userRepository;
+    
+    private final UserRepository userRepository;
+    private final PasswordEncoder passwordEncoder;
+    private final AuthenticationManager authManager;
+    private final JWTService jwtService;
 
-    @Autowired
-    private PasswordEncoder passwordEncoder;
-
-    @Autowired
-    private AuthenticationManager authManager;
-
-    @Autowired
-    private JWTService jwtService;
+    public UserService (
+        UserRepository userRepository,
+        PasswordEncoder passwordEncoder,
+        AuthenticationManager authManager,
+        JWTService jwtService
+    ) {
+        this.userRepository = userRepository;
+        this.passwordEncoder = passwordEncoder;
+        this.authManager = authManager;
+        this.jwtService = jwtService;
+    }
 
 
     /**
