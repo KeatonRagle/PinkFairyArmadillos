@@ -128,6 +128,10 @@ import lombok.Data;
 	public Integer getPet_id() {
 		return pet_id;
 	}
+
+    public AdoptionSite getSite() {
+        return site;
+    }
 	
 	public String getName() {
 		return name;
@@ -167,6 +171,10 @@ import lombok.Data;
 	
 	
 	/*+++ Setters +++*/
+    public void setSite(AdoptionSite site) {
+        this.site = site;
+    }
+
 	public void setName(String name) {
 		this.name = name;
 	}
