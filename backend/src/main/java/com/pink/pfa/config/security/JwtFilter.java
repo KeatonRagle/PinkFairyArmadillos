@@ -1,8 +1,7 @@
-package com.pink.pfa.config;
+package com.pink.pfa.config.security;
 
 import java.io.IOException;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -43,11 +42,13 @@ import jakarta.servlet.http.HttpServletResponse;
 @Component
 public class JwtFilter extends OncePerRequestFilter {
 
-    @Autowired
-    private JWTService jwtService;
-    
-    @Autowired
-    private CustomUserDetailsService userDetailsService;
+    private final JWTService jwtService;
+    private final CustomUserDetailsService userDetailsService;
+
+    public JwtFilter (JWTService jwtService, CustomUserDetailsService userDetailsService) {
+        this.jwtService = jwtService;
+        this.userDetailsService = userDetailsService;
+    }
 
 
     /**

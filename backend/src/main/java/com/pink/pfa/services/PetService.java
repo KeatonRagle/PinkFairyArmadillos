@@ -2,13 +2,15 @@ package com.pink.pfa.services;
 
 import java.util.List;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.context.properties.source.InvalidConfigurationPropertyValueException;
 import org.springframework.stereotype.Service;
 import org.springframework.web.bind.annotation.RequestMapping;
 
 import com.pink.pfa.models.datatransfer.PetDTO;
+import com.pink.pfa.models.Pet;
 import com.pink.pfa.repos.PetRepository;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 
 /**
@@ -33,8 +35,13 @@ import com.pink.pfa.repos.PetRepository;
 @RequestMapping("/api/pets")
 public class PetService {
 
-    @Autowired
-    private PetRepository petRepository;
+    private static final Logger log = LoggerFactory.getLogger(PetService.class);
+
+    private final PetRepository petRepository;
+
+    public PetService (PetRepository petRepository) {
+        this.petRepository = petRepository;
+    }
 
 
     /**
@@ -63,5 +70,12 @@ public class PetService {
                 .map(PetDTO::fromEntity)
                 .orElseThrow(() -> new InvalidConfigurationPropertyValueException("Failed to Find ID", null, "Pet Not Found"));
     }
+
+
+
+    public void sync (List<Pet> pets) {
+
+    }
+
     
 }

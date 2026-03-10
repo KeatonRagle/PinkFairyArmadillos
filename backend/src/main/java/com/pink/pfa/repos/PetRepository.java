@@ -37,5 +37,6 @@ public interface PetRepository extends JpaRepository<Pet, Integer>{
      * @return list of {@link Pet} entities matching the name
      */
     List<Pet> findByName(String name);
+
     
 }
