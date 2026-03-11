@@ -182,4 +182,13 @@ public class UserService {
 
         user.setRole(User.Role.ROLE_ADMIN);
     }
+
+    // changes
+    @Transactional
+    public void promoteToContributor(int userId) {
+        User user = userRepository.findById(userId)
+            .orElseThrow(() -> new RuntimeException("User not found"));
+
+        user.setRole(User.Role.ROLE_CONTRIBUTOR);
+    }
 }

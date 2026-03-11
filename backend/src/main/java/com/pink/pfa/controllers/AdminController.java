@@ -52,4 +52,11 @@ public class AdminController {
         userService.promoteToAdmin(id);
         return ResponseEntity.noContent().build();
     }
+
+    // changes
+    @PatchMapping("/{id}/promote-contributor")
+    public ResponseEntity<Void> promoteContributor(@PathVariable int id) {
+        userService.promoteToContributor(id);
+        return ResponseEntity.noContent().build();
+    }
 }

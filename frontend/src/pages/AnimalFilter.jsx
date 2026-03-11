@@ -1,9 +1,11 @@
-import { useEffect, useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import HomeHeader from '../components/header'
 import HomeFooter from '../components/footer'
 import '../styling/AnimalFilter.css'
 
 export default function AnimalFilter() {
+	const filterPanelRef = useRef(null)
+
 	// State: filter panel and search inputs
 	const [openFilter, setOpenFilter] = useState(null)
 	const [breedSearchText, setBreedSearchText] = useState('')
@@ -61,6 +63,17 @@ export default function AnimalFilter() {
 		return () => document.body.classList.remove('animalfilter-body')
 	}, [])
 
+	useEffect(() => {
+		const handleDocumentMouseDown = (event) => {
+			if (!filterPanelRef.current?.contains(event.target)) {
+				setOpenFilter(null)
+			}
+		}
+
+		document.addEventListener('mousedown', handleDocumentMouseDown)
+		return () => document.removeEventListener('mousedown', handleDocumentMouseDown)
+	}, [])
+
 	// Derived data: pagination values
 	const totalPages = Math.max(1, Math.ceil(animals.length / animalsPerPage))
 	const startIndex = (currentPage - 1) * animalsPerPage
@@ -87,7 +100,7 @@ export default function AnimalFilter() {
 			{/* Layout: main content area */}
 			<main className="animalfilter-main">
 				{/* Section: filter controls */}
-				<section className="animalfilter-panel">
+				<section className="animalfilter-panel" ref={filterPanelRef}>
 					<h1>Filters</h1>
 
 					{/* Filter: gender */}

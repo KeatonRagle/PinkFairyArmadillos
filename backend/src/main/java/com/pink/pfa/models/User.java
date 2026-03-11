@@ -74,7 +74,8 @@ public class User {
      * USER represents a standard authenticated user.
      * ADMIN represents a privileged user with elevated permissions.
      */
-    public enum Role { ROLE_USER, ROLE_ADMIN }
+    // changes
+    public enum Role { ROLE_USER, ROLE_CONTRIBUTOR, ROLE_ADMIN }
 
     /** Default constructor required by JPA. */
     public User() {
