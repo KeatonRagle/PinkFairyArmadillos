@@ -50,10 +50,6 @@ import com.pink.pfa.context.PfaBase;
  */
 class JWTServiceTest extends PfaBase {
 
-    private final JWTService jwtService;
-    private final CustomUserDetailsService userDetailsService;
-
-
     /**
      * Constructs the test instance with the required Spring-managed services.
      *
