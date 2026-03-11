@@ -166,9 +166,11 @@ public class UserService {
      * @return JWT string if authentication succeeds; otherwise a failure message
      */
     public String verify(UserRequest userRequest) {
-        Authentication authentication = authManager.authenticate(new UsernamePasswordAuthenticationToken(userRequest.email(), userRequest.password()));
-
-        if(authentication.isAuthenticated()) return jwtService.generateToken(userRequest.email());
+        Authentication authentication = authManager.authenticate(
+            new UsernamePasswordAuthenticationToken(userRequest.email(), userRequest.password())
+        );
+        if (authentication.isAuthenticated()) 
+            return jwtService.generateToken(userRequest.email().trim().toLowerCase());
         return "Nope";
     }
 
