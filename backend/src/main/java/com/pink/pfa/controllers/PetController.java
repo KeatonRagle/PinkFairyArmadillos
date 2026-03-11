@@ -90,6 +90,7 @@ public class PetController {
         List<String> sites = List.of("https://hsdallascounty.org");
         databaseBackupService.backup("pre_scrape");
         return webScraperService.runScraper(sites);
+        // petService.sync();
     }
 
 }
