@@ -3,7 +3,6 @@ package com.pink.pfa.controllers;
 import java.time.Instant;
 import java.util.Map;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
@@ -17,8 +16,11 @@ import com.pink.pfa.services.UserService;
 @RequestMapping("/api/admin")
 public class AdminController {
 
-    @Autowired
-    private UserService userService;
+    private final UserService userService;
+
+    public AdminController (UserService userService) {
+        this.userService = userService;
+    }
 
 
     /**

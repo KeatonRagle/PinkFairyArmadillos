@@ -3,6 +3,8 @@ package com.pink.pfa.models;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.ManyToOne;
+import jakarta.persistence.Table;
+import jakarta.persistence.UniqueConstraint;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
@@ -33,6 +35,9 @@ import lombok.Data;
  */
  @Data
  @Entity
+ @Table(uniqueConstraints = {
+    @UniqueConstraint(columnNames = {"name", "breed", "pet_type"})
+ })
  public class Pet {
 	
 	
@@ -70,7 +75,7 @@ import lombok.Data;
 	
 	/** Type of pet. */
 	@Column(name = "pet_type", nullable = false)
-	private String pet_type;
+	private String petType;
 	
 	
 	/** Location of pet. */
@@ -116,7 +121,7 @@ import lombok.Data;
 		this.breed = breed;
 		this.age = age;
 		this.gender = gender;
-		this.pet_type = pet_type;
+		this.petType = pet_type;
 		this.location = location;
 		this.price = price;
 		this.pet_status = pet_status;
@@ -128,6 +133,10 @@ import lombok.Data;
 	public Integer getPet_id() {
 		return pet_id;
 	}
+
+    public AdoptionSite getSite() {
+        return site;
+    }
 	
 	public String getName() {
 		return name;
@@ -146,7 +155,7 @@ import lombok.Data;
 	}
 	
 	public String getPet_type() {
-		return pet_type;
+		return petType;
 	}
 	
 	public String getLocation() {
@@ -167,6 +176,10 @@ import lombok.Data;
 	
 	
 	/*+++ Setters +++*/
+    public void setSite(AdoptionSite site) {
+        this.site = site;
+    }
+
 	public void setName(String name) {
 		this.name = name;
 	}
@@ -184,7 +197,7 @@ import lombok.Data;
 	}
 	
 	public void setPet_type(String pet_type) {
-		this.pet_type = pet_type;
+		this.petType = pet_type;
 	}
 	
 	public void setLocation(String location) {
