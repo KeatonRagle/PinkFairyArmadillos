@@ -22,8 +22,6 @@ import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.CorsConfigurationSource;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 
-import jakarta.servlet.http.HttpServletResponse;
-
 
 /**
  * Central Spring Security configuration for the application.
@@ -58,9 +56,13 @@ import jakarta.servlet.http.HttpServletResponse;
 public class SecurityConfig {
 
     private final JwtFilter jwtFilter;
+    private final CustomAuthenticationEntryPoint authenticationEntryPoint;
+    private final CustomAccessDeniedHandler accessDeniedHandler;
 
-    public SecurityConfig (JwtFilter jwtFilter) {
+    public SecurityConfig (JwtFilter jwtFilter, CustomAuthenticationEntryPoint authenticationEntryPoint, CustomAccessDeniedHandler accessDeniedHandler) {
         this.jwtFilter = jwtFilter;
+        this.authenticationEntryPoint = authenticationEntryPoint;
+        this.accessDeniedHandler = accessDeniedHandler;
     }
 
 
@@ -77,6 +79,8 @@ public class SecurityConfig {
         return new BCryptPasswordEncoder(12);
     }
 
+
+    
 
     /**
      * Defines the Cross-Origin Resource Sharing (CORS) policy for browser clients.
@@ -141,16 +145,15 @@ public class SecurityConfig {
                 ).permitAll() // any endpoint starting with /api/public is public and does not require auth
                 .requestMatchers("/api/admin/**").hasRole("ADMIN")
                 .anyRequest().authenticated() // any endpoint that does not start with /api/public is private and does require auth
-                )
-            .httpBasic(basic -> basic.disable())
+            )
+            .exceptionHandling(ex -> ex
+
+                .authenticationEntryPoint(authenticationEntryPoint)
+                .accessDeniedHandler(accessDeniedHandler)
+            )
+            .httpBasic(Customizer.withDefaults())
             .formLogin(form -> form.disable())
             .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS)) // sets the api to NEVER use HTTP sessions EVER
-            .exceptionHandling(ex -> ex
-                .accessDeniedHandler((request, response, accessDeniedException) ->
-                    response.sendError(HttpServletResponse.SC_FORBIDDEN, "Forbidden"))
-                .authenticationEntryPoint((request, response, authException) ->
-                    response.sendError(HttpServletResponse.SC_UNAUTHORIZED, "Unauthorized"))
-            )
             .addFilterBefore(jwtFilter, UsernamePasswordAuthenticationFilter.class);
 
         /*
