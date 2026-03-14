@@ -112,6 +112,9 @@ public class JwtFilter extends OncePerRequestFilter {
                 SecurityContext context = SecurityContextHolder.createEmptyContext();
                 context.setAuthentication(authToken);
                 SecurityContextHolder.setContext(context);
+            } else {
+                response.sendError(HttpServletResponse.SC_UNAUTHORIZED, "Token validation failed");
+                return;
             }
         }
 

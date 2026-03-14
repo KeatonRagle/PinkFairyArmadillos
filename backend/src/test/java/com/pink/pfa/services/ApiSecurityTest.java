@@ -44,12 +44,12 @@ class ApiSecurityTest extends PfaBase {
      * Unauthorized Admin Access
      */
     @Test
-    void unauthorizedAdminAccess_WithUserToken_ShouldReturn401() {
+    void unauthorizedAdminAccess_WithUserToken_ShouldReturn403() {
         String token = loginAndGetToken("dylan@pfa.com", "foobar12");
         webTestClient.get().uri("/api/admin/getAll")
                 .header("Authorization", "Bearer " + token)
                 .exchange()
-                .expectStatus().isUnauthorized();
+                .expectStatus().isForbidden();
     }
 
     // -------------------------------------------------------------------------
@@ -76,13 +76,13 @@ class ApiSecurityTest extends PfaBase {
      * Mass Data Access Attempt
      */
     @Test
-    void massUserDataAccess_AsRegularUser_ShouldReturn401() {
+    void massUserDataAccess_AsRegularUser_ShouldReturn403() {
         String token = loginAndGetToken("dylan@pfa.com", "foobar12");
 
         webTestClient.get().uri("/api/admin/getAll")
                 .header("Authorization", "Bearer " + token)
                 .exchange()
-                .expectStatus().isUnauthorized();
+                .expectStatus().isForbidden();
     }
 
     /**
@@ -114,17 +114,10 @@ class ApiSecurityTest extends PfaBase {
      */
     @Test
     void validAdminToken_ShouldReturn200OnAdminEndpoint() {
-        webTestClient.post().uri("/api/users/register")
-                .contentType(MediaType.APPLICATION_JSON)
-                .bodyValue("""
-                    {"name":"AdminTest","email":"admintest@pfa.com","password":"adminpass1"}
-                """)
-                .exchange();
-
-        String token = loginAndGetToken("admintest@pfa.com", "adminpass1");
+        String token = loginAndGetToken("keaton@pfa.com", "foobar13");
         webTestClient.get().uri("/api/admin/getAll")
                 .header("Authorization", "Bearer " + token)
                 .exchange()
-                .expectStatus().isUnauthorized(); // still a regular user until promoted
+                .expectStatus().isOk(); // still a regular user until promoted
     }
 }
