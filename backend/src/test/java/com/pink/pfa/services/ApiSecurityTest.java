@@ -9,6 +9,7 @@ import org.springframework.http.MediaType;
 import org.springframework.test.web.reactive.server.WebTestClient;
 
 import com.pink.pfa.context.PfaBase;
+import com.pink.pfa.models.User;
 
 class ApiSecurityTest extends PfaBase {
 
@@ -114,6 +115,11 @@ class ApiSecurityTest extends PfaBase {
      */
     @Test
     void validAdminToken_ShouldReturn200OnAdminEndpoint() {
+        // promote just in case
+        User keaton = userRepository.findByEmail("keaton@pfa.com").orElseThrow();
+        userService.promoteToAdmin(keaton.getUser_id());
+
+        // test
         String token = loginAndGetToken("keaton@pfa.com", "foobar13");
         webTestClient.get().uri("/api/admin/getAll")
                 .header("Authorization", "Bearer " + token)
