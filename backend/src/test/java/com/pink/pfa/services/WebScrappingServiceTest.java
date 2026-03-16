@@ -101,7 +101,7 @@ class WebScraperServiceTest {
         WebScraperService.PetDisplayMethod method =
                 webScraperService.FindPetDisplayMethod("https://example.com");
 
-        assertEquals(WebScraperService.PetDisplayMethod.BASIC, method);
+        assertEquals(WebScraperService.PetDisplayMethod.UNSUPPORTED, method);
     }
 
     @Test
@@ -110,7 +110,7 @@ class WebScraperServiceTest {
         WebScraperService.PetDisplayMethod method =
                 webScraperService.FindPetDisplayMethod("invalid-url");
 
-        assertEquals(WebScraperService.PetDisplayMethod.BASIC, method);
+        assertEquals(WebScraperService.PetDisplayMethod.UNSUPPORTED, method);
     }
 
     @Test

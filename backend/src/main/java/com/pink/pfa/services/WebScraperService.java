@@ -20,21 +20,22 @@ import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
 import org.openqa.selenium.By;
+import org.openqa.selenium.JavascriptExecutor;
 import org.openqa.selenium.TimeoutException;
 import org.openqa.selenium.WebDriver;
+import org.openqa.selenium.WebElement;
 import org.openqa.selenium.chrome.ChromeOptions;
 import org.openqa.selenium.remote.RemoteWebDriver;
 import org.openqa.selenium.support.ui.ExpectedConditions;
 import org.openqa.selenium.support.ui.WebDriverWait;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 
 import com.pink.pfa.models.Pet;
 import com.pink.pfa.models.datatransfer.ScrapedPetDTO;
 
 import jakarta.persistence.NoResultException;
-
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 /**
  * Service responsible for scraping pet adoption websites.
@@ -61,7 +62,8 @@ public class WebScraperService {
      */
     enum PetDisplayMethod {
         SHELTER_LUV,    /** ShelterLuv embedded pet listing system */
-        BASIC           /** Basic or unsupported listing structure */
+        PETFINDER,      /** PetFinder embedded pet listing system */
+        UNSUPPORTED     /** Unsupported listing structure */
     };
 
     /**
@@ -101,12 +103,48 @@ public class WebScraperService {
             dynamicUrls.add(anchor.attr("href"));
         }
 
-        Elements iframes = doc.select("iframe").stream()
-            .filter(iframe -> iframe.attr("class").contains(iframeClass))
-            .collect(Collectors.toCollection(Elements::new));
-            
-        for (Element iframe : iframes) {
-            dynamicUrls.add(iframe.attr("src"));
+        List<WebElement> iframes = driver.findElements(By.tagName("iframe")).stream()
+            .filter(iframe -> iframe.getAttribute("class").contains(iframeClass))
+            .collect(Collectors.toCollection(ArrayList::new));
+        
+        for (WebElement iframe : iframes) {
+            if (iframe.getAttribute("srcdoc") != null) {
+                // If the iframe uses srcdoc then the iframe needs to be rendered and urls need to be pulled from the fully rendered iframe
+                try {
+                    // Tries to see if this iframe is a pet-finder embedded scroller
+                    WebElement nextButton = null;
+                    do {
+                        if (nextButton != null) 
+                            nextButton.click();
+
+                        WebElement petScroller = wait.until(ExpectedConditions.presenceOfElementLocated(By.tagName("pet-scroller")));
+                        JavascriptExecutor js = (JavascriptExecutor) driver;
+                        WebElement shadowRoot = (WebElement) js.executeScript(
+                            "return arguments[0].shadowRoot", petScroller
+                        );
+
+                        String html = shadowRoot.getAttribute("innerHTML");
+                        Document petFinderDoc = Jsoup.parse(html);
+                        Elements petAnchors = petFinderDoc.select("a.petCard");
+
+                        for (Element petAnchor : petAnchors) {
+                            dynamicUrls.add(petAnchor.attr("href"));
+                        }
+
+                        nextButton = wait.until(
+                            ExpectedConditions.elementToBeClickable(
+                                By.xpath("//button[.//span[normalize-space()='Next']]")
+                            )
+                        );
+                    } while (nextButton != null);
+                    
+                    
+                } catch (TimeoutException e) {
+                    System.out.println("No Petfinder scrollers could be found");
+                }
+            } else {
+                dynamicUrls.add(iframe.getAttribute("src"));
+            }
         }
 
         return dynamicUrls;
@@ -120,10 +158,12 @@ public class WebScraperService {
      */
     PetDisplayMethod FindPetDisplayMethod(String url) {
         try {
+            // If the url contains the shelterluv hostname then it is a shelterluv site
             if (url.contains("shelterluv.com")) {
                 return PetDisplayMethod.SHELTER_LUV;
             }
 
+            // If the doc contains any shelterluv scripts then it is a shelterluv site
             Document doc = Jsoup.connect(url).get();
             Elements shelterLuvScripts = doc.select("script").stream()
                 .filter(element -> element.attr("src").contains("new.shelterluv.com"))
@@ -132,11 +172,16 @@ public class WebScraperService {
             if (shelterLuvScripts.size() > 0) {
                 return PetDisplayMethod.SHELTER_LUV;
             }
+
+            // If the url contains petfinders.com then it is a petfinders site
+            if (url.contains("petfinder.com")) {
+                return PetDisplayMethod.PETFINDER;
+            }
         } catch (Exception e) {
             System.out.println("Failed to find document when determining display method");
         }
 
-        return PetDisplayMethod.BASIC;
+        return PetDisplayMethod.UNSUPPORTED;
     }
 
     /**
@@ -233,11 +278,13 @@ public class WebScraperService {
 
             Document doc = Jsoup.parse(driver.getPageSource());
 
+            // Attempts to find the pet image associated with the current pet
             petImage = doc.select("img").stream()
                 .filter(element -> element.attr("src").contains("shelterluv.com") && element.attr("src").contains("profile-pictures"))
                 .collect(Collectors.toCollection(Elements::new))
                 .first();
 
+            // Attempts to find the div that contains most of the information about the pet
             mainInfoDiv = doc.select("div").stream()
                 .filter(element -> element.attr("data-cy").equals("name"))
                 .collect(Collectors.toCollection(Elements::new))
@@ -360,6 +407,165 @@ public class WebScraperService {
         }
     }
 
+    class PetFinderBuilder extends PetInfoBuilder {
+        Element petImage = null;    /** Pet profile image element */
+        Element mainInfoDiv = null; /** Main information container element */
+        WebDriver driver = null;     /** Selenium WebDriver instance */
+
+        /**
+         * Creates a ShelterLuv builder and loads the pet page.
+         *
+         * @param origSiteUrl Original parent URL.
+         * @param currUrl Specific ShelterLuv pet URL.
+         * @param webDriver Active Selenium WebDriver.
+         * @throws IOException If page content cannot be loaded.
+         */
+        public PetFinderBuilder(String origSiteUrl, String currUrl, WebDriver webDriver) throws IOException {
+            super(origSiteUrl);
+            this.driver = webDriver;
+
+            WebDriverWait wait = new WebDriverWait(driver, Duration.ofMillis(100));
+
+            driver.get(currUrl);
+
+            try {
+                wait.until(ExpectedConditions.presenceOfElementLocated(By.tagName("img")));
+            } catch (TimeoutException e) {
+                System.out.println("No images could be found");
+            }
+
+            Document doc = Jsoup.parse(driver.getPageSource());
+
+            petImage = doc.select("section").stream()
+                .filter(element -> element.attr("id").equals("pet-details-photos-section"))
+                .collect(Collectors.toCollection(Elements::new))
+                .first()
+                    .select("div").stream()
+                    .filter(element -> element.attr("style").contains("background-image:url"))
+                    .collect(Collectors.toCollection(Elements::new))
+                    .first();
+
+            mainInfoDiv = doc.select("section").stream()
+                .filter(element -> element.attr("id").equals("pet-details-about-section"))
+                .collect(Collectors.toCollection(Elements::new))
+                .first();
+
+            if (petImage == null) {
+                System.out.println("PET IMAGE NULL");
+            }
+
+            if (mainInfoDiv == null) {
+                System.out.println("MAIN INFO NULL");
+            }
+        }
+
+        /** {@inheritDoc} */
+        @Override
+        public PetInfoBuilder AddName() {
+            if (mainInfoDiv != null) {
+                Element name = mainInfoDiv.select("h2").stream()
+                    .filter(element -> element.attr("id").equals("Detail_Main"))
+                    .collect(Collectors.toCollection(Elements::new))
+                    .first();
+
+                if (name != null) {
+                    petInfo.put("Name", name.text().replace("About ", ""));
+                }
+            }
+            
+            return this;
+        }
+
+        /** {@inheritDoc} */
+        @Override
+        public PetInfoBuilder AddType() {
+            if (mainUrl.contains("petfinder.com/dog")) {
+                petInfo.put("Type", "Dog");
+            } else if (mainUrl.contains("petfinder.com/cat")) {
+                petInfo.put("Type", "Cat");
+            } else {
+                petInfo.put("Type", "Other");
+            }
+
+            return this;
+        }
+
+        /** {@inheritDoc} */
+        @Override
+        public PetInfoBuilder AddBreed() {
+            if (mainInfoDiv != null) {
+                Element breed = mainInfoDiv.select("h3").stream()
+                    .filter(element -> element.text().equals("Breed"))
+                    .collect(Collectors.toCollection(Elements::new))
+                    .first().parent().siblingElements()
+                    .first().select("span").first().child(0);
+
+                if (breed != null) {
+                    petInfo.put("Breed", breed.text());
+                }
+            }
+
+            return this;
+        }
+
+        /** {@inheritDoc} */
+        @Override
+        public PetInfoBuilder AddGender() {
+            if (mainInfoDiv != null) {
+                Element genderElement = mainInfoDiv.select("h3").stream()
+                    .filter(element -> element.text().equals("Physical Traits"))
+                    .collect(Collectors.toCollection(Elements::new))
+                    .first().siblingElements().first().child(0);
+
+                String gender = genderElement.child(1).text() + genderElement.child(2).text();
+
+                if (gender != null) {
+                    petInfo.put("Gender", gender);
+                }
+            }
+
+            return this;
+        }
+
+        /** {@inheritDoc} */
+        @Override
+        public PetInfoBuilder AddAge() {
+            if (mainInfoDiv != null) {
+                Element ageElement = mainInfoDiv.select("h3").stream()
+                    .filter(element -> element.text().equals("Physical Traits"))
+                    .collect(Collectors.toCollection(Elements::new))
+                    .first().siblingElements().first().child(1);
+
+                String age = ageElement.child(1).text();
+
+                if (age != null) {
+                    petInfo.put("Age", age);
+                }
+            }
+
+            return this;
+        }
+
+        /** {@inheritDoc} */
+        @Override
+        public PetInfoBuilder AddPrice() {
+            return this;
+        }
+
+        /** {@inheritDoc} */
+        @Override
+        public PetInfoBuilder AddImage() {
+            if (petImage != null) {
+                petInfo.put("Image", petImage.attr("style")
+                                            .replace("background-image:url(", "")
+                                            .replace(")", "")
+                );
+            }
+
+            return this;
+        }
+    }
+
     /**
      * Attempts to scrape pet data from a given embed URL.
      *
@@ -376,6 +582,7 @@ public class WebScraperService {
 
             switch (FindPetDisplayMethod(url)) {
                 case SHELTER_LUV: petInfoBuilder = new ShelterLuvBuilder(mainUrl, url, driver); break;
+                case PETFINDER: petInfoBuilder = new PetFinderBuilder(mainUrl, url, driver); break;
                 default: {
                     data.put("empty", "No valid data found");
                     return data;
@@ -425,7 +632,7 @@ public class WebScraperService {
     public List<Pet> ScrapeSite(String url) {
         List<Pet> scrappedData = new ArrayList<>();
 
-        // 2. Connect to the Docker container
+        // Connect to the Docker container
         // Use "http://localhost:4444/wd/hub" if running script on host
         // Use "http://chrome:4444/wd/hub" if script is also in a Docker container
         try {
@@ -457,6 +664,10 @@ public class WebScraperService {
                             hostname = "new.shelterluv.com";
                             
                             break;
+                        }
+                        case PetDisplayMethod.PETFINDER: {
+                            embedUrl = "petfinder.com";
+                            hostname = "www.petfinder.com";
                         }
                         default: break;
                     }
