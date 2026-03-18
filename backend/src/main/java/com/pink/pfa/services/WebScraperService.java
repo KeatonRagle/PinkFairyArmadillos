@@ -7,6 +7,7 @@ import java.net.URISyntaxException;
 import java.time.Duration;
 import java.util.ArrayDeque;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -40,19 +41,18 @@ import jakarta.persistence.NoResultException;
 /**
  * Service responsible for scraping pet adoption websites.
  * <p>
- * This class uses:
+ * This class leverages:
  * <ul>
- *     <li>Selenium WebDriver for dynamic content loading</li>
- *     <li>Jsoup for HTML parsing and element extraction</li>
- *     <li>A BFS-style traversal for discovering embedded pet listing pages</li>
+ * <li>Selenium RemoteWebDriver for rendering JavaScript-heavy frameworks (React/Next.js)</li>
+ * <li>Jsoup for parsing static and hydrated HTML source</li>
+ * <li>Custom JavaScript execution for Shadow DOM and pet-scroller widget interaction</li>
+ * <li>BFS-style traversal for site-wide link discovery</li>
  * </ul>
  *
- * It currently supports multiple pet display providers, such as ShelterLuv.
+ * Support includes providers like ShelterLuv and Petfinder widgets.
  */
 @Service
 public class WebScraperService {
-
-
     private static final Logger log = LoggerFactory.getLogger(WebScraperService.class);
 
     public WebScraperService() {}
@@ -68,12 +68,15 @@ public class WebScraperService {
 
     /**
      * Extracts dynamic URLs from a given page using Selenium and Jsoup.
+     * <p>
+     * For Petfinder widgets, this method performs specialized Shadow DOM traversal
+     * and handles internal pagination within the pet-scroller component.
      *
      * @param url The URL to inspect.
-     * @param iframeClass The class name to filter iframe elements.
-     * @param anchorClass The class name to filter anchor elements.
+     * @param iframeClass Filter for identifying specific provider iframes.
+     * @param anchorClass Filter for identifying specific pet profile links.
      * @param driver Active Selenium WebDriver instance.
-     * @return A list of discovered URLs matching the provided filters.
+     * @return A list of discovered URLs (e.g., direct animal profile links).
      */
     List<String> FindURLS(String url, String iframeClass, String anchorClass, WebDriver driver) {
         List<String> dynamicUrls = new ArrayList<>();
@@ -81,69 +84,109 @@ public class WebScraperService {
 
         driver.get(url);
 
+        // Waits until any dynamically loaded anchor tags are found or until 100 milliseconds has past
         try {
             wait.until(ExpectedConditions.presenceOfElementLocated(By.tagName("a")));
         } catch (TimeoutException e) {
             System.out.println("No anchors could be found");
         }
 
+        // Waits until any dynamically loaded iframe tags are found or until 100 milliseconds has past
         try {
             wait.until(ExpectedConditions.presenceOfElementLocated(By.tagName("iframe")));
         } catch (TimeoutException e) {
             System.out.println("No iframes could be found");
         }
 
+        // Finds any anchor tags and adds their href links to the list of urls
         Document doc = Jsoup.parse(driver.getPageSource());
-
         Elements anchors = doc.select("a").stream()
             .filter(anchor -> anchor.attr("class").contains(anchorClass))
             .collect(Collectors.toCollection(Elements::new));
-            
         for (Element anchor : anchors) {
             dynamicUrls.add(anchor.attr("href"));
         }
 
+        // Finds any iframe tags and adds their associated links to the list of urls
         List<WebElement> iframes = driver.findElements(By.tagName("iframe")).stream()
             .filter(iframe -> iframe.getAttribute("class").contains(iframeClass))
             .collect(Collectors.toCollection(ArrayList::new));
-        
+
+        PetDisplayMethod displayType = FindPetDisplayMethod(url);
         for (WebElement iframe : iframes) {
-            if (iframe.getAttribute("srcdoc") != null) {
-                // If the iframe uses srcdoc then the iframe needs to be rendered and urls need to be pulled from the fully rendered iframe
-                try {
-                    // Tries to see if this iframe is a pet-finder embedded scroller
-                    WebElement nextButton = null;
-                    do {
-                        if (nextButton != null) 
-                            nextButton.click();
-
-                        WebElement petScroller = wait.until(ExpectedConditions.presenceOfElementLocated(By.tagName("pet-scroller")));
-                        JavascriptExecutor js = (JavascriptExecutor) driver;
-                        WebElement shadowRoot = (WebElement) js.executeScript(
-                            "return arguments[0].shadowRoot", petScroller
-                        );
-
-                        String html = shadowRoot.getAttribute("innerHTML");
-                        Document petFinderDoc = Jsoup.parse(html);
-                        Elements petAnchors = petFinderDoc.select("a.petCard");
-
-                        for (Element petAnchor : petAnchors) {
-                            dynamicUrls.add(petAnchor.attr("href"));
-                        }
-
-                        nextButton = wait.until(
-                            ExpectedConditions.elementToBeClickable(
-                                By.xpath("//button[.//span[normalize-space()='Next']]")
-                            )
-                        );
-                    } while (nextButton != null);
-                    
-                    
-                } catch (TimeoutException e) {
-                    System.out.println("No Petfinder scrollers could be found");
+            switch (displayType) {
+                case PetDisplayMethod.SHELTER_LUV: {
+                    dynamicUrls.add(iframe.getAttribute("src"));
+                    break;
                 }
-            } else {
-                dynamicUrls.add(iframe.getAttribute("src"));
+                case PetDisplayMethod.PETFINDER: {
+                    // If the iframe contains a srcdoc it needs to be fully rendered in order to get its content
+                    // Currently this only happens on sites that use petfinder widgets so we wait until said widget has loaded and then switch to it
+                    WebElement petIframe = wait.until(ExpectedConditions.presenceOfElementLocated(
+                        By.cssSelector("iframe[srcdoc*='pet-scroller']")));
+                    driver.switchTo().frame(petIframe);
+
+                    try {
+                        // After switching we wait until the custom pet-scroller tag that contains all of the pet cards has loaded
+                        wait.until(ExpectedConditions.presenceOfElementLocated(By.tagName("pet-scroller")));
+
+                        boolean hasNextPage = true;
+                        while (hasNextPage) {
+                            // Runs a JavaScript snippet that attempts to find at least one of the pet cards
+                            // If the pet scroller cannot be found or if its shadow DOM has not loaded then we assume that the cards have also not loaded
+                            boolean cardsLoaded = (Boolean) ((JavascriptExecutor) driver).executeScript(
+                                "const host = document.querySelector('pet-scroller');" +
+                                "if (!host || !host.shadowRoot) return false;" +
+                                "return host.shadowRoot.querySelectorAll('a.petCard').length > 0;"
+                            );
+
+                            // In the event that the cards had not loaded yet, we retry a few times before giving up
+                            int retries = 0;
+                            while (!cardsLoaded && retries < 10) {
+                                wait.until(ExpectedConditions.presenceOfElementLocated(By.cssSelector("a.petCard")));
+                                cardsLoaded = (Boolean) ((JavascriptExecutor) driver).executeScript(
+                                    "return document.querySelector('pet-scroller').shadowRoot.querySelectorAll('a.petCard').length > 0;"
+                                );
+                                retries++;
+                            }
+
+                            // This JavaScript snippet will find all of the pet cards and pull out their href links
+                            String getUrlsScript = 
+                                "return Array.from(document.querySelector('pet-scroller').shadowRoot" +
+                                ".querySelectorAll('a.petCard'))" +
+                                ".map(a => a.href);";
+                            
+                            @SuppressWarnings("unchecked")
+                            List<String> petAnchors = (List<String>) ((JavascriptExecutor) driver).executeScript(getUrlsScript);
+                            
+                            // Adds the new links to the list
+                            for (String petAnchor : petAnchors) {
+                                if (!dynamicUrls.contains(petAnchor)) {
+                                    dynamicUrls.add(petAnchor);
+                                }
+                            }
+
+                            // Clicks the Next button on the page to load more pets from the widget
+                            // If there is not pet button to click then we can assume that their are no more pets to find and the loop terminates
+                            String clickNextScript = 
+                                "const host = document.querySelector('pet-scroller');" +
+                                "const buttons = Array.from(host.shadowRoot.querySelectorAll('button'));" +
+                                "const nextBtn = buttons.find(b => b.textContent.trim().includes('Next'));" +
+                                "if (nextBtn && !nextBtn.disabled) {" +
+                                "  nextBtn.click();" +
+                                "  return true;" +
+                                "}" +
+                                "return false;";
+
+                            hasNextPage = (Boolean) ((JavascriptExecutor) driver).executeScript(clickNextScript);
+                        }
+                    } catch (TimeoutException e) {
+                        System.out.println("Cannot find any more urls");
+                    } finally {
+                        driver.switchTo().defaultContent();
+                    }
+                    break;
+                }
             }
         }
 
@@ -151,18 +194,24 @@ public class WebScraperService {
     }
 
     /**
-     * Determines which pet display method is used on the provided URL.
+     * Determines the pet display provider by inspecting URL patterns 
+     * and searching for specific provider script/iframe fingerprints in the DOM.
      *
      * @param url The URL to inspect.
-     * @return The detected {@link PetDisplayMethod}.
+     * @return The detected {@link PetDisplayMethod}, or UNSUPPORTED if no match is found.
      */
     PetDisplayMethod FindPetDisplayMethod(String url) {
-        try {
-            // If the url contains the shelterluv hostname then it is a shelterluv site
-            if (url.contains("shelterluv.com")) {
-                return PetDisplayMethod.SHELTER_LUV;
-            }
+        // If the url contains the shelterluv hostname then it is a shelterluv site
+        if (url.contains("shelterluv.com")) {
+            return PetDisplayMethod.SHELTER_LUV;
+        }
 
+        // If the url contains petfinders.com then it is a petfinders site
+        if (url.contains("petfinder.com")) {
+            return PetDisplayMethod.PETFINDER;
+        }
+
+        try {
             // If the doc contains any shelterluv scripts then it is a shelterluv site
             Document doc = Jsoup.connect(url).get();
             Elements shelterLuvScripts = doc.select("script").stream()
@@ -172,13 +221,23 @@ public class WebScraperService {
             if (shelterLuvScripts.size() > 0) {
                 return PetDisplayMethod.SHELTER_LUV;
             }
+        } catch (Exception e) {
+            System.out.println("Failed to find document when determining if this was a shelterluv site");
+        }
+  
+        try {
+            // If the doc contains any iframes using the pet-scroller widget then it is a petfinder site
+            Document doc = Jsoup.connect(url).get();
+            Elements petfinderScripts = doc.select("iframe").stream()
+                .filter(element -> element.attr("srcdoc").contains("</pet-scroller>"))
+                .collect(Collectors.toCollection(Elements::new));
 
-            // If the url contains petfinders.com then it is a petfinders site
-            if (url.contains("petfinder.com")) {
+            if (petfinderScripts.size() > 0) {
+                System.out.println("Petfinder Site");
                 return PetDisplayMethod.PETFINDER;
             }
         } catch (Exception e) {
-            System.out.println("Failed to find document when determining display method");
+            System.out.println("Failed to find document when determining if this was a petfinder site");
         }
 
         return PetDisplayMethod.UNSUPPORTED;
@@ -210,15 +269,18 @@ public class WebScraperService {
      */
     abstract class PetInfoBuilder implements IPetInfoBuilder {
         protected String mainUrl;               /** Original url that was passed into the current scraping session */
+        protected String currUrl;               /** Current url that is being scrapped */
         protected Map<String, Object> petInfo;  /** Internal storage for scraped pet data */
 
         /**
          * Constructs a new builder instance.
          *
          * @param mainUrl The parent listing URL.
+         * @param currUrl The active scrapping URL.
          */
-        public PetInfoBuilder(String mainUrl) {
+        public PetInfoBuilder(String mainUrl, String currUrl) {
             this.mainUrl = mainUrl;
+            this.currUrl = currUrl;
             this.petInfo = new HashMap<>();
         }
 
@@ -263,7 +325,7 @@ public class WebScraperService {
          * @throws IOException If page content cannot be loaded.
          */
         public ShelterLuvBuilder(String origSiteUrl, String currUrl, WebDriver webDriver) throws IOException {
-            super(origSiteUrl);
+            super(origSiteUrl, currUrl);
             this.driver = webDriver;
 
             WebDriverWait wait = new WebDriverWait(driver, Duration.ofMillis(100));
@@ -363,7 +425,7 @@ public class WebScraperService {
                         .first().siblingElements().first();
 
                 if (gender != null) {
-                    petInfo.put("Gender", gender.text());
+                    petInfo.put("Gender", gender.text().substring(0, 1));
                 }
             }
 
@@ -383,7 +445,12 @@ public class WebScraperService {
                         .first().siblingElements().first();
 
                 if (age != null) {
-                    petInfo.put("Age", age.text());
+                    String formattedAge = age.text().replace("Y/", ".").replace("M/", ".").replace("W", "");
+                    String[] ageComponents = formattedAge.split("\\.");
+                    int ageValue = Integer.parseInt(ageComponents[0]) * 52 +
+                            Integer.parseInt(ageComponents[1]) * 52 / 12 +
+                            Integer.parseInt(ageComponents[2]);
+                    petInfo.put("Age", ageValue);
                 }
             }
 
@@ -407,21 +474,31 @@ public class WebScraperService {
         }
     }
 
+    /**
+     * Concrete builder implementation for PetFinder profile pages.
+     * <p>
+     * Specifically handles:
+     * <ul>
+     * <li>Waiting for Swiper.js/carousel elements to hydrate</li>
+     * <li>Parsing specific Petfinder section IDs (e.g., #pet-details-about-section)</li>
+     * <li>Extracting breed, age, and gender from localized trait containers</li>
+     * </ul>
+     */
     class PetFinderBuilder extends PetInfoBuilder {
         Element petImage = null;    /** Pet profile image element */
         Element mainInfoDiv = null; /** Main information container element */
         WebDriver driver = null;     /** Selenium WebDriver instance */
 
         /**
-         * Creates a ShelterLuv builder and loads the pet page.
+         * Constructs a PetFinder builder and triggers the initial page load.
          *
-         * @param origSiteUrl Original parent URL.
-         * @param currUrl Specific ShelterLuv pet URL.
-         * @param webDriver Active Selenium WebDriver.
-         * @throws IOException If page content cannot be loaded.
+         * @param origSiteUrl The parent site URL for context.
+         * @param currUrl The direct Petfinder animal profile URL.
+         * @param webDriver Active Selenium WebDriver for dynamic rendering.
+         * @throws IOException If the connection fails or the rendered source is inaccessible.
          */
         public PetFinderBuilder(String origSiteUrl, String currUrl, WebDriver webDriver) throws IOException {
-            super(origSiteUrl);
+            super(origSiteUrl, currUrl);
             this.driver = webDriver;
 
             WebDriverWait wait = new WebDriverWait(driver, Duration.ofMillis(100));
@@ -429,22 +506,31 @@ public class WebScraperService {
             driver.get(currUrl);
 
             try {
-                wait.until(ExpectedConditions.presenceOfElementLocated(By.tagName("img")));
+                wait.until(ExpectedConditions.presenceOfElementLocated(By.cssSelector("div.swiper-slide-active")));
             } catch (TimeoutException e) {
-                System.out.println("No images could be found");
+                System.out.println("Cannot find pet photos");
+            }
+
+            try {
+                wait.until(ExpectedConditions.presenceOfElementLocated(By.cssSelector("#pet-details-about-section")));
+            } catch (TimeoutException e) {
+                System.out.println("Cannot find main info div");
             }
 
             Document doc = Jsoup.parse(driver.getPageSource());
 
-            petImage = doc.select("section").stream()
-                .filter(element -> element.attr("id").equals("pet-details-photos-section"))
-                .collect(Collectors.toCollection(Elements::new))
-                .first()
-                    .select("div").stream()
-                    .filter(element -> element.attr("style").contains("background-image:url"))
-                    .collect(Collectors.toCollection(Elements::new))
-                    .first();
+            // Attempts to find the pet image associated with the current pet
+            try {
+                petImage = doc.selectFirst("div.swiper-slide-active")
+                    .select("img").stream()
+                        .filter(element -> element.attr("src").contains("cloudfront.net/animal"))
+                        .collect(Collectors.toCollection(Elements::new))
+                        .first();
+            } catch (Exception e) {
+                System.out.println("Failed to get pet image");
+            }
 
+            // Attempts to find the section that contains most of the information about the pet
             mainInfoDiv = doc.select("section").stream()
                 .filter(element -> element.attr("id").equals("pet-details-about-section"))
                 .collect(Collectors.toCollection(Elements::new))
@@ -479,9 +565,9 @@ public class WebScraperService {
         /** {@inheritDoc} */
         @Override
         public PetInfoBuilder AddType() {
-            if (mainUrl.contains("petfinder.com/dog")) {
+            if (currUrl.contains("petfinder.com/dog")) {
                 petInfo.put("Type", "Dog");
-            } else if (mainUrl.contains("petfinder.com/cat")) {
+            } else if (currUrl.contains("petfinder.com/cat")) {
                 petInfo.put("Type", "Cat");
             } else {
                 petInfo.put("Type", "Other");
@@ -515,12 +601,12 @@ public class WebScraperService {
                 Element genderElement = mainInfoDiv.select("h3").stream()
                     .filter(element -> element.text().equals("Physical Traits"))
                     .collect(Collectors.toCollection(Elements::new))
-                    .first().siblingElements().first().child(0);
+                    .first().siblingElements().first().child(0).child(1);
 
-                String gender = genderElement.child(1).text() + genderElement.child(2).text();
+                String gender = genderElement.child(1).text();
 
                 if (gender != null) {
-                    petInfo.put("Gender", gender);
+                    petInfo.put("Gender", gender.substring(0, 1));
                 }
             }
 
@@ -534,12 +620,15 @@ public class WebScraperService {
                 Element ageElement = mainInfoDiv.select("h3").stream()
                     .filter(element -> element.text().equals("Physical Traits"))
                     .collect(Collectors.toCollection(Elements::new))
-                    .first().siblingElements().first().child(1);
+                    .first().siblingElements().first().child(0).child(0);
 
-                String age = ageElement.child(1).text();
+                String age = ageElement.child(2).text();
 
                 if (age != null) {
-                    petInfo.put("Age", age);
+                    String formattedAge = age.replace("(", "").replace(" years)", "");
+                    String[] ageComponents = formattedAge.split("-");
+                    int ageVal = (Integer.parseInt(ageComponents[1]) - Integer.parseInt(ageComponents[0])) / 2 * 52;
+                    petInfo.put("Age", ageVal);
                 }
             }
 
@@ -556,10 +645,7 @@ public class WebScraperService {
         @Override
         public PetInfoBuilder AddImage() {
             if (petImage != null) {
-                petInfo.put("Image", petImage.attr("style")
-                                            .replace("background-image:url(", "")
-                                            .replace(")", "")
-                );
+                petInfo.put("Image", petImage.attr("src"));
             }
 
             return this;
@@ -567,19 +653,19 @@ public class WebScraperService {
     }
 
     /**
-     * Attempts to scrape pet data from a given embed URL.
+     * Attempts to scrape raw pet data from a specific profile URL based on detected provider.
      *
-     * @param mainUrl Parent site URL.
-     * @param url Specific embed URL.
+     * @param mainUrl The root or listing URL (used for animal type context).
+     * @param url The specific direct pet profile URL to scrape.
      * @param driver Active Selenium WebDriver.
-     * @return Map containing pet data, or error/empty markers.
+     * @return Map containing scraped pet fields, or keys "error"/"empty" on failure.
      */
     Map<String, Object> AttemptScrape(String mainUrl, String url, WebDriver driver) {
         Map<String, Object> data = new HashMap<>();
 
         try {
+            // Determines the method for scrapping the current site
             IPetInfoBuilder petInfoBuilder;
-
             switch (FindPetDisplayMethod(url)) {
                 case SHELTER_LUV: petInfoBuilder = new ShelterLuvBuilder(mainUrl, url, driver); break;
                 case PETFINDER: petInfoBuilder = new PetFinderBuilder(mainUrl, url, driver); break;
@@ -589,7 +675,9 @@ public class WebScraperService {
                 }
             }
             
+            // Attempts to scrape pet data from the site 
             data = petInfoBuilder.AddName()
+                .AddAge()
                 .AddType()
                 .AddBreed()
                 .AddGender()
@@ -597,15 +685,14 @@ public class WebScraperService {
                 .AddPrice()
                 .Build();
 
+            // Ensures that at least some distinguishable data is present before returning it
             if (
                 data.keySet().contains("Name") && 
                 data.keySet().contains("Type") && 
                 data.keySet().contains("Gender")
             ) {
                 return data;
-            }
-            
-            
+            }            
         } catch (IOException e) {
             System.out.println("IOException thrown for the following reason - " + e.getMessage());
             data.clear();
@@ -617,17 +704,14 @@ public class WebScraperService {
     }
 
     /**
-     * Scrapes A site for all pet data.
+     * Orchestrates a site-wide crawl starting from the root URL.
      * <p>
-     * Performs:
-     * <ul>
-     *     <li>Breadth-first traversal of internal links</li>
-     *     <li>Detection of embedded pet provider systems</li>
-     *     <li>Batch scraping of discovered pet profile pages</li>
-     * </ul>
+     * Performs a breadth-first search to discover listing pages, detects provider 
+     * specific iframes/widgets, and uses a headless Chrome instance with 
+     * stealth configurations to minimize detection by Web Application Firewalls.
      *
-     * @param url Root URL of the adoption website.
-     * @return Map containing a list of successfully scraped pet data under key {@code "data"}.
+     * @param url Root URL of the adoption website to crawl.
+     * @return A list of successfully scraped and converted {@link Pet} entities.
      */
     public List<Pet> ScrapeSite(String url) {
         List<Pet> scrappedData = new ArrayList<>();
@@ -636,51 +720,60 @@ public class WebScraperService {
         // Use "http://localhost:4444/wd/hub" if running script on host
         // Use "http://chrome:4444/wd/hub" if script is also in a Docker container
         try {
+            // Set up headless browser so it can best replicate the conditions of an actual browser
             ChromeOptions options = new ChromeOptions();
             options.addArguments("--no-sandbox");
             options.addArguments("--disable-dev-shm-usage");
-
+            options.addArguments("--disable-blink-features=AutomationControlled");
+            options.setExperimentalOption("excludeSwitches", Collections.singletonList("enable-automation"));
+            options.setExperimentalOption("useAutomationExtension", false);
             RemoteWebDriver driver = new RemoteWebDriver(URI.create("http://chrome:4444/wd/hub").toURL(), options);
 
+            // Set up queues and set for urls that have been seen and that need to be looked at
             Queue<String> urlBFSQueue = new ArrayDeque<>();
+            Queue<List<String>> terminatingUrlQueue = new ArrayDeque<>();
             Set<String> seenUrls = new HashSet<>();
             urlBFSQueue.add(url);
             seenUrls.add(url);
 
-            Queue<List<String>> embedBatchQueue = new ArrayDeque<>();
+            // Run a breadth firth search on the site by searching through links that are found in the current page
             while (!urlBFSQueue.isEmpty()) {
                 try {
+                    // Set up the information needed to find urls on the current site
                     String currUrl = urlBFSQueue.remove();
-
                     String iframeClass = "";
                     String anchorClass = "";
                     String hostname = "";
-                    String embedUrl = "";
+                    List<String> terminatingUrls = new ArrayList<>();
                     PetDisplayMethod displayMethod = FindPetDisplayMethod(currUrl);
                     switch (displayMethod) {
                         case PetDisplayMethod.SHELTER_LUV: {
                             iframeClass = "shelterluv";
-                            embedUrl = "new.shelterluv.com/embed/animal/";
+                            terminatingUrls.add("new.shelterluv.com/embed/animal/");
                             hostname = "new.shelterluv.com";
                             
                             break;
                         }
                         case PetDisplayMethod.PETFINDER: {
-                            embedUrl = "petfinder.com";
+                            terminatingUrls.add("www.petfinder.com/dog/");
+                            terminatingUrls.add("www.petfinder.com/cat/");
                             hostname = "www.petfinder.com";
                         }
                         default: break;
                     }
 
+                    // Retrieves urls on the current site and adds them to their respective queues
                     System.out.println("Curr URL - " + currUrl);
                     List<String> newUrls = FindURLS(currUrl, iframeClass, anchorClass, driver);
                     URI origUri = new URI(url);
                     for (String newUrl : newUrls) {
-                        if (newUrl.contains(embedUrl) && !embedUrl.equals("")) {
+                        if (terminatingUrls.stream().anyMatch(newUrl::contains) && !terminatingUrls.isEmpty()) {
+                            // If the url is suspected to be a terminating url that needs to be scrapped it is added to the terminating queue
                             System.out.println("New URL - " + newUrl);
-                            embedBatchQueue.add(List.of(currUrl, newUrl));
+                            terminatingUrlQueue.add(List.of(currUrl, newUrl));
                             seenUrls.add(newUrl);
                         } else {
+                            // Elsewise the url is added to the queue to be searched further if it meets certain criteria
                             URI uri = new URI(newUrl);
                             if (newUrl.contains("https://") && (uri.getHost().equals(origUri.getHost()) || uri.getHost().equals(hostname)) && !seenUrls.contains(newUrl)) {
                                 System.out.println("New URL - " + newUrl);
@@ -694,10 +787,11 @@ public class WebScraperService {
                 }
             }
 
-            while (!embedBatchQueue.isEmpty()) {
-                List<String> embedUrlList = embedBatchQueue.remove();
-                String parentUrl = embedUrlList.get(0);
-                String childUrl = embedUrlList.get(1);
+            // Iterates through all of the terminating urls and attempts to scrape data off of them
+            while (!terminatingUrlQueue.isEmpty()) {
+                List<String> terminatingUrlList = terminatingUrlQueue.remove();
+                String parentUrl = terminatingUrlList.get(0);
+                String childUrl = terminatingUrlList.get(1);
 
                 System.out.println("Curr URL - " + childUrl);
                 Map<String, Object> potentialData = AttemptScrape(parentUrl, childUrl, driver);
@@ -712,16 +806,10 @@ public class WebScraperService {
             
             driver.quit();
 
-        } catch (MalformedURLException e) {
-            
-        }
-        
+        } catch (MalformedURLException e) {}
         
         return scrappedData;
     }
-
-
-
 
     /**
      * Main entry point for the scraper service.
