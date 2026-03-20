@@ -139,8 +139,8 @@ class PetServiceTest extends PfaBase {
 
         // Mock some data to avoid scraping for real
         List<Pet> mockData = List.of(
-            // This pet is already seeded
-            new Pet("Buddy", "Labrador Retriever", 3, 'M', "dog", "Austin, TX", 150.0, "available", 85),
+            // This pet is already seeded, but the location is changed
+            new Pet("Buddy", "Labrador Retriever", 3, 'M', "dog", "Lubbock, TX", 150.0, "available", 85),
             // ...while these are new
             new Pet("Mulch", "Toy Poodle", 2, 'F', "dog", "Austin, TX", 150.0, "available", 85),
             new Pet("Pibble", "Pit Bull", 1, 'M', "dog", "Austin, TX", 150.0, "available", 85)

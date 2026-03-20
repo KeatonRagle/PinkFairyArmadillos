@@ -381,7 +381,8 @@ public class WebScraperService {
                 }
             }
             
-            data = petInfoBuilder.AddName()
+            data = petInfoBuilder
+                .AddName()
                 .AddType()
                 .AddBreed()
                 .AddGender()
