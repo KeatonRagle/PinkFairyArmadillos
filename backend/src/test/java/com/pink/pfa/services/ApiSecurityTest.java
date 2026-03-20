@@ -9,6 +9,7 @@ import org.springframework.http.MediaType;
 import org.springframework.test.web.reactive.server.WebTestClient;
 
 import com.pink.pfa.context.PfaBase;
+import com.pink.pfa.controllers.requests.UserRequest;
 import com.pink.pfa.models.User;
 
 class ApiSecurityTest extends PfaBase {
@@ -46,7 +47,8 @@ class ApiSecurityTest extends PfaBase {
      */
     @Test
     void unauthorizedAdminAccess_WithUserToken_ShouldReturn403() {
-        String token = loginAndGetToken("dylan@pfa.com", "foobar12");
+        userService.createUser(new UserRequest("randomUser", "randomUser@pfa.com", "password123"));
+        String token = loginAndGetToken("randomUser@pfa.com", "password123");
         webTestClient.get().uri("/api/admin/getAll")
                 .header("Authorization", "Bearer " + token)
                 .exchange()

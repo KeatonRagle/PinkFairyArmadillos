@@ -5,6 +5,7 @@ import org.springframework.boot.test.context.TestConfiguration;
 import org.springframework.context.annotation.Bean;
 
 import com.pink.pfa.controllers.requests.UserRequest;
+import com.pink.pfa.exceptions.UserAlreadyExistsException;
 import com.pink.pfa.models.AdoptionSite;
 import com.pink.pfa.models.Pet;
 import com.pink.pfa.repos.AdoptionSiteRepository;
@@ -17,20 +18,23 @@ public class TestDataConfig {
     @Bean
     CommandLineRunner seedTestUsers(UserService userService) {
         return args -> {
-            try {
-                userService.createUser(new UserRequest(
-                    "Austin", "austin@pfa.com", "foobar1"
-                ));
+            UserRequest[] users = {
+                new UserRequest("Austin", "austin@pfa.com", "foobar1"),
+                new UserRequest("Dylan", "dylan@pfa.com", "foobar12"),
+                new UserRequest("Keaton", "keaton@pfa.com", "foobar13"),
+                new UserRequest("Jordan", "jordan@pfa.com", "foobar14"),
+                new UserRequest("Taylor", "taylor@pfa.com", "foobar15"),
+                new UserRequest("Morgan", "morgan@pfa.com", "foobar16"),
+                new UserRequest("Casey", "casey@pfa.com", "foobar17"),
+                new UserRequest("Riley", "riley@pfa.com", "foobar18")
+            };
 
-                userService.createUser(new UserRequest(
-                    "Dylan", "Dylan@pfa.com", "foobar12"
-                ));
-
-                userService.createUser(new UserRequest(
-                    "Keaton", "Keaton@pfa.com", "foobar13"
-                ));
-            } catch (Exception ignored) {
-                // if duplicate, ignore
+            for (UserRequest user : users) {
+                try {
+                    userService.createUser(user);
+                } catch (UserAlreadyExistsException ignored) {
+                    // skip duplicates on restart
+                }
             }
         };
     }
