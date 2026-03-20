@@ -2,14 +2,14 @@ package com.pink.pfa.models;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
-import jakarta.persistence.ManyToOne;
-import jakarta.persistence.Table;
-import jakarta.persistence.UniqueConstraint;
-import jakarta.persistence.JoinColumn;
 import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
+import jakarta.persistence.Table;
+import jakarta.persistence.UniqueConstraint;
 import lombok.Data;
 
 
@@ -44,7 +44,8 @@ import lombok.Data;
 	/** Primary key identifier for the pet (auto-generated). */
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Integer pet_id;
+	@Column(name = "pet_id")
+    private Integer petId;
 	
 	
 	/** Foreign key identifier for the adoptionSite. */
@@ -90,12 +91,12 @@ import lombok.Data;
 	
 	/** Pet's status. */
 	@Column(name = "pet_status", nullable = false)
-	private String pet_status;
+	private String petStatus;
 	
 	
 	/** Pet's compatability score with User. */
 	@Column(name = "compatibility_score", nullable = true)
-	private int compatibility_score;
+	private int compatibilityScore;
 	
 	
 	/** Default constructor required by JPA. */
@@ -116,7 +117,10 @@ import lombok.Data;
      * @param pet_status pet's adoption status
      * @param compatability_score pet's listed compatability score
      */
-	public Pet(String name, String breed, int age, char gender, String pet_type, String location, double price, String pet_status, int compatability_score) {
+	public Pet(String name, String breed, int age, char gender, 
+		String pet_type, String location, double price, 
+		String petStatus, int compatibilityScore
+	) {
 		this.name = name;
 		this.breed = breed;
 		this.age = age;
@@ -124,95 +128,7 @@ import lombok.Data;
 		this.petType = pet_type;
 		this.location = location;
 		this.price = price;
-		this.pet_status = pet_status;
-		this.compatibility_score = compatability_score;
-	}
-	
-	
-	/*+++ Getters +++*/
-	public Integer getPet_id() {
-		return pet_id;
-	}
-
-    public AdoptionSite getSite() {
-        return site;
-    }
-	
-	public String getName() {
-		return name;
-	}
-	
-	public String getBreed() {
-		return breed;
-	}
-	
-	public int getAge() {
-		return age;
-	}
-	
-	public char getGender() {
-		return gender;
-	}
-	
-	public String getPet_type() {
-		return petType;
-	}
-	
-	public String getLocation() {
-		return location;
-	}
-	
-	public double getPrice() {
-		return price;
-	}
-	
-	public String getPet_status() {
-		return pet_status;
-	}
-	
-	public int getCompatability_score() {
-		return compatibility_score;
-	}
-	
-	
-	/*+++ Setters +++*/
-    public void setSite(AdoptionSite site) {
-        this.site = site;
-    }
-
-	public void setName(String name) {
-		this.name = name;
-	}
-	
-	public void setBreed(String breed) {
-		this.breed = breed;
-	}
-	
-	public void setAge(int age) {
-		this.age = age;
-	}
-	
-	public void setGender(char gender) {
-		this.gender = gender;
-	}
-	
-	public void setPet_type(String pet_type) {
-		this.petType = pet_type;
-	}
-	
-	public void setLocation(String location) {
-		this.location = location;
-	}
-	
-	public void setPrice(double price) {
-		this.price = price;
-	}
-	
-	public void setPet_status(String pet_status) {
-		this.pet_status = pet_status;
-	}
-	
-	public void setCompatability_score(int compatability_score) {
-		this.compatibility_score = compatability_score;
+		this.petStatus = petStatus;
+		this.compatibilityScore = compatibilityScore;
 	}
  }

@@ -31,9 +31,7 @@ import com.pink.pfa.models.User;
  * during authentication.
  */
 public class UserPrincipal implements UserDetails {
-
-    private User user;
-
+    private final User user;
 
     /**
      * Constructs a UserPrincipal wrapping a {@link User} entity.

@@ -26,15 +26,14 @@ import org.openqa.selenium.chrome.ChromeOptions;
 import org.openqa.selenium.remote.RemoteWebDriver;
 import org.openqa.selenium.support.ui.ExpectedConditions;
 import org.openqa.selenium.support.ui.WebDriverWait;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 
 import com.pink.pfa.models.Pet;
 import com.pink.pfa.models.datatransfer.ScrapedPetDTO;
 
 import jakarta.persistence.NoResultException;
-
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 /**
  * Service responsible for scraping pet adoption websites.
@@ -501,16 +500,10 @@ public class WebScraperService {
             
             driver.quit();
 
-        } catch (MalformedURLException e) {
-            
-        }
-        
-        
+        } catch (MalformedURLException e) {}
+         
         return scrappedData;
     }
-
-
-
 
     /**
      * Main entry point for the scraper service.

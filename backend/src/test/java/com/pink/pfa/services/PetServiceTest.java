@@ -1,18 +1,23 @@
 package com.pink.pfa.services;
 
+import java.util.List;
+
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
-
-import java.util.List;
-
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.Mock;
+import static org.mockito.Mockito.when;
+import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import com.pink.pfa.config.TestDataConfig;
 import com.pink.pfa.context.PfaBase;
+import com.pink.pfa.models.Pet;
 import com.pink.pfa.models.datatransfer.PetDTO;
+import com.pink.pfa.repos.AdoptionSiteRepository;
 import com.pink.pfa.repos.PetRepository;
 
 /**
@@ -23,15 +28,27 @@ import com.pink.pfa.repos.PetRepository;
  * verify correct DTO mapping, status diversity, and exception behavior for invalid
  * lookups.
  */
+
+@ExtendWith(MockitoExtension.class)
 class PetServiceTest extends PfaBase {
 
     private final PetService petService;
     private final PetRepository petRepository;
+    private final AdoptionSiteRepository adoptionSiteRepository;
+
+    @Mock
+    private final WebScraperService webScraperService;
 
     @Autowired
-    public PetServiceTest(PetService petService, PetRepository petRepository) {
+    public PetServiceTest(PetService petService, 
+        PetRepository petRepository,
+        WebScraperService webScraperService,
+        AdoptionSiteRepository adoptionSiteRepository
+    ) {
         this.petService = petService;
         this.petRepository = petRepository;
+        this.webScraperService = webScraperService;
+        this.adoptionSiteRepository = adoptionSiteRepository;
     }
 
     // -------------------------------------------------------------------------
@@ -94,7 +111,7 @@ class PetServiceTest extends PfaBase {
                 .filter(p -> "Buddy".equals(p.getName()))
                 .findFirst()
                 .orElseThrow()
-                .getPet_id();
+                .getPetId();
 
         PetDTO result = petService.findById(buddyId);
 
@@ -108,5 +125,54 @@ class PetServiceTest extends PfaBase {
     @Test
     void findById_WithInvalidId_ShouldThrowException() {
         assertThrows(Exception.class, () -> petService.findById(999999));
+    }
+
+    /*----------------------------------*\
+    || ******************************** ||      
+    || **********SYNC TESTING********** ||
+    || ******************************** ||                                          
+    *///-------------------------------\\\*
+
+    @Test
+    void trySync_threePets_oneDupe() {
+        List<String> sites =  List.of("https://hsdallascounty.org");
+
+        // Mock some data to avoid scraping for real
+        List<Pet> mockData = List.of(
+            // This pet is already seeded
+            new Pet("Buddy", "Labrador Retriever", 3, 'M', "dog", "Austin, TX", 150.0, "available", 85),
+            // ...while these are new
+            new Pet("Mulch", "Toy Poodle", 2, 'F', "dog", "Austin, TX", 150.0, "available", 85),
+            new Pet("Pibble", "Pit Bull", 1, 'M', "dog", "Austin, TX", 150.0, "available", 85)
+        );
+
+        // ...and set their site to the one the other seeded animals use
+        mockData.forEach(p -> p.setSite(
+            adoptionSiteRepository.findBySiteId(1)
+            .orElseThrow(() -> new IllegalStateException("There must be one Adoption Site seeded"))
+        ));
+
+        when(webScraperService.runScraper(sites)).thenReturn(mockData);  
+        List<Pet> testScrape = webScraperService.runScraper(sites);
+
+        // Sync data, and lets test to make sure it worked
+        petService.sync(testScrape);
+
+        // We should have three elements
+        assertEquals(testScrape.size(), 3);
+        //...and all should be in our database
+        for (Pet p : testScrape) {
+             assertTrue(petService.findByName(p.getName()) != null, "Expected at least one pet");
+        }
+
+        // Lets filter for all the inactive pets
+        List<PetDTO> inactives = petRepository.findAll()
+            .stream()
+            .filter(p -> "INACTIVE".equals(p.getPetStatus()))
+            .map(PetDTO::fromEntity)
+            .toList();
+        
+        // We had two seeded pets not in our scrape, so they should be deactivated for now
+        assertEquals(inactives.size(), 2);
     }
 }
