@@ -100,7 +100,10 @@ public class PetService {
         //     syncBySite(entry.getKey(), entry.getValue());
         // }
 
-
+        // Create two maps, one for the scraped pets and one for all in the db
+        // keyed by the custom key method as a hash
+        // Then, run a diff on the two maps by checking to see if any differences exist
+        // between entries in the scrape and existing elements in the DB
         Map<String, Pet> scrapedMap = scrapedPets
             .stream()
             .collect(Collectors.toMap(this::buildKey, p -> p));
@@ -112,12 +115,15 @@ public class PetService {
         // In scrape — add or update
         for (Map.Entry<String, Pet> entry : scrapedMap.entrySet()) {
             Pet scraped = entry.getValue();
-
             Pet existing = dbMap.get(entry.getKey());
+            
             if (existing == null) {
+                // Naturally, if not in, add it
                 petRepository.save(scraped);
                 log.info("Added new pet: {}", entry.getKey());
             } else if (hasChanges(existing, scraped)) {
+                // Otherwise, if it has sufficient changes in the fields that matter, 
+                // apply those changes and update the entry in the DB
                 applyUpdates(existing, scraped);
                 petRepository.save(existing);
                 log.info("Updated pet: {}", entry.getKey());
@@ -135,6 +141,7 @@ public class PetService {
         }
     }
 
+    //Experimental...
     @Transactional
     public void syncBySite(Integer siteId, List<Pet> scrapedPets) {
         AdoptionSite site = adoptionRepository.findById(siteId)
@@ -158,7 +165,7 @@ public class PetService {
                 log.info("Added new pet: {}", entry.getKey());
             } else if (hasChanges(existing, scraped)) {
                 applyUpdates(existing, scraped);
-                petRepository.save(existing);
+                petRepository.save(existing); 
                 log.info("Updated pet: {}", entry.getKey());
             }
         }
@@ -174,6 +181,8 @@ public class PetService {
         }
     }
 
+    // Build a composite key using attributes that, collectively, should never be repeated
+    // by the law of statistics (I guess?)
     private String buildKey(Pet pet) {
         return String.join("__",
             pet.getSite().getSiteId().toString().trim(),
@@ -185,6 +194,8 @@ public class PetService {
         ).replaceAll("\\s+", " ");
     }
 
+    // If location, price, or status has changes between the new scrape and the old DB,
+    // update the DB entry
     private boolean hasChanges(Pet existing, Pet scraped) {
         return !existing.getLocation().equals(scraped.getLocation())
             || existing.getPrice() != scraped.getPrice()
