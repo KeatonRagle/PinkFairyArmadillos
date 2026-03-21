@@ -30,15 +30,6 @@ import com.pink.pfa.repos.UserRepository;
  */
 class UserServiceTest extends PfaBase {
 
-    private final UserService userService;
-    private final UserRepository userRepository;
-
-    @Autowired
-    public UserServiceTest (UserService userService, UserRepository userRepository) {
-        this.userService = userService;
-        this.userRepository = userRepository;
-    }
-
 
     // -------------------------------------------------------------------------
     // Authentication Security Tests
