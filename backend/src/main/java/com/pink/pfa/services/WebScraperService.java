@@ -884,7 +884,6 @@ public class WebScraperService {
                         log.warn("Failed to convert scraped data to Pet: {}", e.getMessage());
                     }
                 }
-                break;
             }
             
             driver.quit();
