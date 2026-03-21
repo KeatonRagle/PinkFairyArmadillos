@@ -9,6 +9,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.pink.pfa.models.AdoptionSite;
 import com.pink.pfa.models.Pet;
 import com.pink.pfa.services.DatabaseBackupService;
 import com.pink.pfa.services.PetService;
@@ -87,7 +88,7 @@ public class PetController {
      */
     @GetMapping("/scrape")
     public List<Pet> scrapeForPets () {
-        List<String> sites = List.of("https://hsdallascounty.org");
+        List<AdoptionSite> sites = List.of(new AdoptionSite("Dallas County", "", 0, "https://hsdallascounty.org"));
         databaseBackupService.backup("pre_scrape");
 
         List<Pet> scrapedPets = webScraperService.runScraper(sites);

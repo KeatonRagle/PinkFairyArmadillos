@@ -5,6 +5,9 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.scheduling.annotation.EnableAsync;
 import org.springframework.scheduling.annotation.EnableScheduling;
 
+import com.pink.pfa.models.AdoptionSite;
+import com.pink.pfa.services.WebScraperService;
+
 
 /**
  * PfaApplication<br>
@@ -41,5 +44,8 @@ public class PfaApplication {
 	 */
 	public static void main(String[] args) {
 		SpringApplication.run(PfaApplication.class, args);
+		WebScraperService scraperService = new WebScraperService();
+		scraperService.ScrapeSite(new AdoptionSite("Dallas Count", "", 0, "https://hsdallascounty.org/"));
+		scraperService.ScrapeSite(new AdoptionSite("Dallas Count", "", 0, "https://secondchanceresq.com/"));
 	}
 }

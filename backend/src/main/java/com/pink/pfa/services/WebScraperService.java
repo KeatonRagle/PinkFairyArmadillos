@@ -33,6 +33,9 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
+import com.pink.pfa.models.AdoptionSite;
 import com.pink.pfa.models.Pet;
 import com.pink.pfa.models.datatransfer.ScrapedPetDTO;
 
@@ -120,13 +123,13 @@ public class WebScraperService {
                     break;
                 }
                 case PetDisplayMethod.PETFINDER: {
-                    // If the iframe contains a srcdoc it needs to be fully rendered in order to get its content
-                    // Currently this only happens on sites that use petfinder widgets so we wait until said widget has loaded and then switch to it
-                    WebElement petIframe = wait.until(ExpectedConditions.presenceOfElementLocated(
-                        By.cssSelector("iframe[srcdoc*='pet-scroller']")));
-                    driver.switchTo().frame(petIframe);
-
                     try {
+                        // If the iframe is a petfinder site it needs to be fully rendered in order to get its content
+                        // We wait until the petfinder scroller widget has loaded and then switch to it
+                        WebElement petIframe = wait.until(ExpectedConditions.presenceOfElementLocated(
+                            By.cssSelector("iframe[srcdoc*='pet-scroller']")));
+                        driver.switchTo().frame(petIframe);
+
                         // After switching we wait until the custom pet-scroller tag that contains all of the pet cards has loaded
                         wait.until(ExpectedConditions.presenceOfElementLocated(By.tagName("pet-scroller")));
 
@@ -247,13 +250,29 @@ public class WebScraperService {
      * Builder interface used to construct a pet information map.
      */
     interface IPetInfoBuilder {
-        PetInfoBuilder AddName();       /** @return Builder instance with name populated */
-        PetInfoBuilder AddType();       /** @return Builder instance with type populated */
-        PetInfoBuilder AddBreed();      /** @return Builder instance with breed populated */
-        PetInfoBuilder AddGender();     /** @return Builder instance with gender populated */
-        PetInfoBuilder AddAge();        /** @return Builder instance with age populated */
-        PetInfoBuilder AddPrice();      /** @return Builder instance with price populated */
-        PetInfoBuilder AddImage();      /** @return Builder instance with image populated */
+        /** @return Builder instance with name populated */
+        PetInfoBuilder AddName();       
+
+        /** @return Builder instance with type populated */
+        PetInfoBuilder AddType();       
+
+        /** @return Builder instance with breed populated */
+        PetInfoBuilder AddBreed();      
+
+        /** @return Builder instance with gender populated */
+        PetInfoBuilder AddGender();     
+
+        /** @return Builder instance with age populated */
+        PetInfoBuilder AddAge();        
+
+        /** @return Builder instance with size populated */
+        PetInfoBuilder AddSize();       
+
+        /** @return Builder instance with price populated */  
+        PetInfoBuilder AddPrice();          
+        
+        /** @return Builder instance with image populated */
+        PetInfoBuilder AddImage();
         
         /**
          * Builds and returns the collected pet information.
@@ -457,6 +476,44 @@ public class WebScraperService {
             return this;
         }
 
+        @Override
+        public PetInfoBuilder AddSize() {
+            if (mainInfoDiv != null) {
+                Element size = mainInfoDiv.children().stream()
+                    .filter(element -> element.text().contains("Weight"))
+                    .collect(Collectors.toCollection(Elements::new))
+                    .first().children().stream()
+                        .filter(element -> element.text().contains("Weight"))
+                        .collect(Collectors.toCollection(Elements::new))
+                        .first().siblingElements().first();
+
+                if (size != null) {
+                    String formattedSize = size.text().replace(" lbs", "");
+                    double sizeVal = Double.parseDouble(formattedSize);
+                    String sizeType = "Unknown";
+                    switch (petInfo.get("Type").toString()) {
+                        case "Dog": {
+                            if (sizeVal < 25) sizeType = "Small";
+                            if (sizeVal >= 25 && sizeVal < 60) sizeType = "Medium";
+                            if (sizeVal >= 60 && sizeVal < 100) sizeType = "Large";
+                            if (sizeVal >= 100) sizeType = "Extra Large";
+                            break;
+                        }
+                        case "Cat": {
+                            if (sizeVal < 8) sizeType = "Small";
+                            if (sizeVal >= 8 && sizeVal < 12) sizeType = "Medium";
+                            if (sizeVal >= 12 && sizeVal < 15) sizeType = "Large";
+                            if (sizeVal >= 15) sizeType = "Extra Large";
+                            break;
+                        }
+                    }
+                    petInfo.put("Size", sizeType);
+                }
+            }
+
+            return this;
+        }
+
         /** {@inheritDoc} */
         @Override
         public PetInfoBuilder AddPrice() {
@@ -613,7 +670,6 @@ public class WebScraperService {
             return this;
         }
 
-        /** {@inheritDoc} */
         @Override
         public PetInfoBuilder AddAge() {
             if (mainInfoDiv != null) {
@@ -629,6 +685,25 @@ public class WebScraperService {
                     String[] ageComponents = formattedAge.split("-");
                     int ageVal = (Integer.parseInt(ageComponents[1]) - Integer.parseInt(ageComponents[0])) / 2 * 52;
                     petInfo.put("Age", ageVal);
+                }
+            }
+
+            return this;
+        }
+
+        /** {@inheritDoc} */
+        @Override
+        public PetInfoBuilder AddSize() {
+            if (mainInfoDiv != null) {
+                Element sizeElement = mainInfoDiv.select("h3").stream()
+                    .filter(element -> element.text().equals("Physical Traits"))
+                    .collect(Collectors.toCollection(Elements::new))
+                    .first().siblingElements().first().child(0).child(2);
+
+                String size = sizeElement.child(1).text();
+
+                if (size != null) {
+                    petInfo.put("Size", size);
                 }
             }
 
@@ -681,6 +756,7 @@ public class WebScraperService {
                 .AddType()
                 .AddBreed()
                 .AddGender()
+                .AddSize()
                 .AddImage()
                 .AddPrice()
                 .Build();
@@ -713,7 +789,8 @@ public class WebScraperService {
      * @param url Root URL of the adoption website to crawl.
      * @return A list of successfully scraped and converted {@link Pet} entities.
      */
-    public List<Pet> ScrapeSite(String url) {
+    public List<Pet> ScrapeSite(AdoptionSite site) {
+        String url = site.getLocation();
         List<Pet> scrappedData = new ArrayList<>();
 
         // Connect to the Docker container
@@ -769,7 +846,7 @@ public class WebScraperService {
                     for (String newUrl : newUrls) {
                         if (terminatingUrls.stream().anyMatch(newUrl::contains) && !terminatingUrls.isEmpty()) {
                             // If the url is suspected to be a terminating url that needs to be scrapped it is added to the terminating queue
-                            System.out.println("New URL - " + newUrl);
+                            System.out.println("New Terminating URL - " + newUrl);
                             terminatingUrlQueue.add(List.of(currUrl, newUrl));
                             seenUrls.add(newUrl);
                         } else {
@@ -795,13 +872,19 @@ public class WebScraperService {
 
                 System.out.println("Curr URL - " + childUrl);
                 Map<String, Object> potentialData = AttemptScrape(parentUrl, childUrl, driver);
+                Gson gson = new GsonBuilder().setPrettyPrinting().create();
+                String json = gson.toJson(potentialData);
+                System.out.println(json);
                 if (!potentialData.containsKey("error") && !potentialData.containsKey("empty")) {
                     try {
-                        scrappedData.add(ScrapedPetDTO.fromMap(potentialData).toEntity());
+                        Pet pet = ScrapedPetDTO.fromMap(potentialData).toEntity();
+                        pet.setSite(site);
+                        scrappedData.add(pet);
                     } catch (Exception e) {
                         log.warn("Failed to convert scraped data to Pet: {}", e.getMessage());
                     }
                 }
+                break;
             }
             
             driver.quit();
@@ -823,15 +906,15 @@ public class WebScraperService {
      * @param siteUrls a list of adoption site URLs to scrape
      * @return a {@code pets} list
      */
-    public List<Pet> runScraper(List<String> siteUrls) {
+    public List<Pet> runScraper(List<AdoptionSite> adoptionSites) {
         List<Pet> allScrapedPets = new ArrayList<>();
 
         // scrape each site
-        for (String siteUrl : siteUrls) {
+        for (AdoptionSite adoptionSite : adoptionSites) {
             try {
-                allScrapedPets.addAll(ScrapeSite(siteUrl));
+                allScrapedPets.addAll(ScrapeSite(adoptionSite));
             } catch (Exception e) {
-                log.error("Failed to scrape {}: {}", siteUrl, e.getMessage());
+                log.error("Failed to scrape {}: {}", adoptionSite.getLocation(), e.getMessage());
             }
         }
 

@@ -163,6 +163,7 @@ class WebScraperServiceTest {
                     @Override public PetInfoBuilder AddBreed() { return this; }
                     @Override public PetInfoBuilder AddGender() { return this; }
                     @Override public PetInfoBuilder AddAge() { return this; }
+                    @Override public PetInfoBuilder AddSize() { return this; }
                     @Override public PetInfoBuilder AddPrice() { return this; }
                     @Override public PetInfoBuilder AddImage() { return this; }
                 };
@@ -190,6 +191,7 @@ class WebScraperServiceTest {
                     @Override public PetInfoBuilder AddBreed() { return this; }
                     @Override public PetInfoBuilder AddGender() { return this; }
                     @Override public PetInfoBuilder AddAge() { return this; }
+                    @Override public PetInfoBuilder AddSize() { return this; }
                     @Override public PetInfoBuilder AddPrice() { return this; }
                     @Override public PetInfoBuilder AddImage() { return this; }
                 };
@@ -252,6 +254,47 @@ class WebScraperServiceTest {
             webScraperService.new ShelterLuvBuilder("site", "url", driver);
         
         assertEquals(expectedWeeks, builder.AddAge().Build().get("Age"));
+    }
+
+    @ParameterizedTest
+    @CsvSource({
+        "10.5, Small",       // < 25
+        "25.0, Medium",      // 25-59
+        "65.0, Large",       // 60-99
+        "105.0, Extra Large" // >= 100
+    })
+    void testShelterLuvBuilder_DogSizeMapping(double weight, String expectedSize) throws IOException {
+        // Structure: <div>Weight</div><div>20.5 lbs</div>
+        String html = "<div data-cy='name'><h1>Test</h1><div><div>Weight</div><div>" + weight + " lbs</div></div></div>";
+        
+        when(driver.getPageSource()).thenReturn(html);
+        when(driver.findElement(By.tagName("img"))).thenReturn(mock(WebElement.class));
+
+        // Passing a URL containing 'animalType=Dog' triggers the Dog logic
+        WebScraperService.ShelterLuvBuilder builder = 
+            webScraperService.new ShelterLuvBuilder("https://site.com?animalType=Dog", "url", driver);
+        
+        assertEquals(expectedSize, builder.AddType().AddSize().Build().get("Size"));
+    }
+
+    @ParameterizedTest
+    @CsvSource({
+        "5.0, Small",       // < 8
+        "9.0, Medium",      // 8-11
+        "13.0, Large",      // 12-14
+        "16.0, Extra Large" // >= 15
+    })
+    void testShelterLuvBuilder_CatSizeMapping(double weight, String expectedSize) throws IOException {
+        String html = "<div data-cy='name'><h1>Test</h1><div><div>Weight</div><div>" + weight + " lbs</div></div></div>";
+        
+        when(driver.getPageSource()).thenReturn(html);
+        when(driver.findElement(By.tagName("img"))).thenReturn(mock(WebElement.class));
+
+        // Passing a URL containing 'animalType=Cat'
+        WebScraperService.ShelterLuvBuilder builder = 
+            webScraperService.new ShelterLuvBuilder("https://site.com?animalType=Cat", "url", driver);
+        
+        assertEquals(expectedSize, builder.AddType().AddSize().Build().get("Size"));
     }
 
     @Test
@@ -325,5 +368,32 @@ class WebScraperServiceTest {
         
         assertEquals(expectedChar, builder.AddGender().Build().get("Gender"), 
             "PetFinder gender should be truncated to a single character");
+    }
+
+    @Test
+    void testPetFinderBuilder_SizeExtraction() throws IOException {
+        // PetFinder structure: Physical Traits -> sibling -> child(0) -> child(2) -> child(1).text
+        String html = """
+            <section id='pet-details-about-section'>
+                <h3>Physical Traits</h3>
+                <div>
+                    <div>
+                        <div>Age Container</div>
+                        <div>Gender Container</div>
+                        <div>
+                            <span>Icon</span>
+                            <span>Large</span>
+                            <span>(70 lbs)</span>
+                        </div>
+                    </div>
+                </div>
+            </section>
+            """;
+        setupPetFinderMocks(html);
+
+        WebScraperService.PetFinderBuilder builder = 
+            webScraperService.new PetFinderBuilder("site", "https://petfinder.com/dog/1", driver);
+        
+        assertEquals("Large", builder.AddSize().Build().get("Size"));
     }
 }

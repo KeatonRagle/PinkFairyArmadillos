@@ -15,6 +15,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 
 import com.pink.pfa.config.TestDataConfig;
 import com.pink.pfa.context.PfaBase;
+import com.pink.pfa.models.AdoptionSite;
 import com.pink.pfa.models.Pet;
 import com.pink.pfa.models.datatransfer.PetDTO;
 import com.pink.pfa.repos.AdoptionSiteRepository;
@@ -135,7 +136,7 @@ class PetServiceTest extends PfaBase {
 
     @Test
     void trySync_threePets_oneDupe() {
-        List<String> sites =  List.of("https://hsdallascounty.org");
+        List<AdoptionSite> sites = List.of(new AdoptionSite("Dallas County", "", 0, "https://hsdallascounty.org"));
 
         // Mock some data to avoid scraping for real
         List<Pet> mockData = List.of(
