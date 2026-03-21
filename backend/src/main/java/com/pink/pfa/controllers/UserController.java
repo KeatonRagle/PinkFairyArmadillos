@@ -3,11 +3,9 @@ package com.pink.pfa.controllers;
 import java.time.Instant;
 import java.util.Map;
 
-import org.springframework.boot.context.properties.source.InvalidConfigurationPropertyValueException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
-import org.springframework.security.core.AuthenticationException;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -120,7 +118,7 @@ public class UserController {
         String jwt = userService.verify(request);
 
         return ResponseEntity.status(HttpStatus.CREATED).body(Map.of(
-            "user", userService.findById(createdUser.getUser_id()),
+            "user", userService.findById(createdUser.getUserId()),
             "token", jwt
         ));
     }

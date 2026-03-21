@@ -1,7 +1,6 @@
 package com.pink.pfa.services;
 
 import static org.junit.jupiter.api.Assertions.assertTrue;
-
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.web.server.LocalServerPort;
@@ -117,7 +116,7 @@ class ApiSecurityTest extends PfaBase {
     void validAdminToken_ShouldReturn200OnAdminEndpoint() {
         // promote just in case
         User keaton = userRepository.findByEmail("keaton@pfa.com").orElseThrow();
-        userService.promoteToAdmin(keaton.getUser_id());
+        userService.promoteToAdmin(keaton.getUserId());
 
         // test
         String token = loginAndGetToken("keaton@pfa.com", "foobar13");

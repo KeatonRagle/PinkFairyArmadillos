@@ -45,8 +45,9 @@ public class TestDataConfig {
                     4.5,
                     "Austin, TX"
                 );
-                site = siteRepo.save(site);
 
+                site = siteRepo.save(site);
+                
                 Pet dog = new Pet("Buddy", "Labrador Retriever", 3, 'M', "dog", "Austin, TX", 150.0, "available", 85);
                 dog.setSite(site);
                 petRepo.save(dog);

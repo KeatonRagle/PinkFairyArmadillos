@@ -89,8 +89,11 @@ public class PetController {
     public List<Pet> scrapeForPets () {
         List<String> sites = List.of("https://hsdallascounty.org");
         databaseBackupService.backup("pre_scrape");
-        return webScraperService.runScraper(sites);
-        // petService.sync();
+
+        List<Pet> scrapedPets = webScraperService.runScraper(sites);
+        
+        petService.sync(scrapedPets);
+        return scrapedPets;
     }
 
 }
