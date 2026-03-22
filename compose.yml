@@ -9,6 +9,9 @@ services:
       SPRING_DATASOURCE_USERNAME: ${MYSQL_USER}
       SPRING_DATASOURCE_PASSWORD: ${MYSQL_PASSWORD}
       DB_NAME: ${MYSQL_DATABASE}
+      SELENIUM_URL: "http://chrome:4444/wd/hub"
+    depends_on:
+      - chrome
 
   frontend:
     restart: unless-stopped
@@ -27,3 +30,10 @@ services:
       MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD}
     ports:
       - "127.0.0.1:3306:3306"  
+
+  chrome:
+    image: selenium/standalone-chrome:latest
+    shm_size: 2g
+    ports:
+      - "4444:4444"
+      - "7900:7900"

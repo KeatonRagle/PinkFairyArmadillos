@@ -29,7 +29,8 @@ public class AdoptionSite {
 	/** Primary key identifier for the adoption site (auto-generated). */
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
-	private Integer site_id;
+	@Column(name = "site_id")
+	private Integer siteId;
 	
 	
 	/** Site's display name (required). */
@@ -39,7 +40,7 @@ public class AdoptionSite {
 	
 	/** Site's listed contact info. */
 	@Column(name = "contact_info", nullable = false)
-	private String contact_info;
+	private String contactInfo;
 	
 	
 	/** Site's user-determined rating. */
@@ -52,54 +53,21 @@ public class AdoptionSite {
 	
 	
 	/** Default constructor required by JPA. */
-    public AdoptionSite() {
-    }
+    public AdoptionSite() {}
 	
 	
 	/**
      * Constructs a fully initialized AdoptionSite entity.
      *
      * @param name site's display name
-     * @param contact_info site's contact info
+     * @param contactInfo site's contact info
      * @param rating user-determined rating
      * @param location optional location metadata
      */
-	public AdoptionSite(String name, String contact_info, double rating, String location) {
+	public AdoptionSite(String name, String contactInfo, double rating, String location) {
 		this.name = name;
-		this.contact_info = contact_info;
+		this.contactInfo = contactInfo;
 		this.rating = rating;
 		this.location = location;
-	}
-	
-	
-	/*+++ Getters +++*/
-	public Integer getSite_id() {
-		return site_id;
-	}
-	
-	public String getName() {
-		return name;
-	}
-	
-	public String getContact_info() {
-		return contact_info;
-	}
-	
-	public double getRating() {
-		return rating;
-	}
-	
-	
-	/*+++ Setters +++*/
-	public void setName(String name) {
-		this.name = name;
-	}
-	
-	public void setContact_info(String contact_info) {
-		this.contact_info = contact_info;
-	}
-	
-	public void setRating(double rating) {
-		this.rating = rating;
 	}
 }
