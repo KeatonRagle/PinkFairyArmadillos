@@ -1,6 +1,7 @@
 package com.pink.pfa.models.datatransfer;
 
 import java.util.Map;
+
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.pink.pfa.models.Pet;
@@ -22,12 +23,12 @@ public record ScrapedPetDTO(
         Pet pet = new Pet();
         pet.setName(name != null ? name : "Unknown");
         pet.setBreed(breed != null ? breed : "Unknown");
-        pet.setPet_type(type != null ? type : "Unknown");
+        pet.setPetType(type != null ? type : "Unknown");
         pet.setGender(gender != null && !gender.isEmpty() ? gender.charAt(0) : 'U');
         pet.setAge(0);
         pet.setPrice(0.0);
         pet.setLocation("Unknown");
-        pet.setPet_status("Available");
+        pet.setPetStatus("Available");
         return pet;
     }
 }

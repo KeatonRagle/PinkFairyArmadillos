@@ -1,14 +1,15 @@
 package com.pink.pfa.models;
 
 import java.time.LocalDate;
+
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
-import jakarta.persistence.ManyToOne;
-import jakarta.persistence.JoinColumn;
 import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
 import lombok.Data;
 
 
@@ -32,7 +33,8 @@ public class Comments {
 	/** Primary key identifier for the review (auto-generated). */
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
-	private Integer comment_id;
+	@Column(name = "comment_id")
+	private Integer commentId;
 	
 	
 	/** Foreign key identifier for the user. */
@@ -43,47 +45,25 @@ public class Comments {
 	
 	/** Comment's date. */
 	@Column(name = "ct_date", nullable = false)
-	private LocalDate ct_date;
+	private LocalDate ctDate;
 	
 	
 	/** Comment's comment. */
 	@Column(name = "ct_comment", nullable = false)
-	private String ct_comment;
+	private String ctComment;
 	
 	
 	/** Default constructor required by JPA. */
-	public Comments() {
-	}
-	
+	public Comments() {}
 	
 	/**
      * Constructs a fully initialized Review entity.
      *
-     * @param ct_date date of comment left
-     * @param ct_comment user-written comment
+     * @param ctDate date of comment left
+     * @param ctComment user-written comment
      */
-	public Comments(LocalDate ct_date, String ct_comment) {
-		this.ct_date = ct_date;
-		this.ct_comment = ct_comment;
-	}
-	
-	
-	/*+++ Getters +++*/
-	public LocalDate getCt_date() {
-		return ct_date;
-	}
-	
-	public String getCt_comment() {
-		return ct_comment;
-	}
-	
-	
-	/*+++ Setters +++*/
-	public void setCt_date(LocalDate ct_date) {
-		this.ct_date = ct_date;
-	}
-	
-	public void setCt_comment(String ct_comment) {
-		this.ct_comment = ct_comment;
+	public Comments(LocalDate ctDate, String ctComment) {
+		this.ctDate = ctDate;
+		this.ctComment = ctComment;
 	}
 }
