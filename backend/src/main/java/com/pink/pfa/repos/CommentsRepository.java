@@ -33,8 +33,8 @@ public interface CommentsRepository extends JpaRepository<Comments, Integer> {
 
     
 	/** Finds all comments made by a specific user */
-	List<Comments> findByUserUserId(Integer userId);
+	List<Comments> findByUser_UserId(Integer user);
     
 	/** Finds all comments made within a given date range */
-	List<Comments> findByDateBetween(LocalDate start, LocalDate end);
+	List<Comments> findByCtDateBetween(LocalDate start, LocalDate end);
 }
