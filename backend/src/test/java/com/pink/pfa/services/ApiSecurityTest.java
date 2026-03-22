@@ -17,23 +17,23 @@ class ApiSecurityTest extends PfaBase {
     @Autowired
     ApiSecurityTest(@LocalServerPort int port) {
         this.webTestClient = WebTestClient.bindToServer()
-                .baseUrl("http://localhost:" + port)
-                .build();
+            .baseUrl("http://localhost:" + port)
+            .build();
     }
 
     private String loginAndGetToken(String email, String password) {
         return webTestClient.post().uri("/api/users/login")
-                .contentType(MediaType.APPLICATION_JSON)
-                .bodyValue("""
-                    {"email":"%s","password":"%s"}
-                """.formatted(email, password))
-                .exchange()
-                .expectStatus().isOk()
-                .returnResult(new org.springframework.core.ParameterizedTypeReference<java.util.Map<String, Object>>() {})
-                .getResponseBody()
-                .blockFirst()
-                .get("token")
-                .toString();
+            .contentType(MediaType.APPLICATION_JSON)
+            .bodyValue("""
+                {"email":"%s","password":"%s"}
+            """.formatted(email, password))
+            .exchange()
+            .expectStatus().isOk()
+            .returnResult(new org.springframework.core.ParameterizedTypeReference<java.util.Map<String, Object>>() {})
+            .getResponseBody()
+            .blockFirst()
+            .get("token")
+            .toString();
     }
 
     // -------------------------------------------------------------------------
@@ -47,9 +47,9 @@ class ApiSecurityTest extends PfaBase {
     void unauthorizedAdminAccess_WithUserToken_ShouldReturn403() {
         String token = loginAndGetToken("dylan@pfa.com", "foobar12");
         webTestClient.get().uri("/api/admin/getAll")
-                .header("Authorization", "Bearer " + token)
-                .exchange()
-                .expectStatus().isForbidden();
+            .header("Authorization", "Bearer " + token)
+            .exchange()
+            .expectStatus().isForbidden();
     }
 
     // -------------------------------------------------------------------------
@@ -65,11 +65,11 @@ class ApiSecurityTest extends PfaBase {
     void expiredToken_ShouldBeRejectedByProtectedEndpoint() throws Exception {
         String expiredToken = jwtService.generateExpiredToken("austin@pfa.com");
         webTestClient.get().uri("/api/users/findMe")
-                .header("Authorization", "Bearer " + expiredToken)
-                .exchange()
-                .expectStatus().value(status ->
-                    assertTrue(status == 401 || status == 403,
-                            "Expired token must be rejected with 401 or 403, got: " + status));
+            .header("Authorization", "Bearer " + expiredToken)
+            .exchange()
+            .expectStatus().value(status ->
+                assertTrue(status == 401 || status == 403,
+                        "Expired token must be rejected with 401 or 403, got: " + status));
     }
 
     /**
@@ -80,9 +80,9 @@ class ApiSecurityTest extends PfaBase {
         String token = loginAndGetToken("dylan@pfa.com", "foobar12");
 
         webTestClient.get().uri("/api/admin/getAll")
-                .header("Authorization", "Bearer " + token)
-                .exchange()
-                .expectStatus().isForbidden();
+            .header("Authorization", "Bearer " + token)
+            .exchange()
+            .expectStatus().isForbidden();
     }
 
     /**
@@ -91,8 +91,8 @@ class ApiSecurityTest extends PfaBase {
     @Test
     void unauthenticated_RequestToProtectedEndpoint_ShouldReturn401() {
         webTestClient.get().uri("/api/users/findMe")
-                .exchange()
-                .expectStatus().isUnauthorized();
+            .exchange()
+            .expectStatus().isUnauthorized();
     }
 
     /**
@@ -102,11 +102,11 @@ class ApiSecurityTest extends PfaBase {
     void missingBearerPrefix_ShouldBeRejected() {
         String token = loginAndGetToken("austin@pfa.com", "foobar1");
         webTestClient.get().uri("/api/users/findMe")
-                .header("Authorization", token)
-                .exchange()
-                .expectStatus().value(status ->
-                    assertTrue(status == 401 || status == 403,
-                            "Missing Bearer prefix should be rejected, got: " + status));
+            .header("Authorization", token)
+            .exchange()
+            .expectStatus().value(status ->
+                assertTrue(status == 401 || status == 403,
+                    "Missing Bearer prefix should be rejected, got: " + status));
     }
 
     /**
@@ -121,8 +121,8 @@ class ApiSecurityTest extends PfaBase {
         // test
         String token = loginAndGetToken("keaton@pfa.com", "foobar13");
         webTestClient.get().uri("/api/admin/getAll")
-                .header("Authorization", "Bearer " + token)
-                .exchange()
-                .expectStatus().isOk(); // still a regular user until promoted
+            .header("Authorization", "Bearer " + token)
+            .exchange()
+            .expectStatus().isOk(); // still a regular user until promoted
     }
 }
