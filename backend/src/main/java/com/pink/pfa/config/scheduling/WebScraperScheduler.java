@@ -8,6 +8,7 @@ import org.springframework.scheduling.annotation.Async;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 
+import com.pink.pfa.models.AdoptionSite;
 import com.pink.pfa.models.Pet;
 import com.pink.pfa.services.DatabaseBackupService;
 import com.pink.pfa.services.PetService;
@@ -35,7 +36,7 @@ public class WebScraperScheduler {
     @Async
     @Scheduled(cron = "0 0 2 * * *")
     public void updatePets() {
-        List<String> sites = List.of("https://hsdallascounty.org");
+        List<AdoptionSite> sites = List.of(new AdoptionSite("Dallas County", "", 0, "https://hsdallascounty.org"));
 
         databaseBackupService.backup("pre_scrape");
 
