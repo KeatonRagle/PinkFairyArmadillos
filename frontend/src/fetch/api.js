@@ -12,7 +12,6 @@ export async function apiFetch(path, options = {}) {
         },
     });
 
-    // optional: nicer error handling
     if (!res.ok) {
         const text = await res.text();
         throw new Error(`${res.status} ${res.statusText}: ${text}`);
@@ -34,5 +33,11 @@ export function login(user) {
   return apiFetch("/api/users/login", {
     method: "POST",
     body: JSON.stringify(user),
+  });
+}
+
+export function getAllPets() {
+  return apiFetch("/api/pets/getAll", {
+    method: "GET"
   });
 }

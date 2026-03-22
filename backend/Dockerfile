@@ -12,6 +12,7 @@ RUN ./mvnw -B -q package -DskipTests
 
 # ---------- runtime stage ----------
 FROM eclipse-temurin:21-jre-jammy
+RUN apt-get update && apt-get install -y default-mysql-client && rm -rf /var/lib/apt/lists/*
 WORKDIR /app
 
 COPY --from=build /app/target/*.jar app.jar

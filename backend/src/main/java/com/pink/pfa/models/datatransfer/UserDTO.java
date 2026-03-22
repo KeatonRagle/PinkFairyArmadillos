@@ -43,7 +43,7 @@ public record UserDTO(
      */
     public static UserDTO fromEntity(User user) {
         return new UserDTO(
-            user.getUser_id(),
+            user.getUserId(),
             user.getName(),
             user.getEmail(),
             user.getRole()

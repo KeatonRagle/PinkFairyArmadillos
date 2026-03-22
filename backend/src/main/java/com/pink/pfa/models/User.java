@@ -41,7 +41,8 @@ public class User {
     /** Primary key identifier for the user (auto-generated). */
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Integer user_id;
+    @Column(name = "user_id", nullable = false)
+    private Integer userId;
 	
 	
     /** User's display name (required). */
@@ -96,45 +97,5 @@ public class User {
         this.password = password;
         this.role = role;
         this.location = location;
-    }
-
-
-    /*+++ Getters +++*/
-    public Integer getUser_id() {
-        return user_id;
-    }
-
-    public String getName() {
-        return name;
-    }
-
-    public String getEmail() {
-        return email;
-    }
-
-    public String getPassword() {
-        return password;
-    }
-
-    public Role getRole() {
-        return role;            
-    }
-
-
-    /*+++ Setters +++*/
-    public void setPassword(String password) {
-        this.password = password;
-    }
-
-    public void setName(String name) {
-        this.name = name;
-    }
-
-    public void setEmail(String email) {
-        this.email = email;
-    }
-
-    public void setRole(Role role) {
-        this.role = role;
     }
 }

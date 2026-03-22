@@ -1,8 +1,7 @@
-package com.pink.pfa.config;
+package com.pink.pfa.config.security;
 
 import java.util.List;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -22,6 +21,7 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.CorsConfigurationSource;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
+
 
 /**
  * Central Spring Security configuration for the application.
@@ -55,7 +55,17 @@ import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 @EnableWebSecurity
 public class SecurityConfig {
 
-    
+    private final JwtFilter jwtFilter;
+    private final CustomAuthenticationEntryPoint authenticationEntryPoint;
+    private final CustomAccessDeniedHandler accessDeniedHandler;
+
+    public SecurityConfig (JwtFilter jwtFilter, CustomAuthenticationEntryPoint authenticationEntryPoint, CustomAccessDeniedHandler accessDeniedHandler) {
+        this.jwtFilter = jwtFilter;
+        this.authenticationEntryPoint = authenticationEntryPoint;
+        this.accessDeniedHandler = accessDeniedHandler;
+    }
+
+
     /**
      * Provides the {@link PasswordEncoder} used to hash and verify user passwords.
      * <p>
@@ -69,9 +79,8 @@ public class SecurityConfig {
         return new BCryptPasswordEncoder(12);
     }
 
-    @Autowired
-    private JwtFilter jwtFilter;
 
+    
 
     /**
      * Defines the Cross-Origin Resource Sharing (CORS) policy for browser clients.
@@ -93,6 +102,7 @@ public class SecurityConfig {
         ));
         config.setAllowedMethods(List.of("GET","POST","PUT","DELETE","OPTIONS"));
         config.setAllowedHeaders(List.of("Authorization","Content-Type"));
+        config.setExposedHeaders(List.of("Authorization"));
         // uncomment if we want to use cookies/session auth
         // config.setAllowCredentials(true);
 
@@ -127,11 +137,22 @@ public class SecurityConfig {
             .csrf(customizer -> customizer.disable()) // disable Cross-Site Request Forgery protection since we pass auth as a header in the request
             .authorizeHttpRequests(request -> request
                 //.anyRequest().permitAll() // ONLY UNCOMMENT FOR DEBUG
-                .requestMatchers("/api/users/login", "/api/users/register", "/api/public/**").permitAll() // any endpoint starting with /api/public is public and does not require auth
+                .requestMatchers(
+                    "/api/users/login",
+                    "/api/users/register",
+                    "/api/pets/**",
+                    "/api/public/**"
+                ).permitAll() // any endpoint starting with /api/public is public and does not require auth
                 .requestMatchers("/api/admin/**").hasRole("ADMIN")
                 .anyRequest().authenticated() // any endpoint that does not start with /api/public is private and does require auth
-                )
+            )
+            .exceptionHandling(ex -> ex
+
+                .authenticationEntryPoint(authenticationEntryPoint)
+                .accessDeniedHandler(accessDeniedHandler)
+            )
             .httpBasic(Customizer.withDefaults())
+            .formLogin(form -> form.disable())
             .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS)) // sets the api to NEVER use HTTP sessions EVER
             .addFilterBefore(jwtFilter, UsernamePasswordAuthenticationFilter.class);
 

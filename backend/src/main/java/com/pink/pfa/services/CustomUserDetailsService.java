@@ -1,6 +1,5 @@
 package com.pink.pfa.services;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
@@ -35,8 +34,11 @@ import com.pink.pfa.repos.UserRepository;
 @Service
 public class CustomUserDetailsService implements UserDetailsService {
 
-    @Autowired
-    private UserRepository repo;
+    private final UserRepository repo;
+
+    public CustomUserDetailsService (UserRepository repo) {
+        this.repo = repo;
+    }
 
     // might use later
     //private static final Logger logger = LoggerFactory.getLogger(CustomUserDetailsService.class);

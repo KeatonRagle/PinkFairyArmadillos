@@ -1,9 +1,9 @@
-package com.pink.pfa.config;
+package com.pink.pfa.config.security;
 
 import java.io.IOException;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.context.SecurityContext;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.web.authentication.WebAuthenticationDetailsSource;
@@ -43,11 +43,14 @@ import jakarta.servlet.http.HttpServletResponse;
 @Component
 public class JwtFilter extends OncePerRequestFilter {
 
-    @Autowired
-    private JWTService jwtService;
-    
-    @Autowired
-    private CustomUserDetailsService userDetailsService;
+    private final JWTService jwtService;
+    private final CustomUserDetailsService userDetailsService;
+
+
+    public JwtFilter (JWTService jwtService, CustomUserDetailsService userDetailsService) {
+        this.jwtService = jwtService;
+        this.userDetailsService = userDetailsService;
+    }
 
 
     /**
@@ -80,9 +83,20 @@ public class JwtFilter extends OncePerRequestFilter {
         String token = null;
         String email = null;
 
-        if (authHeader != null) {
-            token = authHeader.substring(7);
-            email = jwtService.extractEmailFromHeader(authHeader);
+        if (authHeader == null || !authHeader.startsWith("Bearer ")) {
+            filterChain.doFilter(request, response);
+            return;
+        }
+
+        token = authHeader.substring(7);
+        try {
+            email = jwtService.extractEmail(token);
+        } catch (Exception e) {
+            System.out.println("JWT PARSE FAILED FOR EMAIL: " + email + ", REASON: " + e.getMessage());
+            // Token is present but unparseable (wrong key, malformed, expired, etc.)
+            // Reject immediately with 401 rather than silently passing through unauthenticated
+            response.sendError(HttpServletResponse.SC_UNAUTHORIZED, "Unauthorized");
+            return;
         }
 
         // if the email was extracted from the token and there is no security context, continue to set security context
@@ -95,7 +109,12 @@ public class JwtFilter extends OncePerRequestFilter {
                 UsernamePasswordAuthenticationToken authToken = 
                     new UsernamePasswordAuthenticationToken(userDetails, null, userDetails.getAuthorities());
                 authToken.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
-                SecurityContextHolder.getContext().setAuthentication(authToken);
+                SecurityContext context = SecurityContextHolder.createEmptyContext();
+                context.setAuthentication(authToken);
+                SecurityContextHolder.setContext(context);
+            } else {
+                response.sendError(HttpServletResponse.SC_UNAUTHORIZED, "Token validation failed");
+                return;
             }
         }
 

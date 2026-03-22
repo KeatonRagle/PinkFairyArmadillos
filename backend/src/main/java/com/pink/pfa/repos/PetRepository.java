@@ -1,7 +1,6 @@
 package com.pink.pfa.repos;
 
 import java.util.List;
-import java.util.Optional;
 
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
@@ -28,21 +27,23 @@ import com.pink.pfa.models.Pet;
  * conventions, allowing query logic to be derived directly from method names.
  */
 @Repository
- public interface PetRepository extends JpaRepository<Pet, Integer> {
-	
-	
-	/** Find all pets by name */
+public interface PetRepository extends JpaRepository<Pet, Integer>{
+
+    /**
+     * Finds all pets with the given name.
+     * Spring automatically derives the query from the method name.
+     *
+     * @param name name to search for
+     * @return list of {@link Pet} entities matching the name
+     */
     List<Pet> findByName(String name);
 
-    /** Find all pets of a given type (e.g. "dog", "cat") */
-    List<Pet> findByPetType(String petType);
-
-    /** Find all pets at a specific adoption site */
-    List<Pet> findBySiteId(Integer siteId);
-
-    /** Find all pets with a given status (e.g. "available", "adopted") */
-    List<Pet> findByPetStatus(String petStatus);
-
-    /** Find all pets by breed */
-    List<Pet> findByBreed(String breed);
+    /**
+     * Finds all pets with the given site ID
+     * Spring automatically derives the query from the method name.
+     *
+     * @param siteID site ID to filter for
+     * @return list of {@link Pet} entities matched by the site's ID
+     */
+    List<Pet> findBySite_SiteId(Integer siteId);
 }
