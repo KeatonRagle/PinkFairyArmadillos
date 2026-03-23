@@ -12,7 +12,8 @@ public record PetDTO(
         String location,
         double price,
         String pet_status,
-        int compatibility_score
+        int compatibility_score,
+        String img_url
 ) {
 
     public static PetDTO fromEntity(Pet pet) {
@@ -26,7 +27,8 @@ public record PetDTO(
                 pet.getLocation(), 
                 pet.getPrice(), 
                 pet.getPetStatus(), 
-                pet.getCompatibilityScore()
+                pet.getCompatibilityScore(),
+                pet.getImgUrl()
                 );
     }
 }
