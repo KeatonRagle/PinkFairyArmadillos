@@ -10,6 +10,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.pink.pfa.exceptions.ResourceNotFoundException;
 import com.pink.pfa.models.datatransfer.UserDTO;
 import com.pink.pfa.services.UserService;
 import com.pink.pfa.services.AdoptionSiteService;
@@ -94,9 +95,11 @@ public class AdminController {
     public ResponseEntity<Void> approveNewSiteRequest(@PathVariable int id){
         try {
             adoptionSiteService.approveNewSiteRequest(id);
-            return ResponseEntity.status(HttpStatus.NOT_IMPLEMENTED).build();
+            return ResponseEntity.ok().build();
+        } catch (ResourceNotFoundException e) {
+            return ResponseEntity.notFound().build();
         } catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.NOT_IMPLEMENTED).build();
+            return ResponseEntity.internalServerError().build();
         }
     }
 
@@ -105,9 +108,11 @@ public class AdminController {
     public ResponseEntity<Void> denyNewSiteRequest(@PathVariable int id){
         try {
             adoptionSiteService.denyNewSiteRequest(id);
-            return ResponseEntity.status(HttpStatus.NOT_IMPLEMENTED).build();
+            return ResponseEntity.ok().build();
+        } catch (ResourceNotFoundException e) {
+            return ResponseEntity.notFound().build();
         } catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.NOT_IMPLEMENTED).build();
+            return ResponseEntity.internalServerError().build();
         }
     }
 }

@@ -25,8 +25,7 @@ public class ContributorController {
     @PostMapping("/submitSite")
     public ResponseEntity<AdoptionSiteDTO> submitNewSite(@RequestBody NewAdoptionSiteRequest request) {
         try {
-            // return ResponseEntity.ok().body(adoptionSiteService.submitNewSite(request));
-            return ResponseEntity.status(HttpStatus.NOT_IMPLEMENTED).build();
+            return ResponseEntity.ok().body(adoptionSiteService.submitNewSite(request));
         } catch (Exception e) {
             return ResponseEntity.internalServerError().build();
         }

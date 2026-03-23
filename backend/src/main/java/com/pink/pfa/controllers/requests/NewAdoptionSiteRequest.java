@@ -1,6 +1,8 @@
 package com.pink.pfa.controllers.requests;
 
 public record NewAdoptionSiteRequest(
+    String url,
     String name,
-    String contact_info
+    String email,
+    String phone
 ) {}

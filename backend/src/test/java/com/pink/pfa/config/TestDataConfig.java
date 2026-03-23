@@ -44,10 +44,11 @@ public class TestDataConfig {
         return args -> {
             try {
                 AdoptionSite site = new AdoptionSite(
-                    "Happy Paws Shelter",
-                    "contact@happypaws.org",
-                    4.5,
-                    "Austin, TX"
+                    "Dallas County",
+                    "",
+                    "",
+                    0,
+                    "https://hsdallascounty.org"
                 );
 
                 site = siteRepo.save(site);

@@ -11,6 +11,7 @@ import org.springframework.web.bind.annotation.RestController;
 import com.pink.pfa.models.AdoptionSite;
 import com.pink.pfa.models.Pet;
 import com.pink.pfa.models.datatransfer.PetDTO;
+import com.pink.pfa.services.AdoptionSiteService;
 import com.pink.pfa.services.DatabaseBackupService;
 import com.pink.pfa.services.PetService;
 import com.pink.pfa.services.WebScraperService;
@@ -41,11 +42,18 @@ public class PetController {
     private final PetService petService;
     private final WebScraperService webScraperService;
     private final DatabaseBackupService databaseBackupService;
+    private final AdoptionSiteService adoptionSiteService;
 
-    public PetController (PetService petService, WebScraperService webScraperService, DatabaseBackupService databaseBackupService) {
+    public PetController (
+        PetService petService,
+        WebScraperService webScraperService, 
+        DatabaseBackupService databaseBackupService,
+        AdoptionSiteService adoptionSiteService
+    ) {
         this.petService = petService;
         this.webScraperService = webScraperService;
         this.databaseBackupService = databaseBackupService;
+        this.adoptionSiteService = adoptionSiteService;
     }
  
 
@@ -91,7 +99,7 @@ public class PetController {
     @GetMapping("/scrape")
     public ResponseEntity<Void> scrapeForPets () {
         try {
-            List<AdoptionSite> sites = List.of(new AdoptionSite("Dallas County", "", 0, "https://hsdallascounty.org"));
+            List<AdoptionSite> sites = adoptionSiteService.findAll();
             databaseBackupService.backup("pre_scrape");
             List<Pet> scrapedPets = webScraperService.runScraper(sites);
             petService.sync(scrapedPets);

@@ -790,7 +790,7 @@ public class WebScraperService {
      * @return A list of successfully scraped and converted {@link Pet} entities.
      */
     public List<Pet> ScrapeSite(AdoptionSite site) {
-        String url = site.getLocation();
+        String url = site.getUrl();
         List<Pet> scrappedData = new ArrayList<>();
 
         // Connect to the Docker container
@@ -913,7 +913,7 @@ public class WebScraperService {
             try {
                 allScrapedPets.addAll(ScrapeSite(adoptionSite));
             } catch (Exception e) {
-                log.error("Failed to scrape {}: {}", adoptionSite.getLocation(), e.getMessage());
+                log.error("Failed to scrape {}: {}", adoptionSite.getUrl(), e.getMessage());
             }
         }
 
