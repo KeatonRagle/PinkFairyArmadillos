@@ -144,6 +144,7 @@ public class SecurityConfig {
                     "/api/public/**"
                 ).permitAll() // any endpoint starting with /api/public is public and does not require auth
                 .requestMatchers("/api/admin/**").hasRole("ADMIN")
+                .requestMatchers("/api/contributor/**").hasAnyRole("CONTRIBUTOR", "ADMIN")
                 .anyRequest().authenticated() // any endpoint that does not start with /api/public is private and does require auth
             )
             .exceptionHandling(ex -> ex

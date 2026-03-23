@@ -415,14 +415,19 @@ public class WebScraperService {
         @Override
         public PetInfoBuilder AddBreed() {
             if (mainInfoDiv != null) {
-                Element breed = mainInfoDiv.children().stream()
+                Element breedContainer = mainInfoDiv.children().stream()
                     .filter(element -> element.text().contains("Breed"))
                     .collect(Collectors.toCollection(Elements::new))
-                    .first().children().stream()
+                    .first();
+                if (breedContainer == null) return this;
+
+                Element breedLabel = breedContainer.children().stream()
                         .filter(element -> element.text().contains("Breed"))
                         .collect(Collectors.toCollection(Elements::new))
-                        .first().siblingElements().first();
+                        .first();
+                if (breedLabel == null) return this;
 
+                Element breed = breedLabel.siblingElements().first();
                 if (breed != null) {
                     petInfo.put("Breed", breed.text());
                 }
@@ -435,14 +440,19 @@ public class WebScraperService {
         @Override
         public PetInfoBuilder AddGender() {
             if (mainInfoDiv != null) {
-                Element gender = mainInfoDiv.children().stream()
+                Element genderContainer = mainInfoDiv.children().stream()
                     .filter(element -> element.text().contains("Sex"))
                     .collect(Collectors.toCollection(Elements::new))
-                    .first().children().stream()
+                    .first();
+                if (genderContainer == null) return this;
+
+                Element genderLabel = genderContainer.children().stream()
                         .filter(element -> element.text().contains("Sex"))
                         .collect(Collectors.toCollection(Elements::new))
-                        .first().siblingElements().first();
+                        .first();
+                if (genderLabel == null) return this;
 
+                Element gender = genderLabel.siblingElements().first();
                 if (gender != null) {
                     petInfo.put("Gender", gender.text().substring(0, 1));
                 }
@@ -455,14 +465,19 @@ public class WebScraperService {
         @Override
         public PetInfoBuilder AddAge() {
             if (mainInfoDiv != null) {
-                Element age = mainInfoDiv.children().stream()
+                Element ageContainer = mainInfoDiv.children().stream()
                     .filter(element -> element.text().contains("Age"))
                     .collect(Collectors.toCollection(Elements::new))
-                    .first().children().stream()
+                    .first();
+                if (ageContainer == null) return this;
+
+                Element ageLabel = ageContainer.children().stream()
                         .filter(element -> element.text().contains("Age"))
                         .collect(Collectors.toCollection(Elements::new))
-                        .first().siblingElements().first();
+                        .first();
+                if (ageLabel == null) return this;
 
+                Element age = ageLabel.siblingElements().first();
                 if (age != null) {
                     String formattedAge = age.text().replace("Y/", ".").replace("M/", ".").replace("W", "");
                     String[] ageComponents = formattedAge.split("\\.");
@@ -479,14 +494,19 @@ public class WebScraperService {
         @Override
         public PetInfoBuilder AddSize() {
             if (mainInfoDiv != null) {
-                Element size = mainInfoDiv.children().stream()
+                Element sizeContainer = mainInfoDiv.children().stream()
                     .filter(element -> element.text().contains("Weight"))
                     .collect(Collectors.toCollection(Elements::new))
-                    .first().children().stream()
+                    .first();
+                if (sizeContainer == null) return this;
+
+                Element sizeLabel = sizeContainer.children().stream()
                         .filter(element -> element.text().contains("Weight"))
                         .collect(Collectors.toCollection(Elements::new))
-                        .first().siblingElements().first();
+                        .first();
+                if (sizeLabel == null) return this;
 
+                Element size = sizeLabel.siblingElements().first();
                 if (size != null) {
                     String formattedSize = size.text().replace(" lbs", "");
                     double sizeVal = Double.parseDouble(formattedSize);

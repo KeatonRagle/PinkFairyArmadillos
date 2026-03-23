@@ -66,7 +66,7 @@ import lombok.Data;
 	
 	/** Pet's age. */
 	@Column(name = "age", nullable = false)
-	private int age;
+	private Integer age;
 	
 	
 	/** Pet's gender. */
@@ -98,7 +98,10 @@ import lombok.Data;
 	@Column(name = "compatibility_score", nullable = true)
 	private int compatibilityScore;
 	
-	
+	/** Pet's size. */
+	@Column(name = "pet_size", nullable = true)
+    private String size;
+
 	/** Default constructor required by JPA. */
 	public Pet() {
 	}

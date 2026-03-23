@@ -2,7 +2,6 @@ package com.pink.pfa.controllers;
 
 import java.util.List;
 
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
@@ -63,6 +62,8 @@ public class AdminController {
         try {
             userService.promoteToAdmin(id);
             return ResponseEntity.noContent().build();
+        } catch (ResourceNotFoundException e) {
+            return ResponseEntity.notFound().build();
         } catch (Exception e) {
             return ResponseEntity.internalServerError().build();
         }
@@ -85,6 +86,8 @@ public class AdminController {
         try {
             userService.promoteToContributor(id);
             return ResponseEntity.noContent().build();
+        } catch (ResourceNotFoundException e) {
+            return ResponseEntity.notFound().build();
         } catch (Exception e) {
             return ResponseEntity.internalServerError().build();
         }
@@ -95,7 +98,7 @@ public class AdminController {
     public ResponseEntity<Void> approveNewSiteRequest(@PathVariable int id){
         try {
             adoptionSiteService.approveNewSiteRequest(id);
-            return ResponseEntity.ok().build();
+            return ResponseEntity.noContent().build();
         } catch (ResourceNotFoundException e) {
             return ResponseEntity.notFound().build();
         } catch (Exception e) {
@@ -108,7 +111,7 @@ public class AdminController {
     public ResponseEntity<Void> denyNewSiteRequest(@PathVariable int id){
         try {
             adoptionSiteService.denyNewSiteRequest(id);
-            return ResponseEntity.ok().build();
+            return ResponseEntity.noContent().build();
         } catch (ResourceNotFoundException e) {
             return ResponseEntity.notFound().build();
         } catch (Exception e) {

@@ -7,32 +7,46 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
 import com.pink.pfa.models.AdoptionSite;
-import com.pink.pfa.models.Pet;
 
 
 /**
  * Data access layer for {@link AdoptionSite} entities.
  * <p>
  * Extends {@link JpaRepository} to provide built-in CRUD operations.
- * Spring Data JPA generates the implementation at runtime.
+ * Spring Data JPA generates all query implementations at runtime from method names.
  */
 @Repository
 public interface AdoptionSiteRepository extends JpaRepository<AdoptionSite, Integer> {
     /**
-     * Finds all pets with the given name.
-     * Spring automatically derives the query from the method name.
+     * Returns all adoption sites matching the given name.
      *
-     * @param name Name to search for
-     * @return list of {@link Pet} entities matching the name
+     * @param name name to search for
+     * @return list of matching {@link AdoptionSite} entities
      */
     List<AdoptionSite> findByName(String name);
 
     /**
-     * Finds the adoption site with the given name.
-     * Spring automatically derives the query from the method name.
+     * Returns the adoption site with the given ID, if it exists.
      *
      * @param siteId ID to search for
-     * @return the site matching the ID
+     * @return an {@link Optional} containing the matching site, or empty if not found
      */
     Optional<AdoptionSite> findBySiteId(int siteId);
+
+    /**
+     * Returns whether an adoption site with the given URL already exists.
+     *
+     * @param url URL to check
+     * @return {@code true} if a site with the URL exists; otherwise {@code false}
+     */
+    Boolean existsByUrl(String url);
+
+    /**
+     * Returns all adoption sites with the given status.
+     * Expected values: {@code 'P'} (Pending), {@code 'A'} (Approved), {@code 'D'} (Denied).
+     *
+     * @param status status character to filter by
+     * @return list of {@link AdoptionSite} entities matching the status
+     */
+    List<AdoptionSite> findByStatus(char status);
 }
