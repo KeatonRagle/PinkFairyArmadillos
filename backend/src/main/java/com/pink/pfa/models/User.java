@@ -101,7 +101,7 @@ public class User {
 
 
     /*+++ Getters +++*/
-    public Integer getUser_id() {
+    public Integer getUserId() {
         return userId;
     }
 

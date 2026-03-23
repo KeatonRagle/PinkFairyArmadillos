@@ -23,11 +23,11 @@ public class AdoptionSiteService {
     }
     
 
-    public AdoptionSiteDTO approveNewSiteRequest(int id) {
-        return null;
+    public void approveNewSiteRequest(int id) {
+
     }
     
-    public AdoptionSiteDTO denyNewSiteRequest(int id) {
-        return null; 
+    public void denyNewSiteRequest(int id) {
+
     }
 }

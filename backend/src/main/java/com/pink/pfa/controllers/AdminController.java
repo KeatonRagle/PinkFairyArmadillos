@@ -10,7 +10,6 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.pink.pfa.models.datatransfer.AdoptionSiteDTO;
 import com.pink.pfa.models.datatransfer.UserDTO;
 import com.pink.pfa.services.UserService;
 import com.pink.pfa.services.AdoptionSiteService;
@@ -32,15 +31,14 @@ public class AdminController {
      * Retrieves all registered users.
      * <p>
      * Access is restricted to ADMIN users via role-based authorization.
-     * Returns HTTP 20 (ok) along with a list of users upon success.
+     * Returns HTTP 200 (ok) along with a list of users upon success.
      *
      * @return list containing users
      */
     @GetMapping("/getAll")
-    public ResponseEntity<?> getAllUsers() {
+    public ResponseEntity<List<UserDTO>> getAllUsers() {
         try {
-            List<UserDTO> users = userService.findAll();
-            return ResponseEntity.ok().body(users);
+            return ResponseEntity.ok().body(userService.findAll());
         } catch (Exception e) {
             return ResponseEntity.internalServerError().build();
         }
@@ -94,14 +92,22 @@ public class AdminController {
 
     @PatchMapping("/approveSite/{id}")
     public ResponseEntity<Void> approveNewSiteRequest(@PathVariable int id){
-        AdoptionSiteDTO site = adoptionSiteService.approveNewSiteRequest(id);
-        return ResponseEntity.status(HttpStatus.NOT_IMPLEMENTED).build();
+        try {
+            adoptionSiteService.approveNewSiteRequest(id);
+            return ResponseEntity.status(HttpStatus.NOT_IMPLEMENTED).build();
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.NOT_IMPLEMENTED).build();
+        }
     }
 
 
     @PatchMapping("/denySite/{id}")
     public ResponseEntity<Void> denyNewSiteRequest(@PathVariable int id){
-        AdoptionSiteDTO site = adoptionSiteService.denyNewSiteRequest(id);
-        return ResponseEntity.status(HttpStatus.NOT_IMPLEMENTED).build();
+        try {
+            adoptionSiteService.denyNewSiteRequest(id);
+            return ResponseEntity.status(HttpStatus.NOT_IMPLEMENTED).build();
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.NOT_IMPLEMENTED).build();
+        }
     }
 }

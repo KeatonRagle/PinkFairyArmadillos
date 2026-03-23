@@ -139,16 +139,17 @@ public class UserController {
      *         or an empty 500 on unexpected error
      */
     @PostMapping("/register")
-    public ResponseEntity<?> register(@Valid @RequestBody UserRequest request) {
-        User createdUser = userService.createUser(request);
-
-        // Generate token from createdUser identity + roles
-        String jwt = userService.verify(request);
-
-        return ResponseEntity.status(HttpStatus.CREATED).body(Map.of(
-            "user", userService.findById(createdUser.getUserId()),
-            "token", jwt
-        ));
+    public ResponseEntity<Map<String, Object>> register(@Valid @RequestBody UserRequest request) {
+        try {
+            return ResponseEntity.status(HttpStatus.CREATED).body(Map.of(
+                "user", userService.findById(userService.createUser(request).getUserId()),
+                "token", userService.verify(request)
+            ));
+        } catch (UserAlreadyExistsException e) {
+            return ResponseEntity.status(HttpStatus.CONFLICT).build();
+        } catch (Exception e) {
+            return ResponseEntity.internalServerError().build();
+        }
     }
 
 
