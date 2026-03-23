@@ -32,7 +32,7 @@ public interface SubmissionsRepository extends JpaRepository<Submissions, Intege
 
     
 	/** Finds all submissions made by a specific contributor */
-	List<Submissions> findByContributorUserId(Integer userId);
+	List<Submissions> findByUser_UserId(Integer userId);
     
 	/** Finds all submissions with a given status (e.g. "pending", "approved") */
 	List<Submissions> findByPetStatus(String petStatus);

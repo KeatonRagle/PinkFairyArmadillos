@@ -32,10 +32,10 @@ public interface ReviewsRepository extends JpaRepository<Reviews, Integer> {
 	
 	
 	/** Finds all reviews for a specific adoption site */
-    List<Reviews> findByAdoptionSiteSiteId(Integer siteId);
+    List<Reviews> findBySite_SiteId(Integer siteId);
     
 	/** Finds all reviews written by a specific user */
-	List<Reviews> findByUserUserId(Integer userId);
+	List<Reviews> findByUser_UserId(Integer userId);
     
 	/** Finds all reviews at or above a minimum rating threshold */
 	List<Reviews> findByRatingGreaterThanEqual(Double rating);
