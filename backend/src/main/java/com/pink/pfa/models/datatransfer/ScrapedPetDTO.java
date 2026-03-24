@@ -54,8 +54,8 @@ public record ScrapedPetDTO(
         pet.setPetType(type != null ? type : "Unknown");
         pet.setGender(gender != null && !gender.isEmpty() ? gender.charAt(0) : 'U');
         pet.setImgUrl(image != null ? image : "");
-        pet.setAge(0);
-        pet.setPrice(0.0);
+        pet.setAge(age != null ? age : 0);
+        pet.setPrice(price != null ? price : 0.0);
         pet.setLocation("Unknown");
         pet.setPetStatus("Available");
         pet.setSize(size != null ? size : "Unknown");
