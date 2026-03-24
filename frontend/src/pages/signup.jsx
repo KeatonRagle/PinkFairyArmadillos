@@ -48,7 +48,11 @@ export default function Signup() {
 
       navigate('/home')
     } catch (err) {
-      setError(err?.message || "Failed to create account.")
+        if (err.status === 409) {
+            setError("An account with that email already exists.")
+        } else {
+            setError("Something went wrong. Please try again.")
+        }
     } finally {
       setLoading(false)
     }

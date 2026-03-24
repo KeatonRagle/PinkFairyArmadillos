@@ -1,4 +1,5 @@
 const API_BASE_URL = import.meta.env.VITE_API_BASE_URL;
+const AUTH_PATHS = ["/api/users/login", "/api/users/register"];
 
 export async function apiFetch(path, options = {}) {
     const url = `${API_BASE_URL}${path}`;
@@ -12,9 +13,17 @@ export async function apiFetch(path, options = {}) {
         },
     });
 
+    if (res.status === 401 && !AUTH_PATHS.includes(path)) {
+        localStorage.removeItem("token");
+        localStorage.removeItem("username");
+        window.location.href = "/login";
+        return;
+    }
+
     if (!res.ok) {
-        const text = await res.text();
-        throw new Error(`${res.status} ${res.statusText}: ${text}`);
+        const err = new Error(`Request failed`);
+        err.status = res.status;
+        throw err;
     }
 
     // if empty response body (204), avoid json() crash

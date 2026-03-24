@@ -1,6 +1,5 @@
 package com.pink.pfa.context;
 
-import org.aspectj.internal.lang.annotation.ajcDeclareAnnotation;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.context.annotation.Import;
@@ -8,7 +7,9 @@ import org.springframework.test.context.ActiveProfiles;
 
 import com.pink.pfa.config.TestDataConfig;
 import com.pink.pfa.config.TestcontainersConfiguration;
+import com.pink.pfa.repos.AdoptionSiteRepository;
 import com.pink.pfa.repos.UserRepository;
+import com.pink.pfa.services.AdoptionSiteService;
 import com.pink.pfa.services.CustomUserDetailsService;
 import com.pink.pfa.services.JWTService;
 import com.pink.pfa.services.UserService;
@@ -59,15 +60,10 @@ import com.pink.pfa.services.UserService;
 )
 @ActiveProfiles("test")
 public abstract class PfaBase {
-    @Autowired
-    protected JWTService jwtService;
-
-    @Autowired
-    protected CustomUserDetailsService userDetailsService;
-
-    @Autowired
-    protected UserService userService;
-
-    @Autowired
-    protected UserRepository userRepository;
+    @Autowired protected JWTService jwtService;
+    @Autowired protected CustomUserDetailsService userDetailsService;
+    @Autowired protected UserService userService;
+    @Autowired protected UserRepository userRepository;
+    @Autowired protected AdoptionSiteService adoptionSiteService;
+    @Autowired protected AdoptionSiteRepository adoptionSiteRepository;
 }

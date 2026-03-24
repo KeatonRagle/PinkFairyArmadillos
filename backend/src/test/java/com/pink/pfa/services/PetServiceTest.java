@@ -136,7 +136,7 @@ class PetServiceTest extends PfaBase {
 
     @Test
     void trySync_threePets_oneDupe() {
-        List<AdoptionSite> sites = List.of(new AdoptionSite("Dallas County", "", 0, "https://hsdallascounty.org"));
+        List<AdoptionSite> sites = List.of(new AdoptionSite("Dallas County", "", "", 0, "https://hsdallascounty.org"));
 
         // Mock some data to avoid scraping for real
         List<Pet> mockData = List.of(

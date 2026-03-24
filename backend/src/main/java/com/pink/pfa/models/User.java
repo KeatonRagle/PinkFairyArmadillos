@@ -41,7 +41,7 @@ public class User {
     /** Primary key identifier for the user (auto-generated). */
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "user_id", nullable = false)
+    @Column(name = "user_id")
     private Integer userId;
 	
 	
@@ -75,7 +75,7 @@ public class User {
      * USER represents a standard authenticated user.
      * ADMIN represents a privileged user with elevated permissions.
      */
-    public enum Role { ROLE_USER, ROLE_ADMIN }
+    public enum Role { ROLE_USER, ROLE_CONTRIBUTOR, ROLE_ADMIN }
 
     /** Default constructor required by JPA. */
     public User() {
@@ -97,5 +97,45 @@ public class User {
         this.password = password;
         this.role = role;
         this.location = location;
+    }
+
+
+    /*+++ Getters +++*/
+    public Integer getUserId() {
+        return userId;
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public String getEmail() {
+        return email;
+    }
+
+    public String getPassword() {
+        return password;
+    }
+
+    public Role getRole() {
+        return role;            
+    }
+
+
+    /*+++ Setters +++*/
+    public void setPassword(String password) {
+        this.password = password;
+    }
+
+    public void setName(String name) {
+        this.name = name;
+    }
+
+    public void setEmail(String email) {
+        this.email = email;
+    }
+
+    public void setRole(Role role) {
+        this.role = role;
     }
 }
