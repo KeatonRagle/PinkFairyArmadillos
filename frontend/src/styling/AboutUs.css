@@ -8,7 +8,7 @@ body.about-body {
 .about-page {
   display: flex;
   flex-direction: column;
-  min-height: 150vh;
+  min-height: 165vh;
   position: relative;
 }
 

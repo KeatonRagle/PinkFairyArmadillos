@@ -6,7 +6,7 @@ export default function HomeFooter() {
     <footer className="site-footer">
       <div className="footer-content">
         <p className="footer-text">ARE YOU A NEW ADOPTER? CHECK OUT OUR NEW ADOPTERS GUIDE.</p>
-        <button className="footer-button">ADOPTER INFO</button>
+        <Link to="/adopters-info" className="footer-button">ADOPTER INFO</Link>
       </div>
     </footer>
   )
