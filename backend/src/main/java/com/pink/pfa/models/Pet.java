@@ -97,6 +97,10 @@ import lombok.Data;
 	/** Pet's compatability score with User. */
 	@Column(name = "compatibility_score", nullable = true)
 	private int compatibilityScore;
+
+	/** Pet's image url. */
+	@Column(name = "img_url", nullable = true)
+	private String imgUrl;
 	
 	/** Pet's size. */
 	@Column(name = "pet_size", nullable = true)
