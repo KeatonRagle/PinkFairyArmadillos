@@ -5,7 +5,7 @@ import java.util.List;
 import org.springframework.stereotype.Service;
 import org.springframework.web.bind.annotation.RequestMapping;
 
-import com.pink.pfa.controllers.requests.NewAdoptionSiteRequest;
+import com.pink.pfa.controllers.requests.AdoptionSiteRequest;
 import com.pink.pfa.exceptions.ResourceNotFoundException;
 import com.pink.pfa.exceptions.SiteAlreadyExistsException;
 import com.pink.pfa.models.AdoptionSite;
@@ -44,13 +44,10 @@ public class AdoptionSiteService {
     }
 
 
-    /**
-     * Returns all adoption sites with an approved ({@code 'A'}) status.
-     *
-     * @return list of approved {@link AdoptionSite} entities
-     */
-    public List<AdoptionSite> findAllApproved() {
-        return adoptionSiteRepository.findByStatus('A');
+    public AdoptionSiteDTO findSiteById(int id) {
+        return adoptionSiteRepository.findById(id)
+            .map(AdoptionSiteDTO::fromEntity)
+            .orElseThrow(() -> new ResourceNotFoundException("AdoptionSite", id));
     }
 
 
@@ -67,6 +64,40 @@ public class AdoptionSiteService {
     }
 
 
+    public List<AdoptionSiteDTO> findApproved() {
+        return adoptionSiteRepository.findByStatus('A')
+            .stream()
+            .map(AdoptionSiteDTO::fromEntity)
+            .toList();
+    }
+
+
+    public List<AdoptionSiteDTO> findDenied() {
+        return adoptionSiteRepository.findByStatus('D')
+            .stream()
+            .map(AdoptionSiteDTO::fromEntity)
+            .toList();
+    }
+
+
+    public List<AdoptionSiteDTO> findPending() {
+        return adoptionSiteRepository.findByStatus('P')
+            .stream()
+            .map(AdoptionSiteDTO::fromEntity)
+            .toList();
+    }
+
+
+    /**
+     * Returns all adoption sites with an approved ({@code 'A'}) status.
+     *
+     * @return list of approved {@link AdoptionSite} entities
+     */
+    public List<AdoptionSite> findAllForScrape() {
+        return adoptionSiteRepository.findByStatus('A');
+    }
+
+
     /**
      * Submits a new adoption site for admin review with a default pending status.
      * Throws if the URL is already registered.
@@ -75,7 +106,7 @@ public class AdoptionSiteService {
      * @return DTO of the newly created site
      * @throws SiteAlreadyExistsException if the URL already exists
      */
-    public AdoptionSiteDTO submitNewSite(NewAdoptionSiteRequest request) {
+    public AdoptionSiteDTO submitNewSite(AdoptionSiteRequest request) {
         if (adoptionSiteRepository.existsByUrl(request.url())) {
             throw new SiteAlreadyExistsException(request.url());
         }
@@ -92,6 +123,21 @@ public class AdoptionSiteService {
     }
 
 
+    @Transactional
+    public AdoptionSiteDTO editSite(AdoptionSiteRequest request, int id) {
+        AdoptionSite site = adoptionSiteRepository.findById(id)
+            .orElseThrow(() -> new ResourceNotFoundException("AdoptionSite", id));
+
+        site.setUrl(request.url());
+        site.setName(request.name());
+        site.setEmail(request.email());
+        site.setPhone(request.phone());
+        site.setRating(request.rating());
+
+        return AdoptionSiteDTO.fromEntity(site);
+    }
+
+
     /**
      * Approves a pending site by setting its status to {@code 'A'}.
      *
@@ -99,7 +145,7 @@ public class AdoptionSiteService {
      * @throws ResourceNotFoundException if no site exists with the given ID
      */
     @Transactional
-    public void approveNewSiteRequest(int id) {
+    public void approveSite(int id) {
         AdoptionSite site = adoptionSiteRepository.findById(id)
             .orElseThrow(() -> new ResourceNotFoundException("AdoptionSite", id));
 
@@ -114,7 +160,7 @@ public class AdoptionSiteService {
      * @throws ResourceNotFoundException if no site exists with the given ID
      */  
     @Transactional
-    public void denyNewSiteRequest(int id) {
+    public void denySite(int id) {
         AdoptionSite site = adoptionSiteRepository.findById(id)
             .orElseThrow(() -> new ResourceNotFoundException("AdoptionSite", id));
         

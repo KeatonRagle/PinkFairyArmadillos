@@ -99,7 +99,7 @@ public class PetController {
     @GetMapping("/scrape")
     public ResponseEntity<Void> scrapeForPets () {
         try {
-            List<AdoptionSite> sites = adoptionSiteService.findAllApproved();
+            List<AdoptionSite> sites = adoptionSiteService.findAllForScrape();
             databaseBackupService.backup("pre_scrape");
             List<Pet> scrapedPets = webScraperService.runScraper(sites);
             petService.sync(scrapedPets);

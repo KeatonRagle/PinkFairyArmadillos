@@ -6,10 +6,14 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.pink.pfa.controllers.requests.AdoptionSiteRequest;
 import com.pink.pfa.exceptions.ResourceNotFoundException;
+import com.pink.pfa.models.datatransfer.AdoptionSiteDTO;
 import com.pink.pfa.models.datatransfer.UserDTO;
 import com.pink.pfa.services.UserService;
 import com.pink.pfa.services.AdoptionSiteService;
@@ -35,7 +39,7 @@ public class AdminController {
      *
      * @return list containing users
      */
-    @GetMapping("/getAll")
+    @GetMapping("/getAllUsers")
     public ResponseEntity<List<UserDTO>> getAllUsers() {
         try {
             return ResponseEntity.ok().body(userService.findAll());
@@ -94,10 +98,50 @@ public class AdminController {
     }
 
 
-    @PatchMapping("/approveSite/{id}")
-    public ResponseEntity<Void> approveNewSiteRequest(@PathVariable int id){
+    @GetMapping("/getSite/{id}")
+    public ResponseEntity<AdoptionSiteDTO> getSiteById(@PathVariable int id) {
         try {
-            adoptionSiteService.approveNewSiteRequest(id);
+            return ResponseEntity.ok().body(adoptionSiteService.findSiteById(id));
+        } catch (ResourceNotFoundException e) {
+            return ResponseEntity.notFound().build();
+        } catch (Exception e) {
+            return ResponseEntity.internalServerError().build();
+        }
+    }
+
+    @GetMapping("/getAllSites")
+    public ResponseEntity<List<AdoptionSiteDTO>> getAllSites() {
+        try {
+            return ResponseEntity.ok().body(adoptionSiteService.findAll());
+        } catch (Exception e) {
+            return ResponseEntity.internalServerError().build();
+        }
+    }
+
+
+    @GetMapping("/getApprovedSites")
+    public ResponseEntity<List<AdoptionSiteDTO>> getApprovedSites() {
+        try {
+            return ResponseEntity.ok().body(adoptionSiteService.findApproved());
+        } catch (Exception e) {
+            return ResponseEntity.internalServerError().build();
+        }
+    }
+
+    @GetMapping("/getDeniedSites")
+    public ResponseEntity<List<AdoptionSiteDTO>> getDeniedSites() {
+        try {
+            return ResponseEntity.ok().body(adoptionSiteService.findDenied());
+        } catch (Exception e) {
+            return ResponseEntity.internalServerError().build();
+        }
+    }
+
+
+    @PatchMapping("/approveSite/{id}")
+    public ResponseEntity<Void> approveSite(@PathVariable int id){
+        try {
+            adoptionSiteService.approveSite(id);
             return ResponseEntity.noContent().build();
         } catch (ResourceNotFoundException e) {
             return ResponseEntity.notFound().build();
@@ -108,10 +152,22 @@ public class AdminController {
 
 
     @PatchMapping("/denySite/{id}")
-    public ResponseEntity<Void> denyNewSiteRequest(@PathVariable int id){
+    public ResponseEntity<Void> denySite(@PathVariable int id){
         try {
-            adoptionSiteService.denyNewSiteRequest(id);
+            adoptionSiteService.denySite(id);
             return ResponseEntity.noContent().build();
+        } catch (ResourceNotFoundException e) {
+            return ResponseEntity.notFound().build();
+        } catch (Exception e) {
+            return ResponseEntity.internalServerError().build();
+        }
+    }
+
+
+    @PostMapping("/editSite/{id}")
+    public ResponseEntity<AdoptionSiteDTO> editSite(@RequestBody AdoptionSiteRequest request, @PathVariable int id) {
+        try {
+            return ResponseEntity.ok().body(adoptionSiteService.editSite(request, id)); 
         } catch (ResourceNotFoundException e) {
             return ResponseEntity.notFound().build();
         } catch (Exception e) {

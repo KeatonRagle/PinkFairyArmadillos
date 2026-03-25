@@ -110,7 +110,7 @@ public class JWTService {
      * @param token JWT string to check
      * @return {@code true} if expired; otherwise {@code false}
      */
-    private boolean isTokenExpired(String token) {
+    public boolean isTokenExpired(String token) {
         return extractExpiration(token).before(new Date());
     }
 

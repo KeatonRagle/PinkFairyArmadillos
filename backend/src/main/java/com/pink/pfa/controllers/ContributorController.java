@@ -7,7 +7,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.pink.pfa.controllers.requests.NewAdoptionSiteRequest;
+import com.pink.pfa.controllers.requests.AdoptionSiteRequest;
 import com.pink.pfa.exceptions.SiteAlreadyExistsException;
 import com.pink.pfa.models.datatransfer.AdoptionSiteDTO;
 import com.pink.pfa.services.AdoptionSiteService;
@@ -38,7 +38,7 @@ public class ContributorController {
      *         {@code 500} on unexpected error
      */   
     @PostMapping("/submitSite")
-    public ResponseEntity<AdoptionSiteDTO> submitNewSite(@RequestBody NewAdoptionSiteRequest request) {
+    public ResponseEntity<AdoptionSiteDTO> submitNewSite(@RequestBody AdoptionSiteRequest request) {
         try {
             return ResponseEntity.ok().body(adoptionSiteService.submitNewSite(request));
         } catch (SiteAlreadyExistsException e){

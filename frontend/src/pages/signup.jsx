@@ -115,7 +115,7 @@ export default function Signup() {
 
         <Text className="signup-text">
           Already have an account?{' '}
-          <Link to="/">
+          <Link to="/login">
             <Strong>Sign in</Strong>
           </Link>
         </Text>
