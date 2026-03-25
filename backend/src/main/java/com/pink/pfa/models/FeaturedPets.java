@@ -1,14 +1,15 @@
 package com.pink.pfa.models;
 
 import java.time.LocalDate;
+
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
-import jakarta.persistence.OneToOne;
-import jakarta.persistence.JoinColumn;
 import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.OneToOne;
 import lombok.Data;
 
 
@@ -32,7 +33,8 @@ public class FeaturedPets {
 	/** Primary key identifier for the featured pet (auto-generated). */
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Integer pet_id;
+	@Column(name = "pet_id")
+    private Integer petId;
 	
 	
 	/** Foreign key identifier for the pet. */
@@ -43,12 +45,12 @@ public class FeaturedPets {
 	
 	/** Featured pet's listed start date. */
 	@Column(name = "start_date", nullable = false)
-	private LocalDate start_date;
+	private LocalDate startDate;
 	
 	
 	/** Featured pet's listed end date. */
 	@Column(name = "end_date", nullable = false)
-	private LocalDate end_date;
+	private LocalDate endDate;
 	
 	
 	/** Featured pet's reason for being featured. */
@@ -57,52 +59,18 @@ public class FeaturedPets {
 	
 	
 	/** Default constructor required by JPA. */
-	public FeaturedPets() {
-	}
-	
+	public FeaturedPets() {}
 	
 	/**
      * Constructs a fully initialized FeaturedPets entity.
      *
-     * @param start_date pet's feature start date
-     * @param end_date pet's feature end date
+     * @param startDate pet's feature start date
+     * @param endDate pet's feature end date
      * @param reason admin/contributor added reason
      */
-	public FeaturedPets(LocalDate start_date, LocalDate end_date, String reason) {
-		this.start_date = start_date;
-		this.end_date = end_date;
-		this.reason = reason;
-	}
-	
-	
-	/*+++ Getters +++*/
-	public Integer getPet_id() {
-		return pet_id;
-	}
-	
-	public LocalDate getStart_date() {
-		return start_date;
-	}
-	
-	public LocalDate getEnd_date() {
-		return end_date;
-	}
-	
-	public String getReason() {
-		return reason;
-	}
-	
-	
-	/*+++ Setters +++*/
-	public void setStart_date(LocalDate start_date) {
-		this.start_date = start_date;
-	}
-	
-	public void setEnd_date(LocalDate end_date) {
-		this.end_date = end_date;
-	}
-	
-	public void setReason(String reason) {
+	public FeaturedPets(LocalDate startDate, LocalDate endDate, String reason) {
+		this.startDate = startDate;
+		this.startDate = endDate;
 		this.reason = reason;
 	}
 }

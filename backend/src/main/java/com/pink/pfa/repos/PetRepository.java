@@ -37,5 +37,13 @@ public interface PetRepository extends JpaRepository<Pet, Integer>{
      * @return list of {@link Pet} entities matching the name
      */
     List<Pet> findByName(String name);
-    
+
+    /**
+     * Finds all pets with the given site ID
+     * Spring automatically derives the query from the method name.
+     *
+     * @param siteID site ID to filter for
+     * @return list of {@link Pet} entities matched by the site's ID
+     */
+    List<Pet> findBySite_SiteId(Integer siteId);
 }

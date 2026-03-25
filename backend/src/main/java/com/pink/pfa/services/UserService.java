@@ -2,8 +2,6 @@ package com.pink.pfa.services;
 
 import java.util.List;
 
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.context.properties.source.InvalidConfigurationPropertyValueException;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
@@ -13,6 +11,8 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.bind.annotation.RequestMapping;
 
 import com.pink.pfa.controllers.requests.UserRequest;
+import com.pink.pfa.exceptions.ResourceNotFoundException;
+import com.pink.pfa.exceptions.UserAlreadyExistsException;
 import com.pink.pfa.models.User;
 import com.pink.pfa.models.datatransfer.UserDTO;
 import com.pink.pfa.repos.UserRepository;
@@ -48,18 +48,23 @@ import jakarta.transaction.Transactional;
 @Service
 @RequestMapping("/api/users")
 public class UserService {
-    // The singleton backend repository that takes our input and turns it into CRUD (abstracting out our data access layer)
-    @Autowired
-    private UserRepository userRepository;
+    
+    private final UserRepository userRepository;
+    private final PasswordEncoder passwordEncoder;
+    private final AuthenticationManager authManager;
+    private final JWTService jwtService;
 
-    @Autowired
-    private PasswordEncoder passwordEncoder;
-
-    @Autowired
-    private AuthenticationManager authManager;
-
-    @Autowired
-    private JWTService jwtService;
+    public UserService (
+        UserRepository userRepository,
+        PasswordEncoder passwordEncoder,
+        AuthenticationManager authManager,
+        JWTService jwtService
+    ) {
+        this.userRepository = userRepository;
+        this.passwordEncoder = passwordEncoder;
+        this.authManager = authManager;
+        this.jwtService = jwtService;
+    }
 
 
     /**
@@ -86,7 +91,7 @@ public class UserService {
     public UserDTO findById(Integer id) {
         return userRepository.findById(id)
                 .map(UserDTO::fromEntity)
-                .orElseThrow(() -> new InvalidConfigurationPropertyValueException("Failed to Find ID", null, "User not found"));
+                .orElseThrow(() -> new ResourceNotFoundException("User", id));
     }
  
 
@@ -100,7 +105,7 @@ public class UserService {
     public UserDTO findByEmail(String email) {
         return userRepository.findByEmail(email)
                 .map(UserDTO::fromEntity)
-                .orElseThrow(() -> new InvalidConfigurationPropertyValueException("Failed to Find ID", null, "User not found"));
+                .orElseThrow(() -> new ResourceNotFoundException("User", email));
     }
 
 
@@ -141,6 +146,9 @@ public class UserService {
      * @return {@link User} for the newly created user
      */
     public User createUser(UserRequest request) {
+        if (userRepository.existsByEmail(request.email())) {
+            throw new UserAlreadyExistsException(request.email());
+        }
         User user = new User();
         user.setName(request.name());
         user.setEmail(request.email().trim().toLowerCase());
@@ -162,9 +170,11 @@ public class UserService {
      * @return JWT string if authentication succeeds; otherwise a failure message
      */
     public String verify(UserRequest userRequest) {
-        Authentication authentication = authManager.authenticate(new UsernamePasswordAuthenticationToken(userRequest.email(), userRequest.password()));
-
-        if(authentication.isAuthenticated()) return jwtService.generateToken(userRequest.email());
+        Authentication authentication = authManager.authenticate(
+            new UsernamePasswordAuthenticationToken(userRequest.email(), userRequest.password())
+        );
+        if (authentication.isAuthenticated()) 
+            return jwtService.generateToken(userRequest.email().trim().toLowerCase());
         return "Nope";
     }
 
@@ -176,18 +186,24 @@ public class UserService {
      * @param userId database ID of the user to promote
      */
     @Transactional
-    public void promoteToAdmin(int userId) {
-        User user = userRepository.findById(userId)
-            .orElseThrow(() -> new RuntimeException("User not found"));
+    public void promoteToAdmin(int id) {
+        User user = userRepository.findById(id)
+            .orElseThrow(() -> new ResourceNotFoundException("User", id));
 
         user.setRole(User.Role.ROLE_ADMIN);
     }
 
-    // changes
+
+    /**
+     * Promotes the specified user to the {@code CONTRIBUTOR} role.
+     * Runs within a transaction so the role change is persisted automatically when the method completes.
+     *
+     * @param userId database ID of the user to promote
+     */
     @Transactional
-    public void promoteToContributor(int userId) {
-        User user = userRepository.findById(userId)
-            .orElseThrow(() -> new RuntimeException("User not found"));
+    public void promoteToContributor(int id) {
+        User user = userRepository.findById(id)
+            .orElseThrow(() -> new ResourceNotFoundException("User", id));
 
         user.setRole(User.Role.ROLE_CONTRIBUTOR);
     }

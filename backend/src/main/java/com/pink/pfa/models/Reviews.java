@@ -1,14 +1,15 @@
 package com.pink.pfa.models;
 
 import java.time.LocalDate;
+
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
-import jakarta.persistence.ManyToOne;
-import jakarta.persistence.JoinColumn;
 import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
 import lombok.Data;
 
 
@@ -32,6 +33,7 @@ public class Reviews {
 	/** Primary key identifier for the review (auto-generated). */
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
+	@Column(name = "review_id")
 	private Integer review_id;
 	
 	
@@ -44,6 +46,7 @@ public class Reviews {
 	/** Foreign key identifier for the adoptionSite. */
 	@ManyToOne
 	@JoinColumn(name = "site_id", nullable = false)
+	
 	private AdoptionSite site;
 	
 	
@@ -54,57 +57,28 @@ public class Reviews {
 	
 	/** Listed review date. */
 	@Column(name = "rw_comment", nullable = false)
-	private String rw_comment;
+	private String rwComment;
 	
 	
 	/** review date. */
 	@Column(name = "rw_date", nullable = false)
-	private LocalDate rw_date;
+	private LocalDate rwDate;
 	
 	
 	/** Default constructor required by JPA. */
-	public Reviews() {
-	}
+	public Reviews() {}
 	
 	
 	/**
      * Constructs a fully initialized Review entity.
      *
      * @param rating center's user-determiend rating
-     * @param rw_comment user review comment
-	 * @param rw_date review date
+     * @param rwComment user review comment
+	 * @param rwDate review date
      */
-	public Reviews(double rating, String rw_comment, LocalDate rw_date) {
+	public Reviews(double rating, String rwComment, LocalDate rwDate) {
 		this.rating = rating;
-		this.rw_comment = rw_comment;
-		this.rw_date = rw_date;
-	}
-	
-	
-	/*+++ Getters +++*/
-	public double getRating() {
-		return rating;
-	}
-	
-	public String getRw_comment() {
-		return rw_comment;
-	}
-	
-	public LocalDate getRw_date() {
-		return rw_date;
-	}
-	
-	
-	/*+++ Setters +++*/
-	public void setRating(double rating) {
-		this.rating = rating;
-	}
-	
-	public void setRw_comment(String rw_comment) {
-		this.rw_comment = rw_comment;
-	}
-	
-	public void setRw_date(LocalDate rw_date) {
-		this.rw_date = rw_date;
+		this.rwComment = rwComment;
+		this.rwDate = rwDate;
 	}
 }

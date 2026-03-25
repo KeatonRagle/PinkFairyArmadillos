@@ -1,9 +1,9 @@
-package com.pink.pfa.config;
+package com.pink.pfa.config.security;
 
 import java.io.IOException;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.context.SecurityContext;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.web.authentication.WebAuthenticationDetailsSource;
@@ -11,6 +11,9 @@ import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
 
 import com.pink.pfa.services.JWTService;
+
+import io.jsonwebtoken.ExpiredJwtException;
+
 import com.pink.pfa.services.CustomUserDetailsService;
 
 import jakarta.servlet.FilterChain;
@@ -43,11 +46,14 @@ import jakarta.servlet.http.HttpServletResponse;
 @Component
 public class JwtFilter extends OncePerRequestFilter {
 
-    @Autowired
-    private JWTService jwtService;
-    
-    @Autowired
-    private CustomUserDetailsService userDetailsService;
+    private final JWTService jwtService;
+    private final CustomUserDetailsService userDetailsService;
+
+
+    public JwtFilter (JWTService jwtService, CustomUserDetailsService userDetailsService) {
+        this.jwtService = jwtService;
+        this.userDetailsService = userDetailsService;
+    }
 
 
     /**
@@ -85,9 +91,17 @@ public class JwtFilter extends OncePerRequestFilter {
             return;
         }
 
-        if (authHeader != null) {
-            token = authHeader.substring(7);
-            email = jwtService.extractEmailFromHeader(authHeader);
+        token = authHeader.substring(7);
+        try {
+            email = jwtService.extractEmail(token);
+        } catch (ExpiredJwtException e) {
+            System.out.println("token expired");
+            response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
+            response.setContentType("application/json");
+            response.getWriter().write("""
+                {"error": "TOKEN_EXPIRED", "message": "Token has expired, please log in again"}
+            """);
+            return;
         }
 
         // if the email was extracted from the token and there is no security context, continue to set security context
@@ -100,8 +114,10 @@ public class JwtFilter extends OncePerRequestFilter {
                 UsernamePasswordAuthenticationToken authToken = 
                     new UsernamePasswordAuthenticationToken(userDetails, null, userDetails.getAuthorities());
                 authToken.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
-                SecurityContextHolder.getContext().setAuthentication(authToken);
-            }
+                SecurityContext context = SecurityContextHolder.createEmptyContext();
+                context.setAuthentication(authToken);
+                SecurityContextHolder.setContext(context);
+            }  
         }
 
         // add to the filter chain 

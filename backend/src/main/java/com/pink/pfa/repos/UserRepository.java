@@ -48,8 +48,18 @@ public interface UserRepository extends JpaRepository<User, Integer> {
      * @param email unique email identifier
      * @return {@link User} if found, otherwise null
      */
-
     Optional<User> findByEmail(String email);
-    
-    //User findById(Integer user_id);
+
+
+    /**
+     * Checks whether a user with the given email address already exists.
+     * <p>
+     * Used during registration to detect duplicate accounts before
+     * attempting to persist a new user.
+     * </p>
+     *
+     * @param email the email address to check
+     * @return {@code true} if a user with the given email exists, {@code false} otherwise
+     */
+    Boolean existsByEmail(String email);
 }

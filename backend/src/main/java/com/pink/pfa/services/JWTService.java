@@ -99,7 +99,7 @@ public class JWTService {
      * @param token JWT string to parse
      * @return {@link Date} representing when the token expires
      */
-    private Date extractExpiration(String token) {
+    Date extractExpiration(String token) {
         return extractClaim(token, Claims::getExpiration);
     }
     
@@ -110,7 +110,7 @@ public class JWTService {
      * @param token JWT string to check
      * @return {@code true} if expired; otherwise {@code false}
      */
-    private boolean isTokenExpired(String token) {
+    public boolean isTokenExpired(String token) {
         return extractExpiration(token).before(new Date());
     }
 
@@ -161,6 +161,29 @@ public class JWTService {
 
 
     /**
+     * Generates an expired signed JWT for the given email.
+     * <p>
+     * The token includes:
+     * <ul>
+     *   <li>{@code subject}: the user's email</li>
+     *   <li>{@code issuedAt}: time of token creation</li>
+     *   <li>{@code expiration}: time the token becomes invalid</li>
+     * </ul>
+     *
+     * @param email email to store as the token subject
+     * @return compact JWT string
+     */
+    String generateExpiredToken(String email) {
+        return Jwts.builder()
+                .subject(email)
+                .issuedAt(new Date(System.currentTimeMillis() - 60_000))
+                .expiration(new Date(System.currentTimeMillis() - 1_000))
+                .signWith(getKey())
+                .compact();
+    }
+
+
+    /**
      * Validates a token by confirming:
      * <ul>
      *   <li>The token subject matches the authenticated user's username/email.</li>
@@ -174,6 +197,7 @@ public class JWTService {
      */
     public boolean validateToken(String token, UserDetails userDetails) {
         final String email = extractEmail(token);
+        System.out.println("VALIDATE: token_email='" + email + "' userDetails_username='" + userDetails.getUsername() + "' expired=" + isTokenExpired(token));
         return (email.equals(userDetails.getUsername()) && !isTokenExpired(token));
     }
 

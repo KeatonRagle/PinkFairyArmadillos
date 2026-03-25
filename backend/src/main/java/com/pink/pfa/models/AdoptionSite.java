@@ -29,7 +29,8 @@ public class AdoptionSite {
 	/** Primary key identifier for the adoption site (auto-generated). */
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
-	private Integer site_id;
+	@Column(name = "site_id")
+	private Integer siteId;
 	
 	
 	/** Site's display name (required). */
@@ -37,69 +38,44 @@ public class AdoptionSite {
 	private String name;
 	
 	
-	/** Site's listed contact info. */
-	@Column(name = "contact_info", nullable = false)
-	private String contact_info;
+	/** Site's listed phone number. */
+	@Column(name = "phone", nullable = true)
+	private String phone;
 	
+	/** Site's listed email. */
+	@Column(name = "email", nullable = true)
+	private String email;
 	
 	/** Site's user-determined rating. */
 	@Column(name = "rating", nullable = true)
-	private double rating;
+	private Double rating;
 	
-	
-	/** Optional location metadata associated with the site. */
-    private String location;
+	/** site url. */
+	@Column(name = "url", nullable = false)
+    private String url;
+
+	/** approval status. */
+	@Column(name = "status", nullable = false)
+    private char status = 'P';
 	
 	
 	/** Default constructor required by JPA. */
-    public AdoptionSite() {
-    }
+    public AdoptionSite() {}
 	
 	
 	/**
      * Constructs a fully initialized AdoptionSite entity.
      *
      * @param name site's display name
-     * @param contact_info site's contact info
+     * @param contactInfo site's contact info
      * @param rating user-determined rating
      * @param location optional location metadata
      */
-	public AdoptionSite(String name, String contact_info, double rating, String location) {
+	public AdoptionSite(String name, String phone, String email, double rating, String url) {
 		this.name = name;
-		this.contact_info = contact_info;
+		this.phone = phone;
+        this.email = email;
 		this.rating = rating;
-		this.location = location;
-	}
-	
-	
-	/*+++ Getters +++*/
-	public Integer getSite_id() {
-		return site_id;
-	}
-	
-	public String getName() {
-		return name;
-	}
-	
-	public String getContact_info() {
-		return contact_info;
-	}
-	
-	public double getRating() {
-		return rating;
-	}
-	
-	
-	/*+++ Setters +++*/
-	public void setName(String name) {
-		this.name = name;
-	}
-	
-	public void setContact_info(String contact_info) {
-		this.contact_info = contact_info;
-	}
-	
-	public void setRating(double rating) {
-		this.rating = rating;
+		this.url = url;
 	}
 }
