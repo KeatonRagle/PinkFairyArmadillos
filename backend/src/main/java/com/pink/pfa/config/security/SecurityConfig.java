@@ -135,6 +135,7 @@ public class SecurityConfig {
         http
             .cors(Customizer.withDefaults())
             .csrf(customizer -> customizer.disable()) // disable Cross-Site Request Forgery protection since we pass auth as a header in the request
+            .addFilterBefore(jwtFilter, UsernamePasswordAuthenticationFilter.class)
             .authorizeHttpRequests(request -> request
                 //.anyRequest().permitAll() // ONLY UNCOMMENT FOR DEBUG
                 .requestMatchers(
@@ -154,8 +155,7 @@ public class SecurityConfig {
             )
             .httpBasic(Customizer.withDefaults())
             .formLogin(form -> form.disable())
-            .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS)) // sets the api to NEVER use HTTP sessions EVER
-            .addFilterBefore(jwtFilter, UsernamePasswordAuthenticationFilter.class);
+            .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS)); // sets the api to NEVER use HTTP sessions EVER
 
         /*
          * You can test this with these curl commands

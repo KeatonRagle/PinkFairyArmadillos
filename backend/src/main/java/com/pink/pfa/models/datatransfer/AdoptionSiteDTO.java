@@ -13,7 +13,9 @@ public record AdoptionSiteDTO(
     String url,
     String name,
     String email,
-    String phone
+    String phone,
+    Double rating,
+    char status
 ) {
     /**
      * Maps an {@link AdoptionSite} entity to an {@link AdoptionSiteDTO}.
@@ -26,7 +28,9 @@ public record AdoptionSiteDTO(
             site.getUrl(),
             site.getName(),
             site.getEmail(),
-            site.getPhone()
+            site.getPhone(),
+            site.getRating(),
+            site.getStatus()
         );
     }
 }

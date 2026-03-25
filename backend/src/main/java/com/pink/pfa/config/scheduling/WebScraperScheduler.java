@@ -71,7 +71,7 @@ public class WebScraperScheduler {
 
         try {
             // run the webScraperService and extract the list of pet objects
-            List<AdoptionSite> sites = adoptionSiteService.findAllApproved();
+            List<AdoptionSite> sites = adoptionSiteService.findAllForScrape();
             List<Pet> pets = webScraperService.runScraper(sites);
             petService.sync(pets);
 

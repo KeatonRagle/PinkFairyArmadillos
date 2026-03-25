@@ -48,7 +48,7 @@ public class AdoptionSite {
 	
 	/** Site's user-determined rating. */
 	@Column(name = "rating", nullable = true)
-	private double rating;
+	private Double rating;
 	
 	/** site url. */
 	@Column(name = "url", nullable = false)

@@ -1,6 +1,8 @@
 package com.pink.pfa.services;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNotEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
@@ -11,7 +13,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import com.pink.pfa.context.PfaBase;
-import com.pink.pfa.controllers.requests.NewAdoptionSiteRequest;
+import com.pink.pfa.controllers.requests.AdoptionSiteRequest;
 import com.pink.pfa.exceptions.ResourceNotFoundException;
 import com.pink.pfa.exceptions.SiteAlreadyExistsException;
 import com.pink.pfa.models.AdoptionSite;
@@ -40,31 +42,31 @@ class AdoptionSiteServiceTest extends PfaBase {
     }
 
     // -------------------------------------------------------------------------
-    // findAllApproved
+    // findAllForScrape
     // -------------------------------------------------------------------------
 
     /**
      * Verifies that only sites with status 'A' are returned.
      */
     @Test
-    void findAllApproved_ShouldOnlyReturnApprovedSites() {
+    void findAllForScrape_ShouldOnlyReturnApprovedSites() {
         // Approve our test site
         testSite.setStatus('A');
         adoptionSiteRepository.save(testSite);
 
-        List<AdoptionSite> approved = adoptionSiteService.findAllApproved();
+        List<AdoptionSite> approved = adoptionSiteService.findAllForScrape();
 
         assertTrue(approved.stream().allMatch(s -> s.getStatus() == 'A'),
             "All returned sites should have status 'A'");
     }
 
     /**
-     * Verifies that pending sites are excluded from findAllApproved results.
+     * Verifies that pending and denied sites are excluded from findAllApproved results.
      */
     @Test
-    void findAllApproved_ShouldExcludePendingAndDeniedSites() {
+    void findAllForScrape_ShouldExcludePendingAndDeniedSites() {
         // testSite is 'P' by default — should not appear
-        List<AdoptionSite> approved = adoptionSiteService.findAllApproved();
+        List<AdoptionSite> approved = adoptionSiteService.findAllForScrape();
 
         boolean containsTestSite = approved.stream()
             .anyMatch(s -> s.getSiteId().equals(testSite.getSiteId()));
@@ -88,6 +90,87 @@ class AdoptionSiteServiceTest extends PfaBase {
     }
 
     // -------------------------------------------------------------------------
+    // findApproved
+    // -------------------------------------------------------------------------
+
+    /**
+     * Verifies that only sites with status 'A' are returned.
+     */
+    @Test
+    void findApproved_ShouldOnlyReturnApprovedSites() {
+        List<AdoptionSiteDTO> sites = adoptionSiteService.findApproved();
+
+        assertTrue(sites.stream().allMatch(s -> s.status() == 'A'),
+            "All returned sites should have status 'A'");
+    }
+
+
+    /**
+     * Verifies that pending and denied sites are excluded from findApproved results.
+     */
+    @Test
+    void findApproved_ShouldExcludePendingAndDeniedSites() {
+        List<AdoptionSiteDTO> sites = adoptionSiteService.findApproved();
+
+        assertFalse(sites.stream().anyMatch(s -> s.status() == 'D' || s.status() == 'P'),
+            "No returned sites should have a status of 'D' or 'P'");
+    }
+
+    // -------------------------------------------------------------------------
+    // findDenied
+    // -------------------------------------------------------------------------
+
+    /**
+     * Verifies that only sites with status 'D' are returned.
+     */
+    @Test
+    void findDenied_ShouldOnlyReturnDeniedSites() {
+        List<AdoptionSiteDTO> sites = adoptionSiteService.findDenied();
+
+        assertTrue(sites.stream().allMatch(s -> s.status() == 'D'),
+            "All returned sites should have status 'D'");
+    }
+
+
+    /**
+     * Verifies that pending and denied sites are excluded from findDenied results.
+     */
+    @Test
+    void findDenied_ShouldExcludePendingAndApprovedSites() {
+        List<AdoptionSiteDTO> sites = adoptionSiteService.findDenied();
+
+        assertFalse(sites.stream().anyMatch(s -> s.status() == 'A' || s.status() == 'P'),
+            "No returned sites should have a status of 'A' or 'P'");
+    }
+
+    // -------------------------------------------------------------------------
+    // findPending
+    // -------------------------------------------------------------------------
+
+    /**
+     * Verifies that only sites with status 'P' are returned.
+     */
+    @Test
+    void findPending_ShouldOnlyReturnPendingSites() {
+        List<AdoptionSiteDTO> sites = adoptionSiteService.findPending();
+
+        assertTrue(sites.stream().allMatch(s -> s.status() == 'P'),
+            "All returned sites should have status 'D'");
+    }
+
+
+    /**
+     * Verifies that approved and denied sites are excluded from findPending results.
+     */
+    @Test
+    void findPending_ShouldExcludeDeniedAndApprovedSites() {
+        List<AdoptionSiteDTO> sites = adoptionSiteService.findPending();
+
+        assertFalse(sites.stream().anyMatch(s -> s.status() == 'A' || s.status() == 'D'),
+            "No returned sites should have a status of 'A' or 'D'");
+    }
+
+    // -------------------------------------------------------------------------
     // submitNewSite
     // -------------------------------------------------------------------------
 
@@ -96,11 +179,12 @@ class AdoptionSiteServiceTest extends PfaBase {
      */
     @Test
     void submitNewSite_ShouldSaveAndReturnDTO_WhenUrlIsNew() {
-        NewAdoptionSiteRequest request = new NewAdoptionSiteRequest(
+        AdoptionSiteRequest request = new AdoptionSiteRequest(
             "https://brand-new-shelter-" + System.nanoTime() + ".org",
             "New Shelter",
             "info@newshelter.org",
-            "555-0001"
+            "555-0001",
+            0.0
         );
 
         AdoptionSiteDTO result = adoptionSiteService.submitNewSite(request);
@@ -116,11 +200,12 @@ class AdoptionSiteServiceTest extends PfaBase {
      */
     @Test
     void submitNewSite_ShouldThrowSiteAlreadyExistsException_WhenUrlIsDuplicate() {
-        NewAdoptionSiteRequest duplicate = new NewAdoptionSiteRequest(
+        AdoptionSiteRequest duplicate = new AdoptionSiteRequest(
             testSite.getUrl(),
             "Duplicate Shelter",
             "other@email.org",
-            "555-0002"
+            "555-0002",
+            0.0
         );
 
         assertThrows(SiteAlreadyExistsException.class,
@@ -134,16 +219,63 @@ class AdoptionSiteServiceTest extends PfaBase {
         assertEquals(1, count, "Should be exactly one site with this URL");
     }
 
+
     // -------------------------------------------------------------------------
-    // approveNewSiteRequest
+    // approveSite
+    // -------------------------------------------------------------------------
+ 
+    /**
+     * Verifies that edits made to a site are persisted to the database
+     * */
+    @Test
+    void editSite_ShouldPersistChanges() {
+        AdoptionSite old = adoptionSiteRepository.findById(testSite.getSiteId()).orElseThrow();
+
+        AdoptionSiteRequest request = new AdoptionSiteRequest(
+            "https://edited-shelter-" + System.nanoTime() + ".org",
+            "Edited Shelter",
+            "info@editedshelter.org",
+            "555-0003",
+            0.2
+        );
+        adoptionSiteService.editSite(request, testSite.getSiteId());
+        AdoptionSite updated = adoptionSiteRepository.findById(testSite.getSiteId()).orElseThrow();
+
+        assertEquals(old.getSiteId(), updated.getSiteId());
+        assertNotEquals(old.getUrl(), updated.getUrl());
+        assertNotEquals(old.getName(), updated.getName());
+        assertNotEquals(old.getEmail(), updated.getEmail());
+        assertNotEquals(old.getPhone(), updated.getPhone());
+    }
+
+
+    /**
+     * Verifies that approving a nonexistent ID throws ResourceNotFoundException.
+     */
+    @Test
+    void editSite_ShouldThrowResourceNotFoundException_WhenIdDoesNotExist() {
+        AdoptionSiteRequest request = new AdoptionSiteRequest(
+            "https://edited-shelter-" + System.nanoTime() + ".org",
+            "Edited Shelter",
+            "info@editedshelter.org",
+            "555-0004",
+            0.3
+        );
+        assertThrows(ResourceNotFoundException.class,
+            () -> adoptionSiteService.editSite(request, 999999));
+    }
+
+
+    // -------------------------------------------------------------------------
+    // approveSite
     // -------------------------------------------------------------------------
 
     /**
      * Verifies that approving a site persists status 'A' to the database.
      */
     @Test
-    void approveNewSiteRequest_ShouldPersistApprovedStatus() {
-        adoptionSiteService.approveNewSiteRequest(testSite.getSiteId());
+    void approveSite_ShouldPersistApprovedStatus() {
+        adoptionSiteService.approveSite(testSite.getSiteId());
 
         AdoptionSite updated = adoptionSiteRepository.findById(testSite.getSiteId()).orElseThrow();
         assertEquals('A', updated.getStatus());
@@ -153,21 +285,21 @@ class AdoptionSiteServiceTest extends PfaBase {
      * Verifies that approving a nonexistent ID throws ResourceNotFoundException.
      */
     @Test
-    void approveNewSiteRequest_ShouldThrowResourceNotFoundException_WhenIdDoesNotExist() {
+    void approveSite_ShouldThrowResourceNotFoundException_WhenIdDoesNotExist() {
         assertThrows(ResourceNotFoundException.class,
-            () -> adoptionSiteService.approveNewSiteRequest(999999));
+            () -> adoptionSiteService.approveSite(999999));
     }
 
     // -------------------------------------------------------------------------
-    // denyNewSiteRequest
+    // denySite
     // -------------------------------------------------------------------------
 
     /**
      * Verifies that denying a site persists status 'D' to the database.
      */
     @Test
-    void denyNewSiteRequest_ShouldPersistDeniedStatus() {
-        adoptionSiteService.denyNewSiteRequest(testSite.getSiteId());
+    void denySite_ShouldPersistDeniedStatus() {
+        adoptionSiteService.denySite(testSite.getSiteId());
 
         AdoptionSite updated = adoptionSiteRepository.findById(testSite.getSiteId()).orElseThrow();
         assertEquals('D', updated.getStatus());
@@ -177,8 +309,8 @@ class AdoptionSiteServiceTest extends PfaBase {
      * Verifies that denying a nonexistent ID throws ResourceNotFoundException.
      */
     @Test
-    void denyNewSiteRequest_ShouldThrowResourceNotFoundException_WhenIdDoesNotExist() {
+    void denySite_ShouldThrowResourceNotFoundException_WhenIdDoesNotExist() {
         assertThrows(ResourceNotFoundException.class,
-            () -> adoptionSiteService.denyNewSiteRequest(999999));
+            () -> adoptionSiteService.denySite(999999));
     }
 }
