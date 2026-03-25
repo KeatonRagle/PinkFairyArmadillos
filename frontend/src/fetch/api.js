@@ -71,3 +71,10 @@ export function getAllPets() {
     method: "GET"
   });
 }
+
+export function submitSite(contribution) {
+  return apiFetchAuthenticated("/api/contributor/submitSite", {
+    method: "POST",
+    body: JSON.stringify(contribution),
+  });
+}

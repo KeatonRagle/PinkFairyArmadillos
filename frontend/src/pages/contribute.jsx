@@ -1,15 +1,14 @@
 import { useEffect, useState } from 'react'
 import HomeHeader from '../components/header'
 import HomeFooter from '../components/footer'
+import { submitSite } from '../fetch/api'
 import '../styling/contribute.css'
 
-
-const CONTRIBUTIONS_KEY = 'pfa_contributions'
 
 export default function Contribute() {
 
 	const [formData, setFormData] = useState({
-		link: '',
+		url: '',
 		name: '',
 		email: '',
 		phone: '',
@@ -33,23 +32,17 @@ export default function Contribute() {
 		event.preventDefault()
 		setError('')
 		setSuccess('')
-
 		setLoading(true)
 		try {
-
-			const contributions = JSON.parse(localStorage.getItem(CONTRIBUTIONS_KEY) || '[]')
-			const newContribution = {
-				id: Date.now(),
-				status: 'PENDING',
-				submittedAt: new Date().toISOString(),
-				...formData,
-			}
-
-			localStorage.setItem(CONTRIBUTIONS_KEY, JSON.stringify([newContribution, ...contributions]))
+            await submitSite(formData)
 			setSuccess('Contribution submitted for admin review.')
-			setFormData({ link: '', name: '', email: '', phone: '' })
-		} catch (submitError) {
-			setError(submitError?.message || 'Failed to submit contribution.')
+			setFormData({ url: '', name: '', email: '', phone: '' })
+		} catch (err) {
+            if (err.status === 409) {
+                setError('Site has already been submitted')
+            } else {
+                setError('Failed to submit contribution.')
+            }
 		} finally {
 			setLoading(false)
 		}
@@ -62,7 +55,7 @@ export default function Contribute() {
 			<main className="contribute-main">
 				<form className="contribute-form" onSubmit={handleSubmit}>
 					<h1>Contribute</h1>
-					<input name="link" type="url" placeholder="Link" value={formData.link} onChange={handleChange} required />
+					<input name="url" type="url" placeholder="Link" value={formData.url} onChange={handleChange} required />
 					<input name="name" type="text" placeholder="Name" value={formData.name} onChange={handleChange} required />
 					<input name="email" type="email" placeholder="Email" value={formData.email} onChange={handleChange} required />
 					<input name="phone" type="text" placeholder="Phone Number" value={formData.phone} onChange={handleChange} required />
