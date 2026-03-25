@@ -2,12 +2,14 @@ package com.pink.pfa.models;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
-import jakarta.persistence.ManyToOne;
-import jakarta.persistence.JoinColumn;
 import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
+import jakarta.persistence.Table;
+import jakarta.persistence.UniqueConstraint;
 import lombok.Data;
 
 
@@ -33,13 +35,17 @@ import lombok.Data;
  */
  @Data
  @Entity
+ @Table(uniqueConstraints = {
+    @UniqueConstraint(columnNames = {"name", "breed", "pet_type"})
+ })
  public class Pet {
 	
 	
 	/** Primary key identifier for the pet (auto-generated). */
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Integer pet_id;
+	@Column(name = "pet_id")
+    private Integer petId;
 	
 	
 	/** Foreign key identifier for the adoptionSite. */
@@ -60,7 +66,7 @@ import lombok.Data;
 	
 	/** Pet's age. */
 	@Column(name = "age", nullable = false)
-	private int age;
+	private Integer age;
 	
 	
 	/** Pet's gender. */
@@ -70,7 +76,7 @@ import lombok.Data;
 	
 	/** Type of pet. */
 	@Column(name = "pet_type", nullable = false)
-	private String pet_type;
+	private String petType;
 	
 	
 	/** Location of pet. */
@@ -79,20 +85,27 @@ import lombok.Data;
 	
 	
 	/** Pet's price. */
-	@Column(name = "price", nullable = false)
-	private double price;
+	@Column(name = "price", nullable = true)
+	private Double price;
 	
 	
 	/** Pet's status. */
 	@Column(name = "pet_status", nullable = false)
-	private String pet_status;
+	private String petStatus;
 	
 	
 	/** Pet's compatability score with User. */
 	@Column(name = "compatibility_score", nullable = true)
-	private int compatibility_score;
+	private int compatibilityScore;
+
+	/** Pet's image url. */
+	@Column(name = "img_url", nullable = true)
+	private String imgUrl;
 	
-	
+	/** Pet's size. */
+	@Column(name = "pet_size", nullable = true)
+    private String size;
+
 	/** Default constructor required by JPA. */
 	public Pet() {
 	}
@@ -111,95 +124,18 @@ import lombok.Data;
      * @param pet_status pet's adoption status
      * @param compatability_score pet's listed compatability score
      */
-	public Pet(String name, String breed, int age, char gender, String pet_type, String location, double price, String pet_status, int compatability_score) {
+	public Pet(String name, String breed, int age, char gender, 
+		String pet_type, String location, double price, 
+		String petStatus, int compatibilityScore
+	) {
 		this.name = name;
 		this.breed = breed;
 		this.age = age;
 		this.gender = gender;
-		this.pet_type = pet_type;
+		this.petType = pet_type;
 		this.location = location;
 		this.price = price;
-		this.pet_status = pet_status;
-		this.compatibility_score = compatability_score;
-	}
-	
-	
-	/*+++ Getters +++*/
-	public Integer getPet_id() {
-		return pet_id;
-	}
-	
-	public String getName() {
-		return name;
-	}
-	
-	public String getBreed() {
-		return breed;
-	}
-	
-	public int getAge() {
-		return age;
-	}
-	
-	public char getGender() {
-		return gender;
-	}
-	
-	public String getPet_type() {
-		return pet_type;
-	}
-	
-	public String getLocation() {
-		return location;
-	}
-	
-	public double getPrice() {
-		return price;
-	}
-	
-	public String getPet_status() {
-		return pet_status;
-	}
-	
-	public int getCompatability_score() {
-		return compatibility_score;
-	}
-	
-	
-	/*+++ Setters +++*/
-	public void setName(String name) {
-		this.name = name;
-	}
-	
-	public void setBreed(String breed) {
-		this.breed = breed;
-	}
-	
-	public void setAge(int age) {
-		this.age = age;
-	}
-	
-	public void setGender(char gender) {
-		this.gender = gender;
-	}
-	
-	public void setPet_type(String pet_type) {
-		this.pet_type = pet_type;
-	}
-	
-	public void setLocation(String location) {
-		this.location = location;
-	}
-	
-	public void setPrice(double price) {
-		this.price = price;
-	}
-	
-	public void setPet_status(String pet_status) {
-		this.pet_status = pet_status;
-	}
-	
-	public void setCompatability_score(int compatability_score) {
-		this.compatibility_score = compatability_score;
+		this.petStatus = petStatus;
+		this.compatibilityScore = compatibilityScore;
 	}
  }

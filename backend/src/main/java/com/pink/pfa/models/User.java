@@ -41,7 +41,8 @@ public class User {
     /** Primary key identifier for the user (auto-generated). */
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Integer user_id;
+    @Column(name = "user_id")
+    private Integer userId;
 	
 	
     /** User's display name (required). */
@@ -74,7 +75,6 @@ public class User {
      * USER represents a standard authenticated user.
      * ADMIN represents a privileged user with elevated permissions.
      */
-    // changes
     public enum Role { ROLE_USER, ROLE_CONTRIBUTOR, ROLE_ADMIN }
 
     /** Default constructor required by JPA. */
@@ -101,8 +101,8 @@ public class User {
 
 
     /*+++ Getters +++*/
-    public Integer getUser_id() {
-        return user_id;
+    public Integer getUserId() {
+        return userId;
     }
 
     public String getName() {
