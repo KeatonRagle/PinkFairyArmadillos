@@ -1,9 +1,8 @@
 package com.pink.pfa.controllers;
 
-import java.time.Instant;
 import java.util.List;
-import java.util.Map;
 
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -11,6 +10,8 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.pink.pfa.models.AdoptionSite;
 import com.pink.pfa.models.Pet;
+import com.pink.pfa.models.datatransfer.PetDTO;
+import com.pink.pfa.services.AdoptionSiteService;
 import com.pink.pfa.services.DatabaseBackupService;
 import com.pink.pfa.services.PetService;
 import com.pink.pfa.services.WebScraperService;
@@ -41,11 +42,18 @@ public class PetController {
     private final PetService petService;
     private final WebScraperService webScraperService;
     private final DatabaseBackupService databaseBackupService;
+    private final AdoptionSiteService adoptionSiteService;
 
-    public PetController (PetService petService, WebScraperService webScraperService, DatabaseBackupService databaseBackupService) {
+    public PetController (
+        PetService petService,
+        WebScraperService webScraperService, 
+        DatabaseBackupService databaseBackupService,
+        AdoptionSiteService adoptionSiteService
+    ) {
         this.petService = petService;
         this.webScraperService = webScraperService;
         this.databaseBackupService = databaseBackupService;
+        this.adoptionSiteService = adoptionSiteService;
     }
  
 
@@ -55,11 +63,12 @@ public class PetController {
      * @return a map containing a {@code Pets} list and a {@code Timestamp} string
      */
     @GetMapping("/getAll")
-    public Map<String, Object> getAllPets() {
-        return Map.of(
-            "Pets: ", petService.findAll(),
-            "Timestamp: ", Instant.now().toString()
-        );
+    public ResponseEntity<List<PetDTO>> getAllPets() {
+        try {
+            return ResponseEntity.ok().body(petService.findAll());
+        } catch (Exception e) {
+            return ResponseEntity.internalServerError().build();
+        }
     }
 
  
@@ -70,13 +79,14 @@ public class PetController {
      * @return a map containing the matched {@code Pet} and a {@code Timestamp} string
      */
     @GetMapping("/{id}")
-    public Map<String, Object> getPetById(
+    public ResponseEntity<PetDTO> getPetById(
         @PathVariable Integer id
     ) {
-        return Map.of(
-            "Pet: ", petService.findById(id),
-            "Timestamp: ", Instant.now().toString()
-        );
+        try {
+            return ResponseEntity.ok().body(petService.findById(id));
+        } catch (Exception e) {
+            return ResponseEntity.internalServerError().build();           
+        }
     }
 
 
@@ -87,14 +97,16 @@ public class PetController {
      * @return a map containing the matched {@code Pet} and a {@code Timestamp} string
      */
     @GetMapping("/scrape")
-    public List<Pet> scrapeForPets () {
-        List<AdoptionSite> sites = List.of(new AdoptionSite("Dallas County", "", 0, "https://hsdallascounty.org"));
-        databaseBackupService.backup("pre_scrape");
-
-        List<Pet> scrapedPets = webScraperService.runScraper(sites);
-        
-        petService.sync(scrapedPets);
-        return scrapedPets;
+    public ResponseEntity<Void> scrapeForPets () {
+        try {
+            List<AdoptionSite> sites = adoptionSiteService.findAllForScrape();
+            databaseBackupService.backup("pre_scrape");
+            List<Pet> scrapedPets = webScraperService.runScraper(sites);
+            petService.sync(scrapedPets);
+            return ResponseEntity.ok().build();
+        } catch (Exception e) {
+            return ResponseEntity.internalServerError().build();
+        }
     }
 
 }

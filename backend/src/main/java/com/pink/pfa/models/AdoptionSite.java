@@ -38,18 +38,25 @@ public class AdoptionSite {
 	private String name;
 	
 	
-	/** Site's listed contact info. */
-	@Column(name = "contact_info", nullable = false)
-	private String contactInfo;
+	/** Site's listed phone number. */
+	@Column(name = "phone", nullable = true)
+	private String phone;
 	
+	/** Site's listed email. */
+	@Column(name = "email", nullable = true)
+	private String email;
 	
 	/** Site's user-determined rating. */
 	@Column(name = "rating", nullable = true)
-	private double rating;
+	private Double rating;
 	
-	
-	/** Optional location metadata associated with the site. */
-    private String location;
+	/** site url. */
+	@Column(name = "url", nullable = false)
+    private String url;
+
+	/** approval status. */
+	@Column(name = "status", nullable = false)
+    private char status = 'P';
 	
 	
 	/** Default constructor required by JPA. */
@@ -64,10 +71,11 @@ public class AdoptionSite {
      * @param rating user-determined rating
      * @param location optional location metadata
      */
-	public AdoptionSite(String name, String contactInfo, double rating, String location) {
+	public AdoptionSite(String name, String phone, String email, double rating, String url) {
 		this.name = name;
-		this.contactInfo = contactInfo;
+		this.phone = phone;
+        this.email = email;
 		this.rating = rating;
-		this.location = location;
+		this.url = url;
 	}
 }
