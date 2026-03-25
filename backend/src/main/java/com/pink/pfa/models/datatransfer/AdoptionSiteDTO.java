@@ -10,6 +10,7 @@ import com.pink.pfa.models.AdoptionSite;
  * ensuring only intended fields are serialized and returned to the client.
  */
 public record AdoptionSiteDTO(
+    Integer siteId,
     String url,
     String name,
     String email,
@@ -25,6 +26,7 @@ public record AdoptionSiteDTO(
      */
     public static AdoptionSiteDTO fromEntity(AdoptionSite site) {
         return new AdoptionSiteDTO(
+            site.getSiteId(),
             site.getUrl(),
             site.getName(),
             site.getEmail(),

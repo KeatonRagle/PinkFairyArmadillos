@@ -39,7 +39,6 @@ public class ContributorController {
      */   
     @PostMapping("/submitSite")
     public ResponseEntity<AdoptionSiteDTO> submitNewSite(@RequestBody AdoptionSiteRequest request) {
-        System.out.println("submit site endpoint hit");
         try {
             return ResponseEntity.ok().body(adoptionSiteService.submitNewSite(request));
         } catch (SiteAlreadyExistsException e){

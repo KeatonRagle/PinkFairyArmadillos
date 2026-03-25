@@ -78,3 +78,33 @@ export function submitSite(contribution) {
     body: JSON.stringify(contribution),
   });
 }
+
+export function getApprovedSites() {
+  return apiFetchAuthenticated("/api/admin/getApprovedSites", { 
+    method: "GET" 
+  });
+}
+
+export function getDeniedSites() {
+  return apiFetchAuthenticated("/api/admin/getDeniedSites", { 
+    method: "GET" 
+  });
+}
+
+export function getPendingSites() {
+  return apiFetchAuthenticated("/api/admin/getPendingSites", { 
+        method: "GET" 
+  });
+}
+
+export function approveSite(id) {
+  return apiFetchAuthenticated(`/api/admin/approveSite/${id}`, { 
+    method: "PATCH"
+  });
+}
+
+export function denySite(id) {
+  return apiFetchAuthenticated(`/api/admin/denySite/${id}`, { 
+    method: "PATCH" 
+  });
+}

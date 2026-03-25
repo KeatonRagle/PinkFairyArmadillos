@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react'
+import { getApprovedSites, getDeniedSites, getPendingSites, approveSite, denySite } from '../fetch/api'
 import HomeHeader from '../components/header'
 import '../styling/request.css'
 
@@ -7,17 +8,17 @@ import '../styling/request.css'
 const CONTRIBUTIONS_KEY = 'pfa_contributions'
 const STATUS_SECTIONS = [
 	{
-		key: 'PENDING',
+		key: 'P',
 		label: 'Pending',
 		emptyMessage: 'No pending contributions.',
 	},
 	{
-		key: 'APPROVED',
+		key: 'A',
 		label: 'Approved',
 		emptyMessage: 'No approved contributions.',
 	},
 	{
-		key: 'DENIED',
+		key: 'D',
 		label: 'Denied',
 		emptyMessage: 'No denied contributions.',
 	},
@@ -43,15 +44,18 @@ export default function Request() {
 	const loadContributions = async () => {
 		setError('')
 		setLoading(true)
-		try {
-			// If the key is missing, default to an empty list.
-			const data = JSON.parse(localStorage.getItem(CONTRIBUTIONS_KEY) || '[]')
-			setContributions(Array.isArray(data) ? data : [])
-		} catch (fetchError) {
-			setError(fetchError?.message || 'Failed to load contributions.')
-		} finally {
-			setLoading(false)
-		}
+        try {
+            const [pending, approved, denied] = await Promise.all([
+                getPendingSites(),
+                getApprovedSites(),
+                getDeniedSites(),
+            ])
+            setContributions([...pending, ...approved, ...denied])
+        } catch (err) {
+            setError('Failed to load contributions.')
+        } finally {
+            setLoading(false)
+        }
 	}
 
 	useEffect(() => {
@@ -72,16 +76,31 @@ export default function Request() {
 		}
 	}
 
-	// Deletes a contribution by ID, updates localStorage, and syncs UI state.
-	const handleDelete = async (id) => {
-		try {
-			const updatedList = contributions.filter((item) => item.id !== id)
-			localStorage.setItem(CONTRIBUTIONS_KEY, JSON.stringify(updatedList))
-			setContributions(updatedList)
-		} catch (deleteError) {
-			setError(deleteError?.message || 'Failed to delete contribution.')
-		}
-	}
+    const handleApprove = async (id) => {
+        try {
+            await approveSite(id)
+            await loadContributions()
+        } catch (err) {
+            if (err.status === 404) {
+                setError('Adoption site not found.')
+            } else {
+                setError('Failed to approve site.')
+            }
+        }
+    }
+
+    const handleDeny = async (id) => {
+        try {
+            await denySite(id)
+            await loadContributions()
+        } catch (err) {
+            if (err.status === 404) {
+                setError('Adoption site not found.')
+            } else {
+                setError('Failed to deny site.')
+            }
+        }
+    }
 
 	const contributionsByStatus = STATUS_SECTIONS.reduce((sections, section) => {
 		sections[section.key] = contributions.filter((item) => item.status === section.key)
@@ -115,25 +134,21 @@ export default function Request() {
 								) : (
 									<div className="request-list">
 										{contributionsByStatus[section.key].map((item) => (
-											<article key={item.id} className="request-card">
+											<article key={item.siteId} className="request-card">
 												<p><strong>Status:</strong> {item.status}</p>
-												<p><strong>Link:</strong> <a href={item.link} target="_blank" rel="noreferrer">{item.link}</a></p>
+                                                <p><strong>Link:</strong> <a href={item.url} target="_blank" rel="noreferrer">{item.url}</a></p>
 												<p><strong>Name:</strong> {item.name}</p>
 												<p><strong>Email:</strong> {item.email}</p>
 												<p><strong>Phone:</strong> {item.phone}</p>
 												<p><strong>Date Submitted:</strong> {new Date(item.submittedAt).toLocaleDateString()}</p>
 
 												<div className="request-actions">
-													{item.status !== 'PENDING' && (
-														<button type="button" onClick={() => handleStatusChange(item.id, 'PENDING')}>Mark Pending</button>
+													{item.status !== 'A' && (
+														<button type="button" onClick={() => handleApprove(item.siteId, 'APPROVED')}>Approve</button>
 													)}
-													{item.status !== 'APPROVED' && (
-														<button type="button" onClick={() => handleStatusChange(item.id, 'APPROVED')}>Approve</button>
+													{item.status !== 'D' && (
+														<button type="button" onClick={() => handleDeny(item.siteId, 'DENIED')}>Deny</button>
 													)}
-													{item.status !== 'DENIED' && (
-														<button type="button" onClick={() => handleStatusChange(item.id, 'DENIED')}>Deny</button>
-													)}
-													<button type="button" onClick={() => handleDelete(item.id)} className="request-delete-btn">Remove</button>
 												</div>
 											</article>
 										))}

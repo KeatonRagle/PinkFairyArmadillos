@@ -137,9 +137,19 @@ public class AdminController {
         }
     }
 
+    @GetMapping("/getPendingSites")
+    public ResponseEntity<List<AdoptionSiteDTO>> getPendingSites() {
+        try {
+            return ResponseEntity.ok().body(adoptionSiteService.findPending());
+        } catch (Exception e) {
+            return ResponseEntity.internalServerError().build();
+        }
+    }
+
 
     @PatchMapping("/approveSite/{id}")
     public ResponseEntity<Void> approveSite(@PathVariable int id){
+        System.out.println("approve site endpoint hit");
         try {
             adoptionSiteService.approveSite(id);
             return ResponseEntity.noContent().build();
@@ -153,6 +163,7 @@ public class AdminController {
 
     @PatchMapping("/denySite/{id}")
     public ResponseEntity<Void> denySite(@PathVariable int id){
+        System.out.println("deny site endpoint hit");
         try {
             adoptionSiteService.denySite(id);
             return ResponseEntity.noContent().build();
@@ -173,12 +184,5 @@ public class AdminController {
         } catch (Exception e) {
             return ResponseEntity.internalServerError().build();
         }
-    }
-
-    // changes
-    @PatchMapping("/{id}/promote-contributor")
-    public ResponseEntity<Void> promoteContributor(@PathVariable int id) {
-        userService.promoteToContributor(id);
-        return ResponseEntity.noContent().build();
     }
 }
