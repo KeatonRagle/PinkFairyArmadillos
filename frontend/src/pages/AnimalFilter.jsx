@@ -159,20 +159,18 @@ export default function AnimalFilter() {
 
 			try {
 				// Fetch all pets (no server-side filters) and filter client-side
-				const allPets = await getFilteredPets({})
+                const allPets = await getFilteredPets({
+                    petType: selectedPetType,
+                    gender: selectedGender,
+                    breed: debouncedBreedSearchText,
+                    startAge: selectedAgeRange?.startAge,
+                    endAge: selectedAgeRange?.endAge,
+                    size: selectedSize,
+                })
 				const petsArray = Array.isArray(allPets) ? allPets : []
 
-				const filtered = filterPetsClientSide(petsArray, {
-					petType: selectedPetType,
-					gender: selectedGender,
-					startAge: selectedAgeRange?.startAge,
-					endAge: selectedAgeRange?.endAge,
-					breed: debouncedBreedSearchText,
-					size: selectedSize,
-				})
-
 				if (!isCancelled) {
-					setAnimals(filtered.map(mapPetToAnimal))
+					setAnimals(petsArray.map(mapPetToAnimal))
 				}
 			} catch {
 				if (!isCancelled) {
@@ -290,7 +288,7 @@ export default function AnimalFilter() {
 						)}
 					</div>
 
-					<div className={`age-filter-group ${openFilter === 'age' ? 'open' : ''}`}>
+                    {/* <div className={`age-filter-group ${openFilter === 'age' ? 'open' : ''}`}>
 						<button
 							type="button"
 							className="filter-dropdown age-toggle"
@@ -314,7 +312,7 @@ export default function AnimalFilter() {
 						)}
 					</div>
 
-					<div className={`compatibility-filter-group ${openFilter === 'compatibility' ? 'open' : ''}`}>
+                    <div className={`compatibility-filter-group ${openFilter === 'compatibility' ? 'open' : ''}`}>
 						<button
 							type="button"
 							className="filter-dropdown compatibility-toggle"
@@ -374,7 +372,7 @@ export default function AnimalFilter() {
 								<button type="button" className="price-option-button">High: &gt; $200</button>
 							</div>
 						)}
-					</div>
+					</div> */}
 				</section>
 
 				<section className="animal-results" aria-label="Animal results">
