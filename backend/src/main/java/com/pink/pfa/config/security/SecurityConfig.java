@@ -100,7 +100,7 @@ public class SecurityConfig {
             "http://localhost:3000",
             "https://adoptpetsforall.com"
         ));
-        config.setAllowedMethods(List.of("GET","POST","PUT","DELETE","OPTIONS"));
+        config.setAllowedMethods(List.of("GET","POST","PUT","DELETE","OPTIONS", "PATCH"));
         config.setAllowedHeaders(List.of("Authorization","Content-Type"));
         config.setExposedHeaders(List.of("Authorization"));
         // uncomment if we want to use cookies/session auth

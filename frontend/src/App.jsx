@@ -8,6 +8,9 @@ import AboutUs from './pages/AboutUs.jsx'
 import Help from './pages/help.jsx'
 import DiscussionBoard from './pages/DiscussionBoard.jsx'
 import ShelterInfo from './pages/ShelterInfo.jsx'
+import Contribute from './pages/contribute.jsx'
+import Request from './pages/request.jsx'
+import AdoptersInfo from './pages/adoptersinfo.jsx'
 
 function App() {
   return (
@@ -23,6 +26,9 @@ function App() {
         <Route path="/shelter-info" element={<ShelterInfo />} />
         <Route path="/About" element={<AboutUs />} />
         <Route path="/help" element={<Help />} />
+        <Route path="/contribute" element={<Contribute />} />
+        <Route path="/request" element={<Request />} />
+        <Route path="/adopters-info" element={<AdoptersInfo />} />
       </Routes>
     </Router>
   )

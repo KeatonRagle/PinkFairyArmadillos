@@ -717,3 +717,11 @@ body.animalfilter-body {
 	text-align: left;
 	cursor: pointer;
 }
+
+.gender-option-button:hover,
+.size-option-button:hover,
+.age-option-button:hover,
+.price-option-button:hover,
+.compatibility-option-item:hover {
+	background: #e5e7eb;
+}
