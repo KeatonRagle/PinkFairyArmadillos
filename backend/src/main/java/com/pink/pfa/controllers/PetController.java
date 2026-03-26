@@ -6,6 +6,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.pink.pfa.models.AdoptionSite;
@@ -66,6 +67,22 @@ public class PetController {
     public ResponseEntity<List<PetDTO>> getAllPets() {
         try {
             return ResponseEntity.ok().body(petService.findAll());
+        } catch (Exception e) {
+            return ResponseEntity.internalServerError().build();
+        }
+    }
+
+    @GetMapping("/getFiltered")
+    public ResponseEntity<List<PetDTO>> getFilteredPets(
+        @RequestParam(required = false) String petType,
+        @RequestParam(required = false) String gender,
+        @RequestParam(required = false) Integer startAge,
+        @RequestParam(required = false) Integer endAge,
+        @RequestParam(required = false) String breed,
+        @RequestParam(required = false) String size
+    ) {
+        try {
+            return ResponseEntity.ok().body(petService.findByFilter(petType, gender, startAge, endAge, breed, size));
         } catch (Exception e) {
             return ResponseEntity.internalServerError().build();
         }

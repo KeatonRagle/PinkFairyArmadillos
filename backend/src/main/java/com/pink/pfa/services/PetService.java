@@ -40,7 +40,6 @@ import jakarta.transaction.Transactional;
 @Service
 @RequestMapping("/api/pets")
 public class PetService {
-
     private static final Logger log = LoggerFactory.getLogger(PetService.class);
     private final PetRepository petRepository;
     private final AdoptionSiteRepository adoptionRepository;
@@ -87,6 +86,50 @@ public class PetService {
     public List<PetDTO> findByName(String name) {
         return petRepository.findByName(name)
             .stream()
+            .map(PetDTO::fromEntity)
+            .toList();
+    }
+
+    /**
+     * Fetches all pets by a given set of filters and returns it as a list of {@link PetDTO}.
+     * Throws an exception if the no pets exist.
+     *
+     * @param petType Type of the pet
+     * @param gender Gender of the pet
+     * @param startAge Starting Age range of the pet
+     * @param endAge Ending Age range of the pet
+     * @param breed Breed of the pet
+     * @param size Size of the pet
+     * @return list of {@link PetDTO} for the requested name
+     */ 
+    public List<PetDTO> findByFilter(String petType, String gender, Integer startAge, Integer endAge, String breed, String size) {
+        List<Pet> allPets = petRepository.findAll();
+
+        if (petType != null) {
+            allPets = allPets.stream().filter(pet -> pet.getPetType().equals(petType)).toList();
+        }
+
+        if (gender != null) {
+            allPets = allPets.stream().filter(pet -> String.valueOf(pet.getGender()).equals(gender)).toList();
+        }
+
+        if (startAge == null && endAge != null) {
+            allPets = allPets.stream().filter(pet -> pet.getAge() <= endAge).toList();
+        } else if (startAge != null && endAge == null) {
+            allPets = allPets.stream().filter(pet -> pet.getAge() >= startAge).toList();
+        } else if (startAge != null && endAge != null) {
+            allPets = allPets.stream().filter(pet -> pet.getAge() >= startAge && pet.getAge() <= endAge).toList();
+        }
+
+        if (breed != null) {
+            allPets = allPets.stream().filter(pet -> ((String) pet.getBreed()).equals(breed)).toList();
+        }
+
+        if (size != null) {
+            allPets = allPets.stream().filter(pet -> ((String) pet.getSize()).equals(size)).toList();
+        }
+
+        return allPets.stream()
             .map(PetDTO::fromEntity)
             .toList();
     }
@@ -189,8 +232,7 @@ public class PetService {
             pet.getName().toLowerCase().trim(),
             pet.getBreed().toLowerCase().trim(),
             pet.getPetType().toLowerCase().trim(),
-            String.valueOf(pet.getGender()).toLowerCase().trim(),
-            Integer.toString(pet.getAge()).trim()
+            String.valueOf(pet.getGender()).toLowerCase().trim()
         ).replaceAll("\\s+", " ");
     }
 
@@ -199,7 +241,8 @@ public class PetService {
     private boolean hasChanges(Pet existing, Pet scraped) {
         return !existing.getLocation().equals(scraped.getLocation())
             || existing.getPrice() != scraped.getPrice()
-            || !existing.getPetStatus().equals(scraped.getPetStatus());
+            || !existing.getPetStatus().equals(scraped.getPetStatus())
+            || existing.getAge() != scraped.getAge();
     }
 
     // Only update scraper-owned fields
@@ -207,5 +250,6 @@ public class PetService {
         existing.setLocation(scraped.getLocation());
         existing.setPrice(scraped.getPrice());
         existing.setPetStatus(scraped.getPetStatus());
+        existing.setAge(scraped.getAge());
     }
 }

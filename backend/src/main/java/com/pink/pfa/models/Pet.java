@@ -121,12 +121,13 @@ import lombok.Data;
      * @param pet_type is the pet a dog or cat
 	 * @param location website pet is on
 	 * @param price pet's listed price
+     * @param pet_size pet's size
      * @param pet_status pet's adoption status
      * @param compatability_score pet's listed compatability score
      */
 	public Pet(String name, String breed, int age, char gender, 
 		String pet_type, String location, double price, 
-		String petStatus, int compatibilityScore
+		String petSize, String petStatus, int compatibilityScore
 	) {
 		this.name = name;
 		this.breed = breed;
@@ -135,6 +136,7 @@ import lombok.Data;
 		this.petType = pet_type;
 		this.location = location;
 		this.price = price;
+		this.size = petSize;
 		this.petStatus = petStatus;
 		this.compatibilityScore = compatibilityScore;
 	}
