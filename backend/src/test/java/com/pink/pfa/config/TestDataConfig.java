@@ -53,17 +53,25 @@ public class TestDataConfig {
 
                 site = siteRepo.save(site);
                 
-                Pet dog = new Pet("Buddy", "Labrador Retriever", 3, 'M', "dog", "Austin, TX", 150.0, "available", 85);
+                Pet dog = new Pet("Buddy", "Labrador Retriever", 24, 'M', "Dog", "Austin, TX", 150.0, "Medium", "available", 85);
                 dog.setSite(site);
                 petRepo.save(dog);
 
-                Pet cat = new Pet("Luna", "Domestic Shorthair", 2, 'F', "cat", "Austin, TX", 75.0, "available", 90);
+                Pet dog2 = new Pet("Rex", "Golden Retriever", 104, 'F', "Dog", "Austin, TX", 150.0, "Large", "pending", 85);
+                dog2.setSite(site);
+                petRepo.save(dog2);
+
+                Pet dog3 = new Pet("Pal", "German Shephard", 50, 'M', "Dog", "Austin, TX", 150.0, "Large", "available", 85);
+                dog3.setSite(site);
+                petRepo.save(dog3);
+
+                Pet cat = new Pet("Luna", "Domestic Shorthair", 12, 'F', "Cat", "Austin, TX", 75.0, "Small", "available", 90);
                 cat.setSite(site);
                 petRepo.save(cat);
 
-                Pet dog2 = new Pet("Max", "German Shepherd", 5, 'M', "dog", "Austin, TX", 200.0, "pending", 70);
-                dog2.setSite(site);
-                petRepo.save(dog2);
+                Pet cat2 = new Pet("Sol", "Domestic Shorthair", 36, 'M', "Cat", "Austin, TX", 75.0, "Medium", "available", 90);
+                cat2.setSite(site);
+                petRepo.save(cat2);
             } catch (Exception ignored) {
                 // if duplicate or FK issue, ignore
             }

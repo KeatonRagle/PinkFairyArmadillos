@@ -28,7 +28,6 @@ import com.pink.pfa.models.Pet;
  */
 @Repository
 public interface PetRepository extends JpaRepository<Pet, Integer>{
-
     /**
      * Finds all pets with the given name.
      * Spring automatically derives the query from the method name.
