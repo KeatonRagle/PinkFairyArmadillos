@@ -43,12 +43,18 @@ export default function Signup() {
       const userObj = data.user
       //const displayName = userObj.username ?? userObj.name ?? userObj.email;
       const displayName = userObj.email;
+      // changes
+      const role = userObj.role;
 
-      setAuth(token, displayName);
+      setAuth(token, displayName, role);
 
       navigate('/home')
     } catch (err) {
-      setError(err?.message || "Failed to create account.")
+        if (err.status === 409) {
+            setError("An account with that email already exists.")
+        } else {
+            setError("Something went wrong. Please try again.")
+        }
     } finally {
       setLoading(false)
     }
@@ -111,7 +117,7 @@ export default function Signup() {
 
         <Text className="signup-text">
           Already have an account?{' '}
-          <Link to="/">
+          <Link to="/login">
             <Strong>Sign in</Strong>
           </Link>
         </Text>

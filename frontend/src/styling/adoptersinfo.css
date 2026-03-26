@@ -1,0 +1,107 @@
+.adoptersinfo-body {
+	background: #f8f8f8;
+}
+
+.adoptersinfo-page {
+	min-height: 100vh;
+	position: relative;
+	padding-bottom: 170px;
+}
+
+.adoptersinfo-main {
+	max-width: 960px;
+	margin: 2rem auto;
+	padding: 0 1rem;
+	display: flex;
+	flex-direction: column;
+	gap: 1.2rem;
+    font-family: 'Hind Kochi', sans-serif;
+}
+
+.adoptersinfo-hero {
+	background: #ffffff;
+	border-radius: 18px;
+	padding: 1.5rem;
+	box-shadow: 0 4px 24px rgba(0, 0, 0, 0.08);
+}
+
+.adoptersinfo-hero h1 {
+	margin: 0 0 0.6rem 0;
+	font-family: 'Hind Kochi', sans-serif;
+	color: #b44b25;
+	text-align: center;
+}
+
+.adoptersinfo-hero p {
+	margin: 0;
+	line-height: 1.5;
+	color: #474747;
+	text-align: center;
+}
+
+.adoptersinfo-card {
+	background: #ffffff;
+	border-radius: 18px;
+	padding: 1.4rem;
+	box-shadow: 0 4px 24px rgba(0, 0, 0, 0.08);
+}
+
+.adoptersinfo-card h2 {
+	margin: 0 0 0.8rem 0;
+	font-family: 'Hind Kochi', sans-serif;
+	color: #b44b25;
+	font-weight: 700;
+}
+
+.adoptersinfo-card h3 {
+	margin: 1rem 0 0.45rem 0;
+	color: #b44b25;
+	font-weight: 400;
+}
+
+.adoptersinfo-card p {
+	margin: 0;
+	line-height: 1.6;
+	color: #3f3f3f;
+}
+
+.adoptersinfo-card p,
+.adoptersinfo-card ul,
+.adoptersinfo-card li {
+	text-align: left;
+}
+
+.adoptersinfo-card ul {
+	margin: 0;
+	padding-left: 1.3rem;
+	color: #3f3f3f;
+	line-height: 1.6;
+}
+
+.adoptersinfo-card li + li {
+	margin-top: 0.45rem;
+}
+
+.rule-grid {
+	display: grid;
+	grid-template-columns: repeat(3, minmax(0, 1fr));
+	gap: 0.8rem;
+}
+
+.rule-grid article {
+	background: #f8f8f8;
+	border-radius: 14px;
+	padding: 0.9rem;
+}
+
+.rule-grid h3 {
+	margin-top: 0;
+	color: #b44b25;
+	font-weight: 400;
+}
+
+@media (max-width: 860px) {
+	.rule-grid {
+		grid-template-columns: 1fr;
+	}
+}

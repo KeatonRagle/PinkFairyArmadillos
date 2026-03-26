@@ -1,0 +1,76 @@
+
+.contribute-page {
+	position: relative;
+}
+
+.contribute-main {
+	max-width: 680px;
+	margin: 2rem auto;
+
+}
+
+.contribute-form h1 {
+	font-family: 'Hind Kochi', sans-serif;
+	font-weight: 300;
+	text-transform: uppercase;
+	margin: 0 0 0.5rem 0;
+	align-self: center;
+}
+
+.contribute-body {
+	background: #F8F8F8;
+}
+
+.contribute-form {
+	display: flex;
+	flex-direction: column;
+	gap: 1.0rem;
+	background: #F8F8F8;
+	border-radius: 20px;
+	padding: 2rem 1.75rem;
+	box-shadow: 0 4px 24px rgba(0, 0, 0, 0.12);
+}
+
+
+.contribute-form input {
+	width: 100%;
+	max-width: none;
+	min-width: 0;
+	height: auto;
+	margin: 0;
+	padding: 0.7rem 0.85rem;
+	font: inherit;
+	color: inherit;
+	background: #fff;
+	border: 1px solid #d1d5db;
+	border-radius: 15px;
+	box-sizing: border-box;
+	appearance: none;
+	-webkit-appearance: none;
+}
+
+.contribute-form input[type="email"] {
+	width: 100%;
+	max-width: none;
+	height: auto;
+	margin: 0;
+}
+
+.contribute-form button {
+	width: 100%;
+	height: 2.8rem;
+	padding: 0.7rem 0.85rem;
+	box-sizing: border-box;
+	border-radius: 15px;
+	font-size: 1.1rem;
+}
+
+.contribute-error {
+	color: #b44b25;
+	margin: -1.0rem 0 0 0;
+}
+
+.contribute-success {
+	color: #b44b25;
+	margin: -1.0rem 0 0 0;
+}

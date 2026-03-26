@@ -39,12 +39,20 @@ export default function Login() {
       const userObj = data.user
       //const displayName = userObj.username ?? userObj.name ?? userObj.email;
       const displayName = userObj.email;
+      // changes
+      const role = userObj.role;
 
-      setAuth(token, displayName);
+      setAuth(token, displayName, role);
 
       navigate('/home')
     } catch (err) {
-      setError(err?.message || "Login Failed")
+        if (err.status === 404) {
+            setError("No account found with that email.")
+        } else if (err.status === 401) {
+            setError("Incorrect password.")
+        } else {
+            setError("Something went wrong. Please try again.")
+        }
     } finally {
       setLoading(false)
     }

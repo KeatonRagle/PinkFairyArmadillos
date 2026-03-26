@@ -57,12 +57,12 @@ class PetServiceTest extends PfaBase {
     // -------------------------------------------------------------------------
 
     /**
-     * Verifies that findAll returns all three pets seeded by TestDataConfig.
+     * Verifies that findAll returns all five pets seeded by TestDataConfig.
      */
     @Test
     void findAll_ShouldReturnAllSeededPets() {
         List<PetDTO> pets = petService.findAll();
-        assertTrue(pets.size() >= 3, "Expected at least 3 seeded pets, got: " + pets.size());
+        assertTrue(pets.size() >= 5, "Expected at least 5 seeded pets, got: " + pets.size());
     }
 
     /**
@@ -117,7 +117,7 @@ class PetServiceTest extends PfaBase {
         PetDTO result = petService.findById(buddyId);
 
         assertEquals("Buddy", result.name());
-        assertEquals("dog", result.pet_type());
+        assertEquals("Dog", result.pet_type());
     }
 
     /**
@@ -128,6 +128,88 @@ class PetServiceTest extends PfaBase {
         assertThrows(Exception.class, () -> petService.findById(999999));
     }
 
+    // -------------------------------------------------------------------------
+    // findByFIlter
+    // -------------------------------------------------------------------------
+
+    /**
+     * Verifies that findByFilter returns all three dogs and all two cats seeded by TestDataConfig.
+     */
+    @Test
+    void findByFilter_ShouldReturnPetsByPetType() {
+        List<PetDTO> dogs = petService.findByFilter("Dog", null, null, null, null, null);
+        assertTrue(dogs.size() >= 3, "Expected at least 3 seeded pets, got: " + dogs.size());
+
+        List<PetDTO> cats = petService.findByFilter("Cat", null, null, null, null, null);
+        assertTrue(cats.size() >= 2, "Expected at least 2 seeded pets, got: " + cats.size());
+    }
+
+    /**
+     * Verifies that findByFilter returns all three male pets and all two female pets seeded by TestDataConfig.
+     */
+    @Test
+    void findByFilter_ShouldReturnPetsByGender() {
+        List<PetDTO> malePets = petService.findByFilter(null, "M", null, null, null, null);
+        assertTrue(malePets.size() >= 3, "Expected at least 3 seeded pets, got: " + malePets.size());
+
+        List<PetDTO> femalePets = petService.findByFilter(null, "F", null, null, null, null);
+        assertTrue(femalePets.size() >= 2, "Expected at least 2 seeded pets, got: " + femalePets.size());
+    }
+
+    /**
+     * Verifies that findByFilter returns pets within correct age ranges by TestDataConfig.
+     */
+    @Test
+    void findByFilter_ShouldReturnPetsByAge() {
+        List<PetDTO> youngPets = petService.findByFilter(null, null, null, 40, null, null);
+        assertTrue(youngPets.size() >= 3, "Expected at least 3 seeded pets, got: " + youngPets.size());
+
+        List<PetDTO> middlePets = petService.findByFilter(null, null, 20, 50, null, null);
+        assertTrue(middlePets.size() >= 3, "Expected at least 3 seeded pets, got: " + middlePets.size());
+
+        List<PetDTO> oldPets = petService.findByFilter(null, null, 30, null, null, null);
+        assertTrue(oldPets.size() >= 3, "Expected at least 3 seeded pets, got: " + oldPets.size());
+    }
+
+    /**
+     * Verifies that findByFilter returns all one golden retrievers and all two domestic shorthairs seeded by TestDataConfig.
+     */
+    @Test
+    void findByFilter_ShouldReturnPetsByBreed() {
+        List<PetDTO> goldenRetrievers = petService.findByFilter(null, null, null, null, "Golden Retriever", null);
+        assertTrue(goldenRetrievers.size() >= 1, "Expected at least 1 seeded pets, got: " + goldenRetrievers.size());
+
+        List<PetDTO> domesticShorthairs = petService.findByFilter(null, null, null, null, "Domestic Shorthair", null);
+        assertTrue(domesticShorthairs.size() >= 2, "Expected at least 2 seeded pets, got: " + domesticShorthairs.size());
+    }
+
+    /**
+     * Verifies that findByFilter returns all two medium sized pets and all two large sized pets seeded by TestDataConfig.
+     */
+    @Test
+    void findByFilter_ShouldReturnPetsBySize() {
+        List<PetDTO> mediumPets = petService.findByFilter(null, null, null, null, null, "Medium");
+        assertTrue(mediumPets.size() >= 2, "Expected at least 2 seeded pets, got: " + mediumPets.size());
+
+        List<PetDTO> largePets = petService.findByFilter(null, null, null, null, null, "Large");
+        assertTrue(largePets.size() >= 2, "Expected at least 2 seeded pets, got: " + largePets.size());
+    }
+
+    /**
+     * Verifies that findByFilter returns correct number of pets under certain mixed filter conditions TestDataConfig.
+     */
+    @Test
+    void findByFilter_ShouldReturnPetsByMixedFilters() {
+        List<PetDTO> youngCats = petService.findByFilter("Cat", null, null, 20, null, null);
+        assertTrue(youngCats.size() >= 1, "Expected at least 1 seeded pets, got: " + youngCats.size());
+
+        List<PetDTO> mediumDogs = petService.findByFilter("Dog", null, null, null, null, "Medium");
+        assertTrue(mediumDogs.size() >= 1, "Expected at least 1 seeded pets, got: " + mediumDogs.size());
+
+        List<PetDTO> femaleDomesticShorthair = petService.findByFilter(null, "F", null, null, "Domestic Shorthair", null);
+        assertTrue(femaleDomesticShorthair.size() >= 1, "Expected at least 1 seeded pets, got: " + femaleDomesticShorthair.size());
+    }
+
     /*----------------------------------*\
     || ******************************** ||      
     || **********SYNC TESTING********** ||
@@ -136,15 +218,15 @@ class PetServiceTest extends PfaBase {
 
     @Test
     void trySync_threePets_oneDupe() {
-        List<AdoptionSite> sites = List.of(new AdoptionSite("Dallas County", "", 0, "https://hsdallascounty.org"));
+        List<AdoptionSite> sites = List.of(new AdoptionSite("Dallas County", "", "", 0, "https://hsdallascounty.org"));
 
         // Mock some data to avoid scraping for real
         List<Pet> mockData = List.of(
             // This pet is already seeded, but the location is changed
-            new Pet("Buddy", "Labrador Retriever", 3, 'M', "dog", "Lubbock, TX", 150.0, "available", 85),
+            new Pet("Buddy", "Labrador Retriever", 24, 'M', "Dog", "Lubbock, TX", 150.0, "Medium", "available", 85),
             // ...while these are new
-            new Pet("Mulch", "Toy Poodle", 2, 'F', "dog", "Austin, TX", 150.0, "available", 85),
-            new Pet("Pibble", "Pit Bull", 1, 'M', "dog", "Austin, TX", 150.0, "available", 85)
+            new Pet("Mulch", "Toy Poodle", 2, 'F', "dog", "Austin, TX", 150.0, "Small", "available", 85),
+            new Pet("Pibble", "Pit Bull", 1, 'M', "dog", "Austin, TX", 150.0, "Large", "available", 85)
         );
 
         // ...and set their site to the one the other seeded animals use
@@ -174,6 +256,6 @@ class PetServiceTest extends PfaBase {
             .toList();
         
         // We had two seeded pets not in our scrape, so they should be deactivated for now
-        assertEquals(inactives.size(), 2);
+        assertEquals(inactives.size(), 4);
     }
 }

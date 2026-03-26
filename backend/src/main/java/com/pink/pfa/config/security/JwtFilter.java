@@ -11,6 +11,9 @@ import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
 
 import com.pink.pfa.services.JWTService;
+
+import io.jsonwebtoken.ExpiredJwtException;
+
 import com.pink.pfa.services.CustomUserDetailsService;
 
 import jakarta.servlet.FilterChain;
@@ -91,11 +94,13 @@ public class JwtFilter extends OncePerRequestFilter {
         token = authHeader.substring(7);
         try {
             email = jwtService.extractEmail(token);
-        } catch (Exception e) {
-            System.out.println("JWT PARSE FAILED FOR EMAIL: " + email + ", REASON: " + e.getMessage());
-            // Token is present but unparseable (wrong key, malformed, expired, etc.)
-            // Reject immediately with 401 rather than silently passing through unauthenticated
-            response.sendError(HttpServletResponse.SC_UNAUTHORIZED, "Unauthorized");
+        } catch (ExpiredJwtException e) {
+            System.out.println("token expired");
+            response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
+            response.setContentType("application/json");
+            response.getWriter().write("""
+                {"error": "TOKEN_EXPIRED", "message": "Token has expired, please log in again"}
+            """);
             return;
         }
 
@@ -112,10 +117,7 @@ public class JwtFilter extends OncePerRequestFilter {
                 SecurityContext context = SecurityContextHolder.createEmptyContext();
                 context.setAuthentication(authToken);
                 SecurityContextHolder.setContext(context);
-            } else {
-                response.sendError(HttpServletResponse.SC_UNAUTHORIZED, "Token validation failed");
-                return;
-            }
+            }  
         }
 
         // add to the filter chain 

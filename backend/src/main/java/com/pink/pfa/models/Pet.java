@@ -66,7 +66,7 @@ import lombok.Data;
 	
 	/** Pet's age. */
 	@Column(name = "age", nullable = false)
-	private int age;
+	private Integer age;
 	
 	
 	/** Pet's gender. */
@@ -97,8 +97,15 @@ import lombok.Data;
 	/** Pet's compatability score with User. */
 	@Column(name = "compatibility_score", nullable = true)
 	private int compatibilityScore;
+
+	/** Pet's image url. */
+	@Column(name = "img_url", nullable = true)
+	private String imgUrl;
 	
-	
+	/** Pet's size. */
+	@Column(name = "pet_size", nullable = true)
+    private String size;
+
 	/** Default constructor required by JPA. */
 	public Pet() {
 	}
@@ -114,12 +121,13 @@ import lombok.Data;
      * @param pet_type is the pet a dog or cat
 	 * @param location website pet is on
 	 * @param price pet's listed price
+     * @param pet_size pet's size
      * @param pet_status pet's adoption status
      * @param compatability_score pet's listed compatability score
      */
 	public Pet(String name, String breed, int age, char gender, 
 		String pet_type, String location, double price, 
-		String petStatus, int compatibilityScore
+		String petSize, String petStatus, int compatibilityScore
 	) {
 		this.name = name;
 		this.breed = breed;
@@ -128,6 +136,7 @@ import lombok.Data;
 		this.petType = pet_type;
 		this.location = location;
 		this.price = price;
+		this.size = petSize;
 		this.petStatus = petStatus;
 		this.compatibilityScore = compatibilityScore;
 	}

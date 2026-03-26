@@ -5,6 +5,7 @@ import org.springframework.boot.test.context.TestConfiguration;
 import org.springframework.context.annotation.Bean;
 
 import com.pink.pfa.controllers.requests.UserRequest;
+import com.pink.pfa.exceptions.UserAlreadyExistsException;
 import com.pink.pfa.models.AdoptionSite;
 import com.pink.pfa.models.Pet;
 import com.pink.pfa.repos.AdoptionSiteRepository;
@@ -17,20 +18,23 @@ public class TestDataConfig {
     @Bean
     CommandLineRunner seedTestUsers(UserService userService) {
         return args -> {
-            try {
-                userService.createUser(new UserRequest(
-                    "Austin", "austin@pfa.com", "foobar1"
-                ));
+            UserRequest[] users = {
+                new UserRequest("Austin", "austin@pfa.com", "foobar1"),
+                new UserRequest("Dylan", "dylan@pfa.com", "foobar12"),
+                new UserRequest("Keaton", "keaton@pfa.com", "foobar13"),
+                new UserRequest("Jordan", "jordan@pfa.com", "foobar14"),
+                new UserRequest("Taylor", "taylor@pfa.com", "foobar15"),
+                new UserRequest("Morgan", "morgan@pfa.com", "foobar16"),
+                new UserRequest("Casey", "casey@pfa.com", "foobar17"),
+                new UserRequest("Riley", "riley@pfa.com", "foobar18")
+            };
 
-                userService.createUser(new UserRequest(
-                    "Dylan", "Dylan@pfa.com", "foobar12"
-                ));
-
-                userService.createUser(new UserRequest(
-                    "Keaton", "Keaton@pfa.com", "foobar13"
-                ));
-            } catch (Exception ignored) {
-                // if duplicate, ignore
+            for (UserRequest user : users) {
+                try {
+                    userService.createUser(user);
+                } catch (UserAlreadyExistsException ignored) {
+                    // skip duplicates on restart
+                }
             }
         };
     }
@@ -40,25 +44,34 @@ public class TestDataConfig {
         return args -> {
             try {
                 AdoptionSite site = new AdoptionSite(
-                    "Happy Paws Shelter",
-                    "contact@happypaws.org",
-                    4.5,
-                    "Austin, TX"
+                    "Dallas County",
+                    "",
+                    "",
+                    0,
+                    "https://hsdallascounty.org"
                 );
 
                 site = siteRepo.save(site);
                 
-                Pet dog = new Pet("Buddy", "Labrador Retriever", 3, 'M', "dog", "Austin, TX", 150.0, "available", 85);
+                Pet dog = new Pet("Buddy", "Labrador Retriever", 24, 'M', "Dog", "Austin, TX", 150.0, "Medium", "available", 85);
                 dog.setSite(site);
                 petRepo.save(dog);
 
-                Pet cat = new Pet("Luna", "Domestic Shorthair", 2, 'F', "cat", "Austin, TX", 75.0, "available", 90);
+                Pet dog2 = new Pet("Rex", "Golden Retriever", 104, 'F', "Dog", "Austin, TX", 150.0, "Large", "pending", 85);
+                dog2.setSite(site);
+                petRepo.save(dog2);
+
+                Pet dog3 = new Pet("Pal", "German Shephard", 50, 'M', "Dog", "Austin, TX", 150.0, "Large", "available", 85);
+                dog3.setSite(site);
+                petRepo.save(dog3);
+
+                Pet cat = new Pet("Luna", "Domestic Shorthair", 12, 'F', "Cat", "Austin, TX", 75.0, "Small", "available", 90);
                 cat.setSite(site);
                 petRepo.save(cat);
 
-                Pet dog2 = new Pet("Max", "German Shepherd", 5, 'M', "dog", "Austin, TX", 200.0, "pending", 70);
-                dog2.setSite(site);
-                petRepo.save(dog2);
+                Pet cat2 = new Pet("Sol", "Domestic Shorthair", 36, 'M', "Cat", "Austin, TX", 75.0, "Medium", "available", 90);
+                cat2.setSite(site);
+                petRepo.save(cat2);
             } catch (Exception ignored) {
                 // if duplicate or FK issue, ignore
             }
