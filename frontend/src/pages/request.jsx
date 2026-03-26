@@ -135,13 +135,12 @@ export default function Request() {
 									<div className="request-list">
 										{contributionsByStatus[section.key].map((item) => (
 											<article key={item.siteId} className="request-card">
-												<p><strong>Status:</strong> {item.status}</p>
+                                                {/* <p><strong>Status:</strong> {item.status}</p> */}
                                                 <p><strong>Link:</strong> <a href={item.url} target="_blank" rel="noreferrer">{item.url}</a></p>
 												<p><strong>Name:</strong> {item.name}</p>
 												<p><strong>Email:</strong> {item.email}</p>
 												<p><strong>Phone:</strong> {item.phone}</p>
-												<p><strong>Date Submitted:</strong> {new Date(item.submittedAt).toLocaleDateString()}</p>
-
+                                                {/* <p><strong>Date Submitted:</strong> {new Date(item.submittedAt).toLocaleDateString()}</p> */}
 												<div className="request-actions">
 													{item.status !== 'A' && (
 														<button type="button" onClick={() => handleApprove(item.siteId, 'APPROVED')}>Approve</button>
