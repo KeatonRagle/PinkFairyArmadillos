@@ -17,8 +17,8 @@
   display: flex;
   flex-direction: column;
   align-items: center;
+  justify-content: center;
   gap: 8px;
-  padding-top: 100px;
 }
 
 .footer-text {
@@ -30,6 +30,7 @@
 }
 
 .footer-button {
+  display: inline-block;
   background-color: #F8F8F8;
   color: #b44b25;
   border: none;
@@ -41,6 +42,7 @@
   box-shadow: 0 0 5px rgba(0, 0, 0, 0.3);
   transition: transform 0.2s;
   font-weight: 600;
+  text-decoration: none;
 }
 
 .footer-button:hover {

@@ -31,10 +31,11 @@
 
 .header-nav {
   display: flex;
-  gap: 130px;
+  gap: 100px;
   font-size: 15px;
   color: #343434;
-  margin-left: 155px;
+  margin-left: auto;
+  margin-right: auto;
   font-family: 'Hind Kochi', sans-serif;
   font-weight: 300;
 }

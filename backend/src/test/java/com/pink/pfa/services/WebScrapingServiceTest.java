@@ -27,7 +27,7 @@ import org.openqa.selenium.WebElement;
 import com.pink.pfa.services.WebScraperService.PetInfoBuilder;
 
 @ExtendWith(MockitoExtension.class)
-class WebScraperServiceTest {
+class WebScrapingServiceTest {
 
     @InjectMocks
     private WebScraperService webScraperService;

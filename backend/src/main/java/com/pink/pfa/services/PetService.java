@@ -232,8 +232,7 @@ public class PetService {
             pet.getName().toLowerCase().trim(),
             pet.getBreed().toLowerCase().trim(),
             pet.getPetType().toLowerCase().trim(),
-            String.valueOf(pet.getGender()).toLowerCase().trim(),
-            Integer.toString(pet.getAge()).trim()
+            String.valueOf(pet.getGender()).toLowerCase().trim()
         ).replaceAll("\\s+", " ");
     }
 
@@ -242,7 +241,8 @@ public class PetService {
     private boolean hasChanges(Pet existing, Pet scraped) {
         return !existing.getLocation().equals(scraped.getLocation())
             || existing.getPrice() != scraped.getPrice()
-            || !existing.getPetStatus().equals(scraped.getPetStatus());
+            || !existing.getPetStatus().equals(scraped.getPetStatus())
+            || existing.getAge() != scraped.getAge();
     }
 
     // Only update scraper-owned fields
@@ -250,5 +250,6 @@ public class PetService {
         existing.setLocation(scraped.getLocation());
         existing.setPrice(scraped.getPrice());
         existing.setPetStatus(scraped.getPetStatus());
+        existing.setAge(scraped.getAge());
     }
 }
