@@ -84,6 +84,7 @@ public class PetController {
         try {
             return ResponseEntity.ok().body(petService.findByFilter(petType, gender, startAge, endAge, breed, size));
         } catch (Exception e) {
+            e.printStackTrace();
             return ResponseEntity.internalServerError().build();
         }
     }

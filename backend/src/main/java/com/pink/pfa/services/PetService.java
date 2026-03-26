@@ -106,13 +106,15 @@ public class PetService {
         List<Pet> allPets = petRepository.findAll();
 
         if (petType != null) {
-            allPets = allPets.stream().filter(pet -> pet.getPetType().equals(petType)).toList();
+            allPets = allPets.stream()
+                .filter(pet -> pet.getPetType().equalsIgnoreCase(petType))
+                .toList();
         }
-
         if (gender != null) {
-            allPets = allPets.stream().filter(pet -> String.valueOf(pet.getGender()).equals(gender)).toList();
+            allPets = allPets.stream()
+                .filter(pet -> String.valueOf(pet.getGender()).equalsIgnoreCase(gender))
+                .toList();
         }
-
         if (startAge == null && endAge != null) {
             allPets = allPets.stream().filter(pet -> pet.getAge() <= endAge).toList();
         } else if (startAge != null && endAge == null) {
@@ -120,13 +122,15 @@ public class PetService {
         } else if (startAge != null && endAge != null) {
             allPets = allPets.stream().filter(pet -> pet.getAge() >= startAge && pet.getAge() <= endAge).toList();
         }
-
-        if (breed != null) {
-            allPets = allPets.stream().filter(pet -> ((String) pet.getBreed()).equals(breed)).toList();
+        if (breed != null && !breed.isBlank()) {
+            allPets = allPets.stream()
+                .filter(pet -> pet.getBreed().toLowerCase().contains(breed.toLowerCase()))
+                .toList();
         }
-
         if (size != null) {
-            allPets = allPets.stream().filter(pet -> ((String) pet.getSize()).equals(size)).toList();
+            allPets = allPets.stream()
+                .filter(pet -> pet.getSize().equalsIgnoreCase(size))
+                .toList();
         }
 
         return allPets.stream()

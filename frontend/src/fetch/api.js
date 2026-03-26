@@ -72,6 +72,25 @@ export function getAllPets() {
   });
 }
 
+export function getFilteredPets(filters = {}) {
+  const searchParams = new URLSearchParams();
+
+  Object.entries(filters).forEach(([key, value]) => {
+    if (value !== null && value !== undefined && value !== "") {
+      searchParams.append(key, value);
+    }
+  });
+
+  const queryString = searchParams.toString();
+  const path = queryString
+    ? `/api/pets/getFiltered?${queryString}`
+    : "/api/pets/getFiltered";
+
+  return apiFetchUnauthenicated(path, {
+    method: "GET",
+  });
+}
+
 export function submitSite(contribution) {
   return apiFetchAuthenticated("/api/contributor/submitSite", {
     method: "POST",

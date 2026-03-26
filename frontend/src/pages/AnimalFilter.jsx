@@ -1,30 +1,80 @@
 import { useEffect, useRef, useState } from 'react'
+import { useLocation } from 'react-router-dom'
 import HomeHeader from '../components/header'
 import HomeFooter from '../components/footer'
+import { getFilteredPets } from '../fetch/api'
 import '../styling/AnimalFilter.css'
+
+const animalsPerPage = 6
+const placeholderCards = [1, 2, 3, 4, 5, 6]
+const genderOptions = [
+	{ value: 'M', label: 'Male' },
+	{ value: 'F', label: 'Female' },
+]
+const sizeOptions = ['Small', 'Medium', 'Large']
+const ageOptions = [
+	{ key: 'puppy', label: 'Puppy:  < 1 year', endAge: 0 },
+	{ key: 'young', label: 'Young: 1-3 years', startAge: 1, endAge: 3 },
+	{ key: 'adult', label: 'Adult: 3-8 years', startAge: 3, endAge: 8 },
+	{ key: 'senior', label: 'Senior: > 8 years', startAge: 8 },
+]
+
+function normalize(value) {
+	if (value === null || value === undefined) return ''
+	return String(value).trim().toLowerCase()
+}
+
+function filterPetsClientSide(pets, filters) {
+	const { petType, gender, startAge, endAge, breed, size } = filters
+	const normPetType = normalize(petType)
+	const normGender = normalize(gender)
+	const normBreed = normalize(breed)
+	const normSize = normalize(size)
+
+	return pets.filter((pet) => {
+		if (normPetType && normalize(pet.pet_type) !== normPetType) return false
+		if (normGender && normalize(pet.gender) !== normGender) return false
+		if (normBreed && !normalize(pet.breed).includes(normBreed)) return false
+		if (normSize && normalize(pet.size) !== normSize) return false
+
+		const age = Number(pet.age)
+		if (Number.isFinite(startAge) && (!Number.isFinite(age) || age < startAge)) return false
+		if (Number.isFinite(endAge) && (!Number.isFinite(age) || age > endAge)) return false
+
+		return true
+	})
+}
+
+function mapPetToAnimal(pet) {
+	return {
+		id: pet.id,
+		name: pet.name,
+		breed: pet.breed,
+		age: pet.age,
+		gender: pet.gender === 'M' ? 'Male' : pet.gender === 'F' ? 'Female' : pet.gender,
+		image: pet.img_url || '/images/waveShort.png',
+	}
+}
 
 export default function AnimalFilter() {
 	const filterPanelRef = useRef(null)
+	const location = useLocation()
+	const selectedPetType = location.state?.petType ?? null
 
-	// State: filter panel and search inputs
 	const [openFilter, setOpenFilter] = useState(null)
 	const [breedSearchText, setBreedSearchText] = useState('')
+	const [debouncedBreedSearchText, setDebouncedBreedSearchText] = useState('')
 	const [shelterSearchText, setShelterSearchText] = useState('')
+	const [selectedGender, setSelectedGender] = useState(null)
+	const [selectedSize, setSelectedSize] = useState(null)
+	const [selectedAgeRange, setSelectedAgeRange] = useState(null)
 
-	// State: results and pagination
-	const [isLoading] = useState(false)
+	const [isLoading, setIsLoading] = useState(true)
+	const [hasLoaded, setHasLoaded] = useState(false)
+	const [errorMessage, setErrorMessage] = useState('')
 	const [currentPage, setCurrentPage] = useState(1)
-	const animalsPerPage = 6
-	// ai added these comments, this is for the api stuff
-	// Data contract for API results:
-	// Each animal should include: id, name, breed, age, gender, image
-	// If backend field names differ, map them to these names before rendering cards.
+	const [animals, setAnimals] = useState([])
 
-	// State: animal data and placeholders
-	const [animals] = useState([])
-	const placeholderCards = [1, 2, 3, 4, 5, 6]
-
-	// State: compatibility options
 	const [compatibilitySelections, setCompatibilitySelections] = useState({
 		dogs: false,
 		cats: false,
@@ -33,7 +83,6 @@ export default function AnimalFilter() {
 		children: false,
 	})
 
-	// Config: compatibility labels
 	const compatibilityOptions = [
 		{ key: 'dogs', label: 'Dogs' },
 		{ key: 'cats', label: 'Cats' },
@@ -42,7 +91,6 @@ export default function AnimalFilter() {
 		{ key: 'children', label: 'Children' },
 	]
 
-	// Handler: toggle compatibility checkbox
 	const toggleCompatibilitySelection = (key) => {
 		setCompatibilitySelections((previous) => ({
 			...previous,
@@ -50,14 +98,33 @@ export default function AnimalFilter() {
 		}))
 	}
 
-	// Handler: open/close active filter dropdown
 	const toggleFilter = (filterName) => {
 		setOpenFilter((currentFilter) =>
 			currentFilter === filterName ? null : filterName,
 		)
 	}
 
-	// Effect: page-specific body class
+	const toggleGender = (genderValue) => {
+		setSelectedGender((currentValue) =>
+			currentValue === genderValue ? null : genderValue,
+		)
+		setOpenFilter(null)
+	}
+
+	const toggleSize = (sizeValue) => {
+		setSelectedSize((currentValue) =>
+			currentValue === sizeValue ? null : sizeValue,
+		)
+		setOpenFilter(null)
+	}
+
+	const toggleAgeRange = (ageOption) => {
+		setSelectedAgeRange((currentValue) =>
+			currentValue?.key === ageOption.key ? null : ageOption,
+		)
+		setOpenFilter(null)
+	}
+
 	useEffect(() => {
 		document.body.classList.add('animalfilter-body')
 		return () => document.body.classList.remove('animalfilter-body')
@@ -74,60 +141,115 @@ export default function AnimalFilter() {
 		return () => document.removeEventListener('mousedown', handleDocumentMouseDown)
 	}, [])
 
-	// Derived data: pagination values
+	useEffect(() => {
+		const timeoutId = window.setTimeout(() => {
+			setDebouncedBreedSearchText(breedSearchText.trim())
+		}, 300)
+
+		return () => window.clearTimeout(timeoutId)
+	}, [breedSearchText])
+
+	useEffect(() => {
+		let isCancelled = false
+
+		const loadFilteredPets = async () => {
+			setIsLoading(true)
+			setErrorMessage('')
+			setCurrentPage(1)
+
+			try {
+				// Fetch all pets (no server-side filters) and filter client-side
+                const allPets = await getFilteredPets({
+                    petType: selectedPetType,
+                    gender: selectedGender,
+                    breed: debouncedBreedSearchText,
+                    startAge: selectedAgeRange?.startAge,
+                    endAge: selectedAgeRange?.endAge,
+                    size: selectedSize,
+                })
+				const petsArray = Array.isArray(allPets) ? allPets : []
+
+				if (!isCancelled) {
+					setAnimals(petsArray.map(mapPetToAnimal))
+				}
+			} catch {
+				if (!isCancelled) {
+					setAnimals([])
+					setErrorMessage('Unable to load pets right now.')
+				}
+			} finally {
+				if (!isCancelled) {
+					setIsLoading(false)
+					setHasLoaded(true)
+				}
+			}
+		}
+
+		loadFilteredPets()
+
+		return () => {
+			isCancelled = true
+		}
+	}, [
+		debouncedBreedSearchText,
+		selectedAgeRange,
+		selectedGender,
+		selectedPetType,
+		selectedSize,
+	])
+
 	const totalPages = Math.max(1, Math.ceil(animals.length / animalsPerPage))
 	const startIndex = (currentPage - 1) * animalsPerPage
 	const paginatedAnimals = animals.slice(startIndex, startIndex + animalsPerPage)
 
-	// Effect: keep current page in valid range
 	useEffect(() => {
 		if (currentPage > totalPages) {
 			setCurrentPage(totalPages)
 		}
 	}, [currentPage, totalPages])
 
-	// ai added these comments, this is for the api stuff
-	// Future API hookup:
-	// 1) set loading true before request
-	// 2) map backend response into the animals shape above
-	// 3) set loading false after response/error
+	const genderLabel = selectedGender === 'M' ? 'Male' : selectedGender === 'F' ? 'Female' : null
+	const ageLabel = selectedAgeRange?.label ?? null
 
 	return (
-		// Layout: page wrapper
 		<div className="animalfilter-page">
 			<HomeHeader />
 
-			{/* Layout: main content area */}
 			<main className="animalfilter-main">
-				{/* Section: filter controls */}
 				<section className="animalfilter-panel" ref={filterPanelRef}>
 					<h1>Filters</h1>
 
-					{/* Filter: gender */}
 					<div className={`gender-filter-group ${openFilter === 'gender' ? 'open' : ''}`}>
 						<button
 							type="button"
 							className="filter-dropdown gender-toggle"
 							onClick={() => toggleFilter('gender')}
 						>
-							Gender
+							{genderLabel ? `Gender: ${genderLabel}` : 'Gender'}
 						</button>
 						{openFilter === 'gender' && (
 							<div className="gender-options">
-								<button type="button" className="gender-option-button">Male</button>
-								<button type="button" className="gender-option-button">Female</button>
+								{genderOptions.map((option) => (
+									<button
+										key={option.value}
+										type="button"
+										className={`gender-option-button ${selectedGender === option.value ? 'is-selected' : ''}`}
+										onClick={() => toggleGender(option.value)}
+									>
+										{option.label}
+									</button>
+								))}
 							</div>
 						)}
 					</div>
 
-					{/* Filter: breed */}
 					<div className={`breed-filter-group ${openFilter === 'breed' ? 'open' : ''}`}>
 						<button
 							type="button"
 							className="filter-dropdown breed-toggle"
 							onClick={() => toggleFilter('breed')}
 						>
-							Breed
+							{breedSearchText ? `Breed: ${breedSearchText}` : 'Breed'}
 						</button>
 						{openFilter === 'breed' && (
 							<div className="breed-options">
@@ -142,45 +264,55 @@ export default function AnimalFilter() {
 						)}
 					</div>
 
-					{/* Filter: size */}
 					<div className={`size-filter-group ${openFilter === 'size' ? 'open' : ''}`}>
 						<button
 							type="button"
 							className="filter-dropdown size-toggle"
 							onClick={() => toggleFilter('size')}
 						>
-							Size
+							{selectedSize ? `Size: ${selectedSize}` : 'Size'}
 						</button>
 						{openFilter === 'size' && (
 							<div className="size-options">
-								<button type="button" className="size-option-button">Small</button>
-								<button type="button" className="size-option-button">Medium</button>
-								<button type="button" className="size-option-button">Large</button>
+								{sizeOptions.map((sizeOption) => (
+									<button
+										key={sizeOption}
+										type="button"
+										className={`size-option-button ${selectedSize === sizeOption ? 'is-selected' : ''}`}
+										onClick={() => toggleSize(sizeOption)}
+									>
+										{sizeOption}
+									</button>
+								))}
 							</div>
 						)}
 					</div>
 
-					{/* Filter: age */}
-					<div className={`age-filter-group ${openFilter === 'age' ? 'open' : ''}`}>
+                    {/* <div className={`age-filter-group ${openFilter === 'age' ? 'open' : ''}`}>
 						<button
 							type="button"
 							className="filter-dropdown age-toggle"
 							onClick={() => toggleFilter('age')}
 						>
-							Age
+							{ageLabel ? `Age: ${ageLabel}` : 'Age'}
 						</button>
 						{openFilter === 'age' && (
 							<div className="age-options">
-								<button type="button" className="age-option-button">Puppy:  &lt; 1 year</button>
-								<button type="button" className="age-option-button">Young: 1-3 years</button>
-								<button type="button" className="age-option-button">Adult: 3-8 years</button>
-								<button type="button" className="age-option-button">Senior: &gt; 8 years</button>
+								{ageOptions.map((option) => (
+									<button
+										key={option.key}
+										type="button"
+										className={`age-option-button ${selectedAgeRange?.key === option.key ? 'is-selected' : ''}`}
+										onClick={() => toggleAgeRange(option)}
+									>
+										{option.label}
+									</button>
+								))}
 							</div>
 						)}
 					</div>
 
-					{/* Filter: compatibility */}
-					<div className={`compatibility-filter-group ${openFilter === 'compatibility' ? 'open' : ''}`}>
+                    <div className={`compatibility-filter-group ${openFilter === 'compatibility' ? 'open' : ''}`}>
 						<button
 							type="button"
 							className="filter-dropdown compatibility-toggle"
@@ -204,7 +336,6 @@ export default function AnimalFilter() {
 						)}
 					</div>
 
-					{/* Filter: shelter */}
 					<div className={`shelter-filter-group ${openFilter === 'shelter' ? 'open' : ''}`}>
 						<button
 							type="button"
@@ -226,7 +357,6 @@ export default function AnimalFilter() {
 						)}
 					</div>
 
-					{/* Filter: price */}
 					<div className={`price-filter-group ${openFilter === 'price' ? 'open' : ''}`}>
 						<button
 							type="button"
@@ -242,13 +372,11 @@ export default function AnimalFilter() {
 								<button type="button" className="price-option-button">High: &gt; $200</button>
 							</div>
 						)}
-					</div>
+					</div> */}
 				</section>
 
-				{/* Section: result cards */}
 				<section className="animal-results" aria-label="Animal results">
-					{/* State: loading/empty placeholders */}
-					{isLoading || animals.length === 0 ? (
+					{isLoading ? (
 						placeholderCards.map((cardId) => (
 							<article key={cardId} className="animal-card animal-card-placeholder" aria-hidden="true">
 								<div className="animal-card-image-wrap animal-placeholder-image" />
@@ -260,8 +388,11 @@ export default function AnimalFilter() {
 								</div>
 							</article>
 						))
+					) : errorMessage ? (
+						<p className="animal-results-empty">{errorMessage}</p>
+					) : hasLoaded && paginatedAnimals.length === 0 ? (
+						<p className="animal-results-empty">No animals match the selected filters.</p>
 					) : (
-						/* State: loaded animal cards */
 						paginatedAnimals.map((animal) => (
 							<article key={animal.id} className="animal-card">
 								<div className="animal-card-image-wrap">
@@ -277,8 +408,7 @@ export default function AnimalFilter() {
 						))
 					)}
 
-					{/* Control: next page button */}
-					{!isLoading && animals.length > animalsPerPage && currentPage < totalPages && (
+					{!isLoading && !errorMessage && animals.length > animalsPerPage && currentPage < totalPages && (
 						<button
 							type="button"
 							className="animal-results-next"

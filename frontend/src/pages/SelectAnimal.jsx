@@ -18,11 +18,11 @@ export default function SelectAnimal() {
       <HomeHeader />
 
       <div className="ButtonRow">
-        <button className="ThreeButtons" onClick={() => navigate('/animal-filter')}>
+      <button className="ThreeButtons" onClick={() => navigate('/animal-filter', { state: { petType: 'dog' } })}>
         <img src="/images/dog png.png" alt="Dog" className="button-icon" />
         <span className="button-text">Dogs</span>
         </button>
-        <button className="ThreeButtons" onClick={() => navigate('/animal-filter')}>
+      <button className="ThreeButtons" onClick={() => navigate('/animal-filter', { state: { petType: 'cat' } })}>
         <img src="/images/cat png.png" alt="Cat" className="button-icon" />
         <span className="button-text">Cats</span>
         </button>
