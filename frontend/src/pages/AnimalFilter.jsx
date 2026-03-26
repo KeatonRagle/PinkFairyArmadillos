@@ -19,6 +19,32 @@ const ageOptions = [
 	{ key: 'senior', label: 'Senior: > 8 years', startAge: 8 },
 ]
 
+function normalize(value) {
+	if (value === null || value === undefined) return ''
+	return String(value).trim().toLowerCase()
+}
+
+function filterPetsClientSide(pets, filters) {
+	const { petType, gender, startAge, endAge, breed, size } = filters
+	const normPetType = normalize(petType)
+	const normGender = normalize(gender)
+	const normBreed = normalize(breed)
+	const normSize = normalize(size)
+
+	return pets.filter((pet) => {
+		if (normPetType && normalize(pet.pet_type) !== normPetType) return false
+		if (normGender && normalize(pet.gender) !== normGender) return false
+		if (normBreed && !normalize(pet.breed).includes(normBreed)) return false
+		if (normSize && normalize(pet.size) !== normSize) return false
+
+		const age = Number(pet.age)
+		if (Number.isFinite(startAge) && (!Number.isFinite(age) || age < startAge)) return false
+		if (Number.isFinite(endAge) && (!Number.isFinite(age) || age > endAge)) return false
+
+		return true
+	})
+}
+
 function mapPetToAnimal(pet) {
 	return {
 		id: pet.id,
@@ -132,7 +158,11 @@ export default function AnimalFilter() {
 			setCurrentPage(1)
 
 			try {
-				const pets = await getFilteredPets({
+				// Fetch all pets (no server-side filters) and filter client-side
+				const allPets = await getFilteredPets({})
+				const petsArray = Array.isArray(allPets) ? allPets : []
+
+				const filtered = filterPetsClientSide(petsArray, {
 					petType: selectedPetType,
 					gender: selectedGender,
 					startAge: selectedAgeRange?.startAge,
@@ -142,7 +172,7 @@ export default function AnimalFilter() {
 				})
 
 				if (!isCancelled) {
-					setAnimals(Array.isArray(pets) ? pets.map(mapPetToAnimal) : [])
+					setAnimals(filtered.map(mapPetToAnimal))
 				}
 			} catch {
 				if (!isCancelled) {
