@@ -4,10 +4,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.web.server.LocalServerPort;
 import org.springframework.http.MediaType;
-import org.springframework.test.web.reactive.server.WebTestClient;
 
 import com.pink.pfa.context.PfaBase;
 import com.pink.pfa.models.AdoptionSite;
@@ -28,15 +25,7 @@ import com.pink.pfa.models.User;
  */
 class AdoptionSiteControllerTest extends PfaBase {
 
-    private final WebTestClient webTestClient;
     private AdoptionSite testSite;
-
-    @Autowired
-    AdoptionSiteControllerTest(@LocalServerPort int port) {
-        this.webTestClient = WebTestClient.bindToServer()
-            .baseUrl("http://localhost:" + port)
-            .build();
-    }
 
     @BeforeEach
     void seedSite() {
@@ -47,21 +36,6 @@ class AdoptionSiteControllerTest extends PfaBase {
         testSite.setPhone("555-7777");
         testSite.setStatus('P');
         testSite = adoptionSiteRepository.save(testSite);
-    }
-
-    private String loginAndGetToken(String email, String password) {
-        return webTestClient.post().uri("/api/users/login")
-            .contentType(MediaType.APPLICATION_JSON)
-            .bodyValue("""
-                {"email":"%s","password":"%s"}
-            """.formatted(email, password))
-            .exchange()
-            .expectStatus().isOk()
-            .returnResult(new org.springframework.core.ParameterizedTypeReference<java.util.Map<String, Object>>() {})
-            .getResponseBody()
-            .blockFirst()
-            .get("token")
-            .toString();
     }
 
     private String getUserToken() {
@@ -92,7 +66,7 @@ class AdoptionSiteControllerTest extends PfaBase {
         String token = getContributorToken();
         String uniqueUrl = "https://submit-test-" + System.nanoTime() + ".org";
 
-        webTestClient.post().uri("/api/contributor/submitSite")
+        webTestClient.post().uri("/api/adoptionSite/submitSite")
             .header("Authorization", "Bearer " + token)
             .contentType(MediaType.APPLICATION_JSON)
             .bodyValue("""
@@ -116,7 +90,7 @@ class AdoptionSiteControllerTest extends PfaBase {
     void submitSite_WithDuplicateUrl_ShouldReturn409() {
         String token = getContributorToken();
 
-        webTestClient.post().uri("/api/contributor/submitSite")
+        webTestClient.post().uri("/api/adoptionSite/submitSite")
             .header("Authorization", "Bearer " + token)
             .contentType(MediaType.APPLICATION_JSON)
             .bodyValue("""
@@ -136,7 +110,7 @@ class AdoptionSiteControllerTest extends PfaBase {
      */
     @Test
     void submitSite_WithNoToken_ShouldReturn401() {
-        webTestClient.post().uri("/api/contributor/submitSite")
+        webTestClient.post().uri("/api/adoptionSite/submitSite")
             .contentType(MediaType.APPLICATION_JSON)
             .bodyValue("""
                 {
@@ -161,7 +135,7 @@ class AdoptionSiteControllerTest extends PfaBase {
     void approveSite_WithAdminToken_ShouldReturn204AndPersistStatus() {
         String token = getAdminToken();
 
-        webTestClient.patch().uri("/api/admin/approveSite/" + testSite.getSiteId())
+        webTestClient.patch().uri("/api/adoptionSite/approveSite/" + testSite.getSiteId())
             .header("Authorization", "Bearer " + token)
             .exchange()
             .expectStatus().isNoContent();
@@ -177,7 +151,7 @@ class AdoptionSiteControllerTest extends PfaBase {
     void approveSite_WithUserToken_ShouldReturn403() {
         String token = getUserToken();
 
-        webTestClient.patch().uri("/api/admin/approveSite/" + testSite.getSiteId())
+        webTestClient.patch().uri("/api/adoptionSite/approveSite/" + testSite.getSiteId())
             .header("Authorization", "Bearer " + token)
             .exchange()
             .expectStatus().isForbidden();
@@ -190,7 +164,7 @@ class AdoptionSiteControllerTest extends PfaBase {
     void approveSite_WithInvalidId_ShouldReturn404() {
         String token = getAdminToken();
 
-        webTestClient.patch().uri("/api/admin/approveSite/999999")
+        webTestClient.patch().uri("/api/adoptionSite/approveSite/999999")
             .header("Authorization", "Bearer " + token)
             .exchange()
             .expectStatus().isNotFound();
@@ -207,7 +181,7 @@ class AdoptionSiteControllerTest extends PfaBase {
     void denySite_WithAdminToken_ShouldReturn204AndPersistStatus() {
         String token = getAdminToken();
 
-        webTestClient.patch().uri("/api/admin/denySite/" + testSite.getSiteId())
+        webTestClient.patch().uri("/api/adoptionSite/denySite/" + testSite.getSiteId())
             .header("Authorization", "Bearer " + token)
             .exchange()
             .expectStatus().isNoContent();
@@ -223,7 +197,7 @@ class AdoptionSiteControllerTest extends PfaBase {
     void denySite_WithUserToken_ShouldReturn403() {
         String token = getUserToken();
 
-        webTestClient.patch().uri("/api/admin/denySite/" + testSite.getSiteId())
+        webTestClient.patch().uri("/api/adoptionSite/denySite/" + testSite.getSiteId())
             .header("Authorization", "Bearer " + token)
             .exchange()
             .expectStatus().isForbidden();
@@ -236,7 +210,7 @@ class AdoptionSiteControllerTest extends PfaBase {
     void denySite_WithInvalidId_ShouldReturn404() {
         String token = getAdminToken();
 
-        webTestClient.patch().uri("/api/admin/denySite/999999")
+        webTestClient.patch().uri("/api/adoptionSite/denySite/999999")
             .header("Authorization", "Bearer " + token)
             .exchange()
             .expectStatus().isNotFound();

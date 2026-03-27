@@ -1,42 +1,58 @@
-package com.pink.pfa.services;
+package com.pink.pfa.controllers;
 
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import org.junit.jupiter.api.Test;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.web.server.LocalServerPort;
-import org.springframework.http.MediaType;
 import org.springframework.test.web.reactive.server.EntityExchangeResult;
-import org.springframework.test.web.reactive.server.WebTestClient;
 
 import com.pink.pfa.context.PfaBase;
 import com.pink.pfa.controllers.requests.UserRequest;
 import com.pink.pfa.models.User;
 
-class ApiSecurityTest extends PfaBase {
+class UserControllerTest extends PfaBase {
 
-    private final WebTestClient webTestClient;
-
-    @Autowired
-    ApiSecurityTest(@LocalServerPort int port) {
-        this.webTestClient = WebTestClient.bindToServer()
-            .baseUrl("http://localhost:" + port)
-            .build();
+    private int getUserIdByEmail (String email) {
+        User user = userRepository.findByEmail(email).orElseThrow();
+        return user.getUserId();
     }
 
-    private String loginAndGetToken(String email, String password) {
-        return webTestClient.post().uri("/api/users/login")
-            .contentType(MediaType.APPLICATION_JSON)
-            .bodyValue("""
-                {"email":"%s","password":"%s"}
-            """.formatted(email, password))
-            .exchange()
-            .expectStatus().isOk()
-            .returnResult(new org.springframework.core.ParameterizedTypeReference<java.util.Map<String, Object>>() {})
-            .getResponseBody()
-            .blockFirst()
-            .get("token")
-            .toString();
+    private void promoteUserToAdmin(String email) {
+        User user = userRepository.findByEmail(email).orElseThrow();
+        userService.promoteToAdmin(user.getUserId());
     }
+
+
+    // -------------------------------------------------------------------------
+    // getUserById
+    // -------------------------------------------------------------------------
+    @Test
+    void getUserById_WithUserToken_ShouldReturn403() {
+        int userId = getUserIdByEmail("morgan@pfa.com");
+
+        String token = loginAndGetToken("morgan@pfa.com", "foobar16");
+        webTestClient.get().uri("/api/users/" + userId)
+                .header("Authorization", "Bearer " + token)
+                .exchange()
+                .expectStatus().isForbidden();
+    }
+
+    @Test
+    void getUserById_WithAdminToken_ShouldReturn200() {
+        int userId = getUserIdByEmail("morgan@pfa.com");
+        promoteUserToAdmin("austin@pfa.com");
+
+        String token = loginAndGetToken("austin@pfa.com", "foobar1");
+        webTestClient.get().uri("/api/users/" + userId)
+                .header("Authorization", "Bearer " + token)
+                .exchange()
+                .expectStatus().isOk();
+    }
+
+
+    //@Test
+    //void getUserById_WithValidId_ShouldReturn200() {
+        
+    //}
+
 
     // -------------------------------------------------------------------------
     // Authorization (Role-Based Access) Tests
@@ -49,10 +65,25 @@ class ApiSecurityTest extends PfaBase {
     void unauthorizedAdminAccess_WithUserToken_ShouldReturn403() {
         userService.createUser(new UserRequest("randomUser", "randomUser@pfa.com", "password123"));
         String token = loginAndGetToken("randomUser@pfa.com", "password123");
-        webTestClient.get().uri("/api/admin/getAllUsers")
+        webTestClient.get().uri("/api/users/getAllUsers")
                 .header("Authorization", "Bearer " + token)
                 .exchange()
                 .expectStatus().isForbidden();
+    }
+
+    /**
+     * Authorized Admin Access
+     */
+    @Test
+    void authorizedAdminAccess_WithAdminToken_ShouldReturn200() {
+        // promote to admin (just in case) and get token
+        promoteUserToAdmin("keaton@pfa.com");
+        String token = loginAndGetToken("keaton@pfa.com", "foobar13");
+
+        webTestClient.get().uri("/api/users/getAllUsers")
+                .header("Authorization", "Bearer " + token)
+                .exchange()
+                .expectStatus().isOk();
     }
 
     // -------------------------------------------------------------------------
@@ -86,7 +117,7 @@ class ApiSecurityTest extends PfaBase {
     void massUserDataAccess_AsRegularUser_ShouldReturn403() {
         String token = loginAndGetToken("dylan@pfa.com", "foobar12");
 
-        webTestClient.get().uri("/api/admin/getAllUsers")
+        webTestClient.get().uri("/api/users/getAllUsers")
                 .header("Authorization", "Bearer " + token)
                 .exchange()
                 .expectStatus().isForbidden();
@@ -114,22 +145,5 @@ class ApiSecurityTest extends PfaBase {
             .expectStatus().value(status ->
                 assertTrue(status == 401 || status == 403,
                     "Missing Bearer prefix should be rejected, got: " + status));
-    }
-
-    /**
-     * Valid admin token should reach admin endpoint
-     */
-    @Test
-    void validAdminToken_ShouldReturn200OnAdminEndpoint() {
-        // promote just in case
-        User keaton = userRepository.findByEmail("keaton@pfa.com").orElseThrow();
-        userService.promoteToAdmin(keaton.getUserId());
-
-        // test
-        String token = loginAndGetToken("keaton@pfa.com", "foobar13");
-        webTestClient.get().uri("/api/admin/getAllUsers")
-                .header("Authorization", "Bearer " + token)
-                .exchange()
-                .expectStatus().isOk(); // still a regular user until promoted
     }
 }

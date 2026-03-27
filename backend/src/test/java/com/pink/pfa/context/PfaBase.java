@@ -1,9 +1,15 @@
 package com.pink.pfa.context;
 
+import java.util.Map;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.boot.test.web.server.LocalServerPort;
 import org.springframework.context.annotation.Import;
+import org.springframework.core.ParameterizedTypeReference;
+import org.springframework.http.MediaType;
 import org.springframework.test.context.ActiveProfiles;
+import org.springframework.test.web.reactive.server.WebTestClient;
 
 import com.pink.pfa.config.TestDataConfig;
 import com.pink.pfa.config.TestcontainersConfiguration;
@@ -66,4 +72,28 @@ public abstract class PfaBase {
     @Autowired protected UserRepository userRepository;
     @Autowired protected AdoptionSiteService adoptionSiteService;
     @Autowired protected AdoptionSiteRepository adoptionSiteRepository;
+
+    protected WebTestClient webTestClient;
+
+    @Autowired
+    void setWebTestClient(@LocalServerPort int port) {
+        this.webTestClient = WebTestClient.bindToServer()
+            .baseUrl("http://localhost:" + port)
+            .build();
+    }
+
+    protected String loginAndGetToken(String email, String password) {
+        return webTestClient.post().uri("/api/users/login")
+            .contentType(MediaType.APPLICATION_JSON)
+            .bodyValue("""
+                {"email":"%s","password":"%s"}
+            """.formatted(email, password))
+            .exchange()
+            .expectStatus().isOk()
+            .returnResult(new ParameterizedTypeReference<Map<String, Object>>() {})
+            .getResponseBody()
+            .blockFirst()
+            .get("token")
+            .toString();
+    }
 }
