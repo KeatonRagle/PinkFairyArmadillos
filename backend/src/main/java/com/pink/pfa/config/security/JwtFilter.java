@@ -95,11 +95,17 @@ public class JwtFilter extends OncePerRequestFilter {
         try {
             email = jwtService.extractEmail(token);
         } catch (ExpiredJwtException e) {
-            System.out.println("token expired");
             response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
             response.setContentType("application/json");
             response.getWriter().write("""
                 {"error": "TOKEN_EXPIRED", "message": "Token has expired, please log in again"}
+            """);
+            return;
+        } catch (Exception e) {
+            response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
+            response.setContentType("application/json");
+            response.getWriter().write("""
+                {"error": "COULDNT_EXTRACT_EMAIL", "message": "Failed to parse token, please log in again"}
             """);
             return;
         }
