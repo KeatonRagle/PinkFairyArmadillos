@@ -1,10 +1,13 @@
 package com.pink.pfa.security;
 
 import static org.junit.jupiter.api.Assertions.assertTrue;
+
 import org.junit.jupiter.api.Test;
 import org.springframework.test.web.reactive.server.EntityExchangeResult;
 
 import com.pink.pfa.context.PfaBase;
+
+import com.pink.pfa.models.User;
 
 public class ApiSecurityTest extends PfaBase {
 
@@ -34,7 +37,8 @@ public class ApiSecurityTest extends PfaBase {
      */
     @Test
     void missingBearerPrefix_ShouldBeRejected() {
-        String token = loginAndGetToken("austin@pfa.com", "foobar1");
+        SeededUser user = getRandUserAndPassByRole(User.Role.ROLE_USER);
+        String token = loginAndGetToken(user.user().getEmail(), user.password());
         webTestClient.get().uri("/api/users/findMe")
             .header("Authorization", token)
             .exchange()

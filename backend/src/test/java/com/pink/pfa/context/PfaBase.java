@@ -1,5 +1,8 @@
 package com.pink.pfa.context;
 
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
 import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -13,6 +16,7 @@ import org.springframework.test.web.reactive.server.WebTestClient;
 
 import com.pink.pfa.config.TestDataConfig;
 import com.pink.pfa.config.TestcontainersConfiguration;
+import com.pink.pfa.models.User;
 import com.pink.pfa.repos.AdoptionSiteRepository;
 import com.pink.pfa.repos.UserRepository;
 import com.pink.pfa.services.AdoptionSiteService;
@@ -66,6 +70,7 @@ import com.pink.pfa.services.UserService;
 )
 @ActiveProfiles("test")
 public abstract class PfaBase {
+    /* SERVICES */
     @Autowired protected JWTService jwtService;
     @Autowired protected CustomUserDetailsService userDetailsService;
     @Autowired protected UserService userService;
@@ -73,6 +78,7 @@ public abstract class PfaBase {
     @Autowired protected AdoptionSiteService adoptionSiteService;
     @Autowired protected AdoptionSiteRepository adoptionSiteRepository;
 
+    /* WEB TEST CLIENT */
     protected WebTestClient webTestClient;
 
     @Autowired
@@ -82,6 +88,34 @@ public abstract class PfaBase {
             .build();
     }
 
+    /* USER SEEDS */
+    public static final Map<String, String> SEEDED_USERS = Map.ofEntries(
+        Map.entry("austin@pfa.com",   "foobar01"),
+        Map.entry("dylan@pfa.com",    "foobar02"),
+        Map.entry("keaton@pfa.com",   "foobar03"),
+        Map.entry("jordan@pfa.com",   "foobar04"),
+        Map.entry("taylor@pfa.com",   "foobar05"),
+        Map.entry("morgan@pfa.com",   "foobar06"),
+        Map.entry("casey@pfa.com",    "foobar07"),
+        Map.entry("riley@pfa.com",    "foobar08"),
+        Map.entry("avery@pfa.com",    "foobar09"),
+        Map.entry("parker@pfa.com",   "foobar10"),
+        Map.entry("quinn@pfa.com",    "foobar11"),
+        Map.entry("sage@pfa.com",     "foobar12"),
+        Map.entry("drew@pfa.com",     "foobar13"),
+        Map.entry("blake@pfa.com",    "foobar14"),
+        Map.entry("jamie@pfa.com",    "foobar15"),
+        Map.entry("reese@pfa.com",    "foobar16"),
+        Map.entry("skyler@pfa.com",   "foobar17"),
+        Map.entry("cameron@pfa.com",  "foobar18"),
+        Map.entry("alex@pfa.com",     "foobar19"),
+        Map.entry("robin@pfa.com",    "foobar20")
+    );
+
+    // Wrapper so tests don't have to carry the user and password separately
+    public record SeededUser(User user, String password) {}
+
+    /* COMMONLY USED METHODS */
     protected String loginAndGetToken(String email, String password) {
         return webTestClient.post().uri("/api/users/login")
             .contentType(MediaType.APPLICATION_JSON)
@@ -95,5 +129,30 @@ public abstract class PfaBase {
             .blockFirst()
             .get("token")
             .toString();
+    }
+
+
+    protected int getUserIdByEmail (String email) {
+        User user = userRepository.findByEmail(email).orElseThrow();
+        return user.getUserId();
+    }
+
+    protected SeededUser getRandUserAndPassByRole(User.Role role) {
+        List<User> results = new ArrayList<>(
+            userRepository.findAll().stream()
+                .filter(user -> user.getRole().equals(role))
+                .filter(user -> SEEDED_USERS.containsKey(user.getEmail()))
+                .toList()
+        );
+        if (results.isEmpty()) throw new RuntimeException("No users found with role: " + role);
+        Collections.shuffle(results);   
+        User user = results.get(0);
+        String password = SEEDED_USERS.get(user.getEmail());
+        if (password == null) {
+            throw new IllegalStateException(
+                "No seeded password found for " + user.getEmail() + " — is this a non-seeded user?"
+            );
+        }
+        return new SeededUser(user, password);
     }
 }

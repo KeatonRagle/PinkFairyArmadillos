@@ -38,22 +38,6 @@ class AdoptionSiteControllerTest extends PfaBase {
         testSite = adoptionSiteRepository.save(testSite);
     }
 
-    private String getUserToken() {
-        return loginAndGetToken("dylan@pfa.com", "foobar12");
-    }
-
-    private String getContributorToken() {
-        User taylor = userRepository.findByEmail("taylor@pfa.com").orElseThrow();
-        userService.promoteToContributor(taylor.getUserId());
-        return loginAndGetToken("taylor@pfa.com", "foobar15");
-    }
-
-    private String getAdminToken() {
-        User keaton = userRepository.findByEmail("keaton@pfa.com").orElseThrow();
-        userService.promoteToAdmin(keaton.getUserId());
-        return loginAndGetToken("keaton@pfa.com", "foobar13");
-    }
-
     // -------------------------------------------------------------------------
     // POST /api/contributor/submitSite
     // -------------------------------------------------------------------------
@@ -63,7 +47,8 @@ class AdoptionSiteControllerTest extends PfaBase {
      */
     @Test
     void submitSite_WithValidToken_ShouldReturn200() {
-        String token = getContributorToken();
+        SeededUser contributor = getRandUserAndPassByRole(User.Role.ROLE_CONTRIBUTOR);
+        String token = loginAndGetToken(contributor.user().getEmail(), contributor.password());
         String uniqueUrl = "https://submit-test-" + System.nanoTime() + ".org";
 
         webTestClient.post().uri("/api/adoptionSite/submitSite")
@@ -88,7 +73,8 @@ class AdoptionSiteControllerTest extends PfaBase {
      */
     @Test
     void submitSite_WithDuplicateUrl_ShouldReturn409() {
-        String token = getContributorToken();
+        SeededUser user = getRandUserAndPassByRole(User.Role.ROLE_CONTRIBUTOR);
+        String token = loginAndGetToken(user.user().getEmail(), user.password());
 
         webTestClient.post().uri("/api/adoptionSite/submitSite")
             .header("Authorization", "Bearer " + token)
@@ -133,7 +119,8 @@ class AdoptionSiteControllerTest extends PfaBase {
      */
     @Test
     void approveSite_WithAdminToken_ShouldReturn204AndPersistStatus() {
-        String token = getAdminToken();
+        SeededUser user = getRandUserAndPassByRole(User.Role.ROLE_ADMIN);
+        String token = loginAndGetToken(user.user().getEmail(), user.password());
 
         webTestClient.patch().uri("/api/adoptionSite/approveSite/" + testSite.getSiteId())
             .header("Authorization", "Bearer " + token)
@@ -149,7 +136,8 @@ class AdoptionSiteControllerTest extends PfaBase {
      */
     @Test
     void approveSite_WithUserToken_ShouldReturn403() {
-        String token = getUserToken();
+        SeededUser user = getRandUserAndPassByRole(User.Role.ROLE_USER);
+        String token = loginAndGetToken(user.user().getEmail(), user.password());
 
         webTestClient.patch().uri("/api/adoptionSite/approveSite/" + testSite.getSiteId())
             .header("Authorization", "Bearer " + token)
@@ -162,7 +150,8 @@ class AdoptionSiteControllerTest extends PfaBase {
      */
     @Test
     void approveSite_WithInvalidId_ShouldReturn404() {
-        String token = getAdminToken();
+        SeededUser user = getRandUserAndPassByRole(User.Role.ROLE_ADMIN);
+        String token = loginAndGetToken(user.user().getEmail(), user.password());
 
         webTestClient.patch().uri("/api/adoptionSite/approveSite/999999")
             .header("Authorization", "Bearer " + token)
@@ -179,7 +168,8 @@ class AdoptionSiteControllerTest extends PfaBase {
      */
     @Test
     void denySite_WithAdminToken_ShouldReturn204AndPersistStatus() {
-        String token = getAdminToken();
+        SeededUser user = getRandUserAndPassByRole(User.Role.ROLE_ADMIN);
+        String token = loginAndGetToken(user.user().getEmail(), user.password());
 
         webTestClient.patch().uri("/api/adoptionSite/denySite/" + testSite.getSiteId())
             .header("Authorization", "Bearer " + token)
@@ -195,7 +185,8 @@ class AdoptionSiteControllerTest extends PfaBase {
      */
     @Test
     void denySite_WithUserToken_ShouldReturn403() {
-        String token = getUserToken();
+        SeededUser user = getRandUserAndPassByRole(User.Role.ROLE_USER);
+        String token = loginAndGetToken(user.user().getEmail(), user.password());
 
         webTestClient.patch().uri("/api/adoptionSite/denySite/" + testSite.getSiteId())
             .header("Authorization", "Bearer " + token)
@@ -208,7 +199,8 @@ class AdoptionSiteControllerTest extends PfaBase {
      */
     @Test
     void denySite_WithInvalidId_ShouldReturn404() {
-        String token = getAdminToken();
+        SeededUser user = getRandUserAndPassByRole(User.Role.ROLE_ADMIN);
+        String token = loginAndGetToken(user.user().getEmail(), user.password());
 
         webTestClient.patch().uri("/api/adoptionSite/denySite/999999")
             .header("Authorization", "Bearer " + token)

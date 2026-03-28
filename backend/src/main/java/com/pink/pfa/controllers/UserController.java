@@ -85,7 +85,6 @@ public class UserController {
         }
     }
 
-
     /**
      * Retrieves the currently authenticated user based on the JWT in the request.
      * <p>

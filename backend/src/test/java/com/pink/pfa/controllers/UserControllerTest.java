@@ -1,7 +1,6 @@
 package com.pink.pfa.controllers;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.util.Map;
 
@@ -13,29 +12,6 @@ import com.pink.pfa.context.PfaBase;
 import com.pink.pfa.models.User;
 
 class UserControllerTest extends PfaBase {
-
-    private int getUserIdByEmail (String email) {
-        User user = userRepository.findByEmail(email).orElseThrow();
-        return user.getUserId();
-    }
-
-    private void promoteUserToAdmin(String email) {
-        User user = userRepository.findByEmail(email).orElseThrow();
-        userService.promoteToAdmin(user.getUserId());
-    }
-
-    private void promoteUserToContributor(String email) {
-        User user = userRepository.findByEmail(email).orElseThrow();
-        userService.promoteToContributor(user.getUserId());
-    }
-
-    private void setRoleToUser(String email) {
-        User user = userRepository.findByEmail(email).orElseThrow();
-        user.setRole(User.Role.ROLE_USER);
-        userRepository.save(user);
-    }
-
-
     // -------------------------------------------------------------------------
     // getUserById
     // -------------------------------------------------------------------------
@@ -45,10 +21,10 @@ class UserControllerTest extends PfaBase {
      */
     @Test
     void getUserById_WithUserToken_ShouldReturn403() {
-        setRoleToUser("morgan@pfa.com");
-        int userId = getUserIdByEmail("morgan@pfa.com");
+        SeededUser user = getRandUserAndPassByRole(User.Role.ROLE_USER);
+        int userId = getUserIdByEmail(user.user().getEmail());
 
-        String token = loginAndGetToken("morgan@pfa.com", "foobar16");
+        String token = loginAndGetToken(user.user().getEmail(), user.password());
         webTestClient.get().uri("/api/users/" + userId)
                 .header("Authorization", "Bearer " + token)
                 .exchange()
@@ -60,7 +36,9 @@ class UserControllerTest extends PfaBase {
      */
     @Test
     void getUserId_WithNoToken_ShouldReturn401() {
-        int userId = getUserIdByEmail("morgan@pfa.com");
+        SeededUser user = getRandUserAndPassByRole(User.Role.ROLE_USER);
+        int userId = getUserIdByEmail(user.user().getEmail());
+
         webTestClient.get().uri("/api/users/" + userId)
                 .exchange()
                 .expectStatus().isUnauthorized();
@@ -71,10 +49,11 @@ class UserControllerTest extends PfaBase {
      */
     @Test
     void getUserById_WithAdminToken_ShouldReturn200() {
-        int userId = getUserIdByEmail("morgan@pfa.com");
-        promoteUserToAdmin("austin@pfa.com");
+        SeededUser user = getRandUserAndPassByRole(User.Role.ROLE_USER);
+        int userId = getUserIdByEmail(user.user().getEmail());
+        SeededUser admin = getRandUserAndPassByRole(User.Role.ROLE_ADMIN);
 
-        String token = loginAndGetToken("austin@pfa.com", "foobar1");
+        String token = loginAndGetToken(admin.user().getEmail(), admin.password());
         webTestClient.get().uri("/api/users/" + userId)
                 .header("Authorization", "Bearer " + token)
                 .exchange()
@@ -86,9 +65,9 @@ class UserControllerTest extends PfaBase {
      */
     @Test
     void getUserById_WithInvalidId_ShouldReturn404() {
-        promoteUserToAdmin("austin@pfa.com");
+        SeededUser admin = getRandUserAndPassByRole(User.Role.ROLE_ADMIN);
+        String token = loginAndGetToken(admin.user().getEmail(), admin.password());
 
-        String token = loginAndGetToken("austin@pfa.com", "foobar1");
         webTestClient.get().uri("/api/users/" + 99999)
                 .header("Authorization", "Bearer " + token)
                 .exchange()
@@ -105,7 +84,8 @@ class UserControllerTest extends PfaBase {
      */
     @Test
     void findMe_WithValidUserToken_ShouldReturn200() {
-        String token = loginAndGetToken("morgan@pfa.com", "foobar16");
+        SeededUser user = getRandUserAndPassByRole(User.Role.ROLE_USER);
+        String token = loginAndGetToken(user.user().getEmail(), user.password());
         webTestClient.get().uri("/api/users/findMe")
                 .header("Authorization", "Bearer " + token)
                 .exchange()
@@ -117,8 +97,8 @@ class UserControllerTest extends PfaBase {
      */
     @Test
     void findMe_WithValidAdminToken_ShouldReturn200() {
-        promoteUserToAdmin("austin@pfa.com");
-        String token = loginAndGetToken("austin@pfa.com", "foobar1");
+        SeededUser admin = getRandUserAndPassByRole(User.Role.ROLE_ADMIN);
+        String token = loginAndGetToken(admin.user().getEmail(), admin.password());
         webTestClient.get().uri("/api/users/findMe")
                 .header("Authorization", "Bearer " + token)
                 .exchange()
@@ -140,11 +120,8 @@ class UserControllerTest extends PfaBase {
      */
     @Test
     void findMe_WithInvalidToken_ShouldReturn401() {
-        promoteUserToAdmin("austin@pfa.com");
-
-        String token = loginAndGetToken("austin@pfa.com", "foobar1") + "thisshouldntbehere";
         webTestClient.get().uri("/api/users/findMe")
-                .header("Authorization", "Bearer " + token)
+                .header("Authorization", "Bearer " + "somethingreallyinvalid")
                 .exchange()
                 .expectStatus().isUnauthorized();
     }
@@ -183,9 +160,11 @@ class UserControllerTest extends PfaBase {
      */
     @Test
     void register_AsExsistingUser_ShouldReturn409() {
-        String name = "Austin";
-        String email = "austin@pfa.com";
-        String pass = "foobar12";
+        SeededUser user = getRandUserAndPassByRole(User.Role.ROLE_USER);
+        String name = user.user().getName();
+        String email = user.user().getEmail();
+        String pass = user.password();
+
         webTestClient.post().uri("/api/users/register")
                 .contentType(MediaType.APPLICATION_JSON)
                 .bodyValue("""
@@ -233,9 +212,10 @@ class UserControllerTest extends PfaBase {
     
     @Test
     void login_WithValidCredentials_ShouldReturn200() {
-        String name = "Austin";
-        String email = "austin@pfa.com";
-        String pass = "foobar1";
+        SeededUser user = getRandUserAndPassByRole(User.Role.ROLE_USER);
+        String name = user.user().getName();
+        String email = user.user().getEmail();
+        String pass = user.password();
         webTestClient.post().uri("/api/users/login")
                 .contentType(MediaType.APPLICATION_JSON)
                 .bodyValue("""
@@ -253,7 +233,8 @@ class UserControllerTest extends PfaBase {
 
     @Test
     void login_WithInvalidPassword_ShouldReturn401() {
-        String email = "jordan@pfa.com";
+        SeededUser user = getRandUserAndPassByRole(User.Role.ROLE_USER);
+        String email = user.user().getEmail();
         String pass = "the_wrong_password";
         webTestClient.post().uri("/api/users/login")
                 .contentType(MediaType.APPLICATION_JSON)
@@ -269,8 +250,9 @@ class UserControllerTest extends PfaBase {
 
     @Test
     void login_WithInvalidEmail_ShouldReturn404() {
+        SeededUser user = getRandUserAndPassByRole(User.Role.ROLE_USER);
         String email = "the_wrong_email@pfa.com";
-        String pass = "foobar14";
+        String pass = user.password();
         webTestClient.post().uri("/api/users/login")
                 .contentType(MediaType.APPLICATION_JSON)
                 .bodyValue("""
@@ -285,9 +267,10 @@ class UserControllerTest extends PfaBase {
 
     @Test
     void login_ShouldReturnUserDTOAndToken() {
-        String name = "Casey";
-        String email = "casey@pfa.com";
-        String pass = "foobar17";
+        SeededUser user = getRandUserAndPassByRole(User.Role.ROLE_USER);
+        String name = user.user().getName();
+        String email = user.user().getEmail();
+        String pass = user.password();
         webTestClient.post().uri("/api/users/login")
                 .contentType(MediaType.APPLICATION_JSON)
                 .bodyValue("""
@@ -300,10 +283,10 @@ class UserControllerTest extends PfaBase {
                 .expectStatus().isOk()
                 .expectBody(Map.class)
                 .value(body -> {
-                    Map user = (Map) body.get("user");
-                    assertThat(user).isNotNull();
-                    assertThat(user.get("name")).isEqualTo(name);
-                    assertThat(user.get("email")).isEqualTo(email);
+                    Map returnedUser = (Map) body.get("user");
+                    assertThat(returnedUser).isNotNull();
+                    assertThat(returnedUser.get("name")).isEqualTo(name);
+                    assertThat(returnedUser.get("email")).isEqualTo(email);
                     assertThat(body.get("token")).isNotNull();
                     assertThat(body.get("token").toString()).isNotEmpty();
                 });
@@ -319,9 +302,8 @@ class UserControllerTest extends PfaBase {
      */
     @Test
     void getAllUsers_WithAdminToken_ShouldReturn200() {
-        // promote to admin (just in case) and get token
-        promoteUserToAdmin("keaton@pfa.com");
-        String token = loginAndGetToken("keaton@pfa.com", "foobar13");
+        SeededUser admin = getRandUserAndPassByRole(User.Role.ROLE_ADMIN);
+        String token = loginAndGetToken(admin.user().getEmail(), admin.password());
         webTestClient.get().uri("/api/users/getAllUsers")
                 .header("Authorization", "Bearer " + token)
                 .exchange()
@@ -333,9 +315,8 @@ class UserControllerTest extends PfaBase {
      */
     @Test
     void getAllUsers_WithUserToken_ShouldReturn403() {
-        String email = "dylan@pfa.com";
-        setRoleToUser(email);
-        String token = loginAndGetToken(email, "foobar12");
+        SeededUser user = getRandUserAndPassByRole(User.Role.ROLE_USER);
+        String token = loginAndGetToken(user.user().getEmail(), user.password());
         webTestClient.get().uri("/api/users/getAllUsers")
                 .header("Authorization", "Bearer " + token)
                 .exchange()
@@ -344,8 +325,8 @@ class UserControllerTest extends PfaBase {
 
     @Test
     void getAllUsers_WithContributorToken_ShouldReturn403() {
-        promoteUserToContributor("taylor@pfa.com"); 
-        String token = loginAndGetToken("taylor@pfa.com", "foobar15");
+        SeededUser contributor = getRandUserAndPassByRole(User.Role.ROLE_CONTRIBUTOR);
+        String token = loginAndGetToken(contributor.user().getEmail(), contributor.password());
         webTestClient.get().uri("/api/users/getAllUsers")
                 .header("Authorization", "Bearer " + token)
                 .exchange()
@@ -358,8 +339,8 @@ class UserControllerTest extends PfaBase {
     
     @Test
     void promoteToAdmin_WithAdminToken_ShouldReturn204() {
-        promoteUserToAdmin("keaton@pfa.com");
-        String token = loginAndGetToken("keaton@pfa.com", "foobar13");
+        SeededUser admin = getRandUserAndPassByRole(User.Role.ROLE_ADMIN);
+        String token = loginAndGetToken(admin.user().getEmail(), admin.password());
         webTestClient.patch().uri("/api/users/promoteToAdmin/" + 6)
                 .header("Authorization", "Bearer " + token)
                 .exchange()
@@ -368,9 +349,8 @@ class UserControllerTest extends PfaBase {
 
     @Test
     void promoteToAdmin_WithUserToken_ShouldReturn403() {
-        String email = "dylan@pfa.com";
-        setRoleToUser(email);
-        String token = loginAndGetToken(email, "foobar12");
+        SeededUser user = getRandUserAndPassByRole(User.Role.ROLE_USER);
+        String token = loginAndGetToken(user.user().getEmail(), user.password());
         webTestClient.patch().uri("/api/users/promoteToAdmin/" + 2)
                 .header("Authorization", "Bearer " + token)
                 .exchange()
@@ -379,8 +359,8 @@ class UserControllerTest extends PfaBase {
 
     @Test
     void promoteToAdmin_WithContributorToken_shouldReturn403() {
-        promoteUserToContributor("taylor@pfa.com"); 
-        String token = loginAndGetToken("taylor@pfa.com", "foobar15");
+        SeededUser contributor = getRandUserAndPassByRole(User.Role.ROLE_CONTRIBUTOR);
+        String token = loginAndGetToken(contributor.user().getEmail(), contributor.password());
         webTestClient.patch().uri("/api/users/promoteToAdmin/" + 3)
                 .header("Authorization", "Bearer " + token)
                 .exchange()
@@ -389,8 +369,8 @@ class UserControllerTest extends PfaBase {
 
     @Test
     void promoteToAdmin_WithInvalidUserId_ShouldReturn404() {
-        promoteUserToAdmin("keaton@pfa.com");
-        String token = loginAndGetToken("keaton@pfa.com", "foobar13");
+        SeededUser admin = getRandUserAndPassByRole(User.Role.ROLE_ADMIN);
+        String token = loginAndGetToken(admin.user().getEmail(), admin.password());
         webTestClient.patch().uri("/api/users/promoteToAdmin/" + 99999)
                 .header("Authorization", "Bearer " + token)
                 .exchange()
@@ -404,8 +384,8 @@ class UserControllerTest extends PfaBase {
     
     @Test
     void promoteToContributor_WithAdminToken_ShouldReturn204() {
-        promoteUserToAdmin("keaton@pfa.com");
-        String token = loginAndGetToken("keaton@pfa.com", "foobar13");
+        SeededUser admin = getRandUserAndPassByRole(User.Role.ROLE_ADMIN);
+        String token = loginAndGetToken(admin.user().getEmail(), admin.password());
         webTestClient.patch().uri("/api/users/promoteToContributor/" + 6)
                 .header("Authorization", "Bearer " + token)
                 .exchange()
@@ -414,9 +394,8 @@ class UserControllerTest extends PfaBase {
 
     @Test
     void promoteToContributor_WithUserToken_ShouldReturn403() {
-        String email = "dylan@pfa.com";
-        setRoleToUser(email);
-        String token = loginAndGetToken(email, "foobar12");
+        SeededUser user = getRandUserAndPassByRole(User.Role.ROLE_USER);
+        String token = loginAndGetToken(user.user().getEmail(), user.password());
         webTestClient.patch().uri("/api/users/promoteToContributor/" + 2)
                 .header("Authorization", "Bearer " + token)
                 .exchange()
@@ -425,8 +404,8 @@ class UserControllerTest extends PfaBase {
 
     @Test
     void promoteToContributor_WithContributorToken_shouldReturn403() {
-        promoteUserToContributor("taylor@pfa.com"); 
-        String token = loginAndGetToken("taylor@pfa.com", "foobar15");
+        SeededUser contributor = getRandUserAndPassByRole(User.Role.ROLE_CONTRIBUTOR);
+        String token = loginAndGetToken(contributor.user().getEmail(), contributor.password());
         webTestClient.patch().uri("/api/users/promoteToContributor/" + 3)
                 .header("Authorization", "Bearer " + token)
                 .exchange()
@@ -435,12 +414,11 @@ class UserControllerTest extends PfaBase {
 
     @Test
     void promoteToContributor_WithInvalidUserId_ShouldReturn404() {
-        promoteUserToAdmin("keaton@pfa.com");
-        String token = loginAndGetToken("keaton@pfa.com", "foobar13");
+        SeededUser admin = getRandUserAndPassByRole(User.Role.ROLE_ADMIN);
+        String token = loginAndGetToken(admin.user().getEmail(), admin.password());
         webTestClient.patch().uri("/api/users/promoteToContributor/" + 99999)
                 .header("Authorization", "Bearer " + token)
                 .exchange()
                 .expectStatus().isNotFound();
     }
-
 }

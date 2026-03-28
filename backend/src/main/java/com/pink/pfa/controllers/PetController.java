@@ -41,20 +41,9 @@ import com.pink.pfa.services.WebScraperService;
 public class PetController {
 
     private final PetService petService;
-    private final WebScraperService webScraperService;
-    private final DatabaseBackupService databaseBackupService;
-    private final AdoptionSiteService adoptionSiteService;
 
-    public PetController (
-        PetService petService,
-        WebScraperService webScraperService, 
-        DatabaseBackupService databaseBackupService,
-        AdoptionSiteService adoptionSiteService
-    ) {
+    public PetController (PetService petService) {
         this.petService = petService;
-        this.webScraperService = webScraperService;
-        this.databaseBackupService = databaseBackupService;
-        this.adoptionSiteService = adoptionSiteService;
     }
  
 
@@ -105,25 +94,4 @@ public class PetController {
             return ResponseEntity.internalServerError().build();           
         }
     }
-
-
-    /**
-     * Returns a single pet by its ID, along with a UTC timestamp.
-     *
-     * @param id the unique identifier of the pet
-     * @return a map containing the matched {@code Pet} and a {@code Timestamp} string
-     */
-    @GetMapping("/scrape")
-    public ResponseEntity<Void> scrapeForPets () {
-        try {
-            List<AdoptionSite> sites = adoptionSiteService.findAllForScrape();
-            databaseBackupService.backup("pre_scrape");
-            List<Pet> scrapedPets = webScraperService.runScraper(sites);
-            petService.sync(scrapedPets);
-            return ResponseEntity.ok().build();
-        } catch (Exception e) {
-            return ResponseEntity.internalServerError().build();
-        }
-    }
-
 }
