@@ -8,18 +8,14 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.Mock;
 import static org.mockito.Mockito.when;
 import org.mockito.junit.jupiter.MockitoExtension;
-import org.springframework.beans.factory.annotation.Autowired;
 
 import com.pink.pfa.config.TestDataConfig;
 import com.pink.pfa.context.PfaBase;
 import com.pink.pfa.models.AdoptionSite;
 import com.pink.pfa.models.Pet;
 import com.pink.pfa.models.datatransfer.PetDTO;
-import com.pink.pfa.repos.AdoptionSiteRepository;
-import com.pink.pfa.repos.PetRepository;
 
 /**
  * Integration test suite for {@link PetService}.
@@ -33,24 +29,6 @@ import com.pink.pfa.repos.PetRepository;
 @ExtendWith(MockitoExtension.class)
 class PetServiceTest extends PfaBase {
 
-    private final PetService petService;
-    private final PetRepository petRepository;
-    private final AdoptionSiteRepository adoptionSiteRepository;
-
-    @Mock
-    private final WebScraperService webScraperService;
-
-    @Autowired
-    public PetServiceTest(PetService petService, 
-        PetRepository petRepository,
-        WebScraperService webScraperService,
-        AdoptionSiteRepository adoptionSiteRepository
-    ) {
-        this.petService = petService;
-        this.petRepository = petRepository;
-        this.webScraperService = webScraperService;
-        this.adoptionSiteRepository = adoptionSiteRepository;
-    }
 
     // -------------------------------------------------------------------------
     // findAll
