@@ -4,7 +4,6 @@ import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.test.context.TestConfiguration;
 import org.springframework.context.annotation.Bean;
 
-import com.pink.pfa.context.PfaBase;
 import com.pink.pfa.controllers.requests.UserRequest;
 import com.pink.pfa.exceptions.UserAlreadyExistsException;
 import com.pink.pfa.models.AdoptionSite;

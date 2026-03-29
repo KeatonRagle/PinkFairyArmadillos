@@ -9,14 +9,8 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.pink.pfa.models.AdoptionSite;
-import com.pink.pfa.models.Pet;
 import com.pink.pfa.models.datatransfer.PetDTO;
-import com.pink.pfa.services.AdoptionSiteService;
-import com.pink.pfa.services.DatabaseBackupService;
 import com.pink.pfa.services.PetService;
-import com.pink.pfa.services.WebScraperService;
-
 
 /**
  * REST controller exposing the {@code /api/pets} API surface for the Pets for All platform.
