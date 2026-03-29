@@ -9,6 +9,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.pink.pfa.exceptions.ResourceNotFoundException;
 import com.pink.pfa.models.datatransfer.PetDTO;
 import com.pink.pfa.services.PetService;
 
@@ -66,6 +67,8 @@ public class PetController {
     ) {
         try {
             return ResponseEntity.ok().body(petService.findByFilter(petType, gender, startAge, endAge, breed, size));
+        } catch (ResourceNotFoundException e) {
+            return ResponseEntity.notFound().build();
         } catch (Exception e) {
             return ResponseEntity.internalServerError().build();
         }
@@ -84,8 +87,10 @@ public class PetController {
     ) {
         try {
             return ResponseEntity.ok().body(petService.findById(id));
+        } catch (ResourceNotFoundException e) {
+            return ResponseEntity.notFound().build();
         } catch (Exception e) {
-            return ResponseEntity.internalServerError().build();           
+            return ResponseEntity.internalServerError().build();
         }
     }
 }

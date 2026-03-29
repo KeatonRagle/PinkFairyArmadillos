@@ -16,12 +16,16 @@ import org.springframework.test.web.reactive.server.WebTestClient;
 
 import com.pink.pfa.config.TestDataConfig;
 import com.pink.pfa.config.TestcontainersConfiguration;
+import com.pink.pfa.models.Pet;
 import com.pink.pfa.models.User;
+import com.pink.pfa.models.datatransfer.PetDTO;
 import com.pink.pfa.repos.AdoptionSiteRepository;
+import com.pink.pfa.repos.PetRepository;
 import com.pink.pfa.repos.UserRepository;
 import com.pink.pfa.services.AdoptionSiteService;
 import com.pink.pfa.services.CustomUserDetailsService;
 import com.pink.pfa.services.JWTService;
+import com.pink.pfa.services.PetService;
 import com.pink.pfa.services.UserService;
 
 
@@ -75,6 +79,8 @@ public abstract class PfaBase {
     @Autowired protected CustomUserDetailsService userDetailsService;
     @Autowired protected UserService userService;
     @Autowired protected UserRepository userRepository;
+    @Autowired protected PetService petService;
+    @Autowired protected PetRepository petRepository;
     @Autowired protected AdoptionSiteService adoptionSiteService;
     @Autowired protected AdoptionSiteRepository adoptionSiteRepository;
 
@@ -154,5 +160,14 @@ public abstract class PfaBase {
             );
         }
         return new SeededUser(user, password);
+    }
+
+    protected Pet getRandPet() {
+        List<Pet> results = new ArrayList<>(
+            petRepository.findAll()
+        );
+        if (results.isEmpty()) throw new RuntimeException("No pets found");
+        Collections.shuffle(results);
+        return results.get(0);
     }
 }
