@@ -18,7 +18,6 @@ import com.pink.pfa.config.TestDataConfig;
 import com.pink.pfa.config.TestcontainersConfiguration;
 import com.pink.pfa.models.Pet;
 import com.pink.pfa.models.User;
-import com.pink.pfa.models.datatransfer.PetDTO;
 import com.pink.pfa.repos.AdoptionSiteRepository;
 import com.pink.pfa.repos.PetRepository;
 import com.pink.pfa.repos.UserRepository;
@@ -27,6 +26,7 @@ import com.pink.pfa.services.CustomUserDetailsService;
 import com.pink.pfa.services.JWTService;
 import com.pink.pfa.services.PetService;
 import com.pink.pfa.services.UserService;
+import com.pink.pfa.services.WebScraperService;
 
 
 /**
@@ -83,6 +83,7 @@ public abstract class PfaBase {
     @Autowired protected PetRepository petRepository;
     @Autowired protected AdoptionSiteService adoptionSiteService;
     @Autowired protected AdoptionSiteRepository adoptionSiteRepository;
+    @Autowired protected WebScraperService webScraperService;
 
     /* WEB TEST CLIENT */
     protected WebTestClient webTestClient;
