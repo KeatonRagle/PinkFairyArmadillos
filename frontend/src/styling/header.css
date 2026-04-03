@@ -31,6 +31,7 @@
 
 .header-nav {
   display: flex;
+  align-items: center;
   gap: 100px;
   font-size: 15px;
   color: #343434;
@@ -38,6 +39,10 @@
   margin-right: auto;
   font-family: 'Hind Kochi', sans-serif;
   font-weight: 300;
+}
+
+.header-nav > * {
+  flex: 0 0 auto;
 }
 
 .header-nav span {
@@ -50,6 +55,135 @@
 }
 
 .header-link {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
   text-decoration: none;
   color: inherit;
+  font: inherit;
+  font-size: inherit;
+  font-weight: inherit;
+  line-height: 1;
+  white-space: nowrap;
+}
+
+.account-menu {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font: inherit;
+  line-height: 1;
+}
+
+.account-button {
+  border: none;
+  background: transparent;
+  width: auto;
+  min-width: 0;
+  height: auto;
+  padding: 0;
+  margin: 0;
+  border-radius: 0;
+  color: inherit;
+  font: inherit;
+  font-size: inherit;
+  font-weight: inherit;
+  line-height: inherit;
+  letter-spacing: inherit;
+  text-transform: none;
+  cursor: pointer;
+  transition: color 0.2s ease;
+  appearance: none;
+  -webkit-appearance: none;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.account-button:hover,
+.account-button:focus-visible {
+  color: #b44b25;
+  outline: none;
+}
+
+.account-dropdown {
+  position: absolute;
+  top: calc(100% + 12px);
+  left: 50%;
+  transform: translateX(-50%);
+  min-width: 220px;
+  padding: 8px;
+  background-color: #ffffff;
+  border: 1px solid #ebe3dd;
+  border-radius: 18px;
+  box-shadow: 0 18px 38px rgba(28, 28, 28, 0.14);
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  z-index: 1001;
+}
+
+.account-dropdown-link {
+  width: 100%;
+  min-width: 0;
+  height: auto;
+  border: none;
+  background: transparent;
+  color: #343434;
+  text-decoration: none;
+  text-align: left;
+  padding: 10px 12px;
+  margin: 0;
+  border-radius: 12px;
+  font-family: 'Hind Kochi', sans-serif;
+  font-size: 14px;
+  font-weight: 400;
+  line-height: 1.2;
+  cursor: pointer;
+  transition: background-color 0.2s ease, color 0.2s ease;
+  display: block;
+  box-sizing: border-box;
+  appearance: none;
+  -webkit-appearance: none;
+}
+
+.account-dropdown-link:hover,
+.account-dropdown-link:focus-visible {
+  background-color: #f7efe9;
+  color: #b44b25;
+  outline: none;
+}
+
+.account-dropdown-link.is-placeholder {
+  display: block;
+  color: #8f847d;
+  cursor: not-allowed;
+  opacity: 1;
+}
+
+.account-dropdown-link.is-placeholder:hover,
+.account-dropdown-link.is-placeholder:focus-visible {
+  background-color: transparent;
+  color: #8f847d;
+}
+
+@media (max-width: 1200px) {
+  .site-header {
+    height: auto;
+    padding: 18px 24px;
+    flex-wrap: wrap;
+    gap: 18px;
+  }
+
+  .header-left {
+    min-width: auto;
+  }
+
+  .header-nav {
+    gap: 28px;
+    margin-left: 0;
+    margin-right: 0;
+    flex-wrap: wrap;
+  }
 }
