@@ -37,7 +37,7 @@ public interface PostsRepository extends JpaRepository<Posts, Integer>{
 	 * @param postId post ID to filter for
 	 * @return list of {@link Posts} entities matched by the post's ID
 	 */
-	Lists<Posts> findByPostId(Integer postId);
+	List<Posts> findByPostId(Integer postId);
 	
 	/**
 	 * Finds all user-generated posts with the given user ID.
@@ -46,7 +46,7 @@ public interface PostsRepository extends JpaRepository<Posts, Integer>{
 	 * @param userId user ID to filter for
 	 * @return list of {@link Posts} entities matched by the user's ID
 	 */
-	Lists<Posts> findByUser_UserId(Integer userId);
+	List<Posts> findByUser_UserId(Integer userId);
 	
 	/**
 	 * Finds all user-generated posts with the given date and time.
@@ -55,5 +55,5 @@ public interface PostsRepository extends JpaRepository<Posts, Integer>{
 	 * @param postDate post date to filter for
 	 * @return list of {@link Posts} entities matched by the post's date
 	 */
-	Lists<Posts> findByPostDate(LocalDate postDate);
+	List<Posts> findByPostDate(LocalDate postDate);
 }
