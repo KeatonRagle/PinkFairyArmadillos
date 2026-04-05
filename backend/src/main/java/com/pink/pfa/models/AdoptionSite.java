@@ -88,7 +88,8 @@ public class AdoptionSite {
      * Constructs a fully initialized AdoptionSite entity.
      *
      * @param name site's display name
-     * @param contactInfo site's contact info
+     * @param phone site's phone number
+	 * @param email site's email address
      * @param rating user-determined rating
      * @param url optional site metadata
 	 * @param status site's approval status
