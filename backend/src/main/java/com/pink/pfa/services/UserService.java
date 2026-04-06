@@ -149,6 +149,7 @@ public class UserService {
         if (userRepository.existsByEmail(request.email())) {
             throw new UserAlreadyExistsException(request.email());
         }
+        
         User user = new User();
         user.setName(request.name());
         user.setEmail(request.email().trim().toLowerCase());
