@@ -401,7 +401,6 @@ export default function AnimalFilter() {
 								<div className="animal-card-info">
 									<h2>{animal.name}</h2>
 									<p>Breed: {animal.breed}</p>
-									<p>Age: {animal.age}</p>
 									<p>Gender: {animal.gender}</p>
 								</div>
 							</article>
