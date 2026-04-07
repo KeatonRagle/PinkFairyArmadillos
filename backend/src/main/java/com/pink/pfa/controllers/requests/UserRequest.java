@@ -26,7 +26,6 @@ import jakarta.validation.constraints.Size;
  * @param password raw password provided during registration (will be hashed before storage)
  */
 public record UserRequest(
-
         String name, 
 
         @Email
@@ -34,5 +33,5 @@ public record UserRequest(
         String email,
 
         @Size(min = 8)
-        String password
+String password
 ) {}
