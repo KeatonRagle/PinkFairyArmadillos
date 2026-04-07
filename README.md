@@ -9,6 +9,8 @@ Practical, Family-Friendly, All-Inclusive!
 Pets For All (PFA) is a centralized pet adoption platform that brings together listings from local adoption centers into one easy-to-navigate web application.
 Our goal is to simplify the pet discovery process while keeping it personal, transparent, and accessible for families and individuals.
 
+You can now explore the live platform here: https://adoptpetsforall.com
+
 **Elevator Pitch**:
 
 For families looking to adopt a pet, PFA is a centralized adoption hub that aggregates pets from local adoption centers in one streamlined platform. Unlike disconnected shelter websites, PFA removes friction from the adoption process while keeping it simple and welcoming.
