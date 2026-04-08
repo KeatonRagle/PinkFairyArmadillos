@@ -12,6 +12,7 @@ export default function HomeHeader() {
 
   const isContributor = role === 'ROLE_CONTRIBUTOR' || role === 'ROLE_ADMIN'
   const isAdmin = role === 'ROLE_ADMIN'
+  const isRegularUser = Boolean(username) && role === 'ROLE_USER'
 
   useEffect(() => {
     if (!menuOpen) {
@@ -73,9 +74,11 @@ export default function HomeHeader() {
                 <Link to="/profile" className="account-dropdown-link" role="menuitem" onClick={closeMenu}>
                   Account Settings
                 </Link>
-                <button type="button" className="account-dropdown-link is-placeholder" role="menuitem" disabled>
-                  Contributor Application
-                </button>
+                {isRegularUser ? (
+                  <Link to="/contributor-application" className="account-dropdown-link" role="menuitem" onClick={closeMenu}>
+                    Contributor Application
+                  </Link>
+                ) : null}
                 {isContributor ? (
                   <Link to="/contribute" className="account-dropdown-link" role="menuitem" onClick={closeMenu}>
                     Contribute
@@ -87,9 +90,9 @@ export default function HomeHeader() {
                   </Link>
                 ) : null}
                 {isAdmin ? (
-                  <button type="button" className="account-dropdown-link is-placeholder" role="menuitem" disabled>
+                  <Link to="/user-management" className="account-dropdown-link" role="menuitem" onClick={closeMenu}>
                     User Management
-                  </button>
+                  </Link>
                 ) : null}
                 <button type="button" className="account-dropdown-link" role="menuitem" onClick={handleLogout}>
                   Log Out

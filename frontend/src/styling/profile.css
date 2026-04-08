@@ -39,6 +39,13 @@
 	text-align: center;
 }
 
+.profile-intro {
+	margin: 18px 0 0;
+	text-align: center;
+	color: #6e5d52;
+	font-size: 16px;
+}
+
 .profile-grid {
 	display: grid;
 	grid-template-columns: repeat(2, minmax(0, 1fr));
@@ -66,6 +73,100 @@
 	color: #2f2520;
 	font-size: 18px;
 	word-break: break-word;
+}
+
+.profile-status {
+	margin: 24px 0 0;
+	padding: 14px 16px;
+	border-radius: 16px;
+	background: #fff4ee;
+	border: 1px solid #edd6c7;
+	color: #8a4a2a;
+	font-size: 15px;
+	text-align: center;
+}
+
+.profile-settings-sections {
+	display: grid;
+	grid-template-columns: repeat(2, minmax(0, 1fr));
+	gap: 18px;
+	margin-top: 28px;
+}
+
+.profile-settings-panel {
+	display: flex;
+	flex-direction: column;
+	gap: 16px;
+	padding: 24px;
+	background-color: #fffaf6;
+	border: 1px solid #eadccf;
+	border-radius: 20px;
+}
+
+.profile-settings-panel h2 {
+	margin: 0;
+	color: #2f2520;
+	font-size: 24px;
+	font-weight: 500;
+}
+
+.profile-settings-panel-wide {
+	grid-column: 1 / -1;
+}
+
+.profile-input-group {
+	display: grid;
+	gap: 8px;
+}
+
+.profile-input-group input {
+	width: 100%;
+	height: 46px;
+	padding: 0 14px;
+	border-radius: 14px;
+	border: 1px solid #dbcabf;
+	background: #ffffff;
+	color: #2f2520;
+	font-family: 'Hind Kochi', sans-serif;
+	font-size: 16px;
+	box-sizing: border-box;
+	outline: none;
+	transition: border-color 0.2s ease, box-shadow 0.2s ease;
+}
+
+.profile-input-group input:focus {
+	border-color: #b44b25;
+	box-shadow: 0 0 0 3px rgba(180, 75, 37, 0.14);
+}
+
+.profile-password-grid {
+	display: grid;
+	grid-template-columns: repeat(3, minmax(0, 1fr));
+	gap: 16px;
+}
+
+.profile-button {
+	align-self: flex-start;
+	min-width: 170px;
+	height: 44px;
+	padding: 0 18px;
+	border: none;
+	border-radius: 999px;
+	background-color: #b44b25;
+	color: #ffffff;
+	font-family: 'Hind Kochi', sans-serif;
+	font-size: 15px;
+	cursor: pointer;
+	transition: background-color 0.2s ease, transform 0.2s ease;
+}
+
+.profile-button:hover {
+	background-color: #973a18;
+	transform: translateY(-1px);
+}
+
+.profile-password-button {
+	margin-top: 10px;
 }
 
 .profile-actions {
@@ -103,6 +204,14 @@
 	}
 
 	.profile-grid {
+		grid-template-columns: 1fr;
+	}
+
+	.profile-settings-sections {
+		grid-template-columns: 1fr;
+	}
+
+	.profile-password-grid {
 		grid-template-columns: 1fr;
 	}
 }
