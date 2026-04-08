@@ -19,6 +19,8 @@ import com.pink.pfa.exceptions.SiteAlreadyExistsException;
 import com.pink.pfa.models.AdoptionSite;
 import com.pink.pfa.models.datatransfer.AdoptionSiteDTO;
 
+import jakarta.validation.constraints.AssertFalse;
+
 /**
  * Integration test suite for {@link AdoptionSiteService}.
  *
@@ -312,5 +314,13 @@ class AdoptionSiteServiceTest extends PfaBase {
     void denySite_ShouldThrowResourceNotFoundException_WhenIdDoesNotExist() {
         assertThrows(ResourceNotFoundException.class,
             () -> adoptionSiteService.denySite(999999));
+    }
+
+    // -------------------------------------------------------------------------
+    // findSubmitionsByJwt
+    // -------------------------------------------------------------------------
+    @Test
+    void findSubmitionsByJwt_WithValidJwt_ShouldOnlyReturnSubmisionsFromThatUser() {
+        
     }
 }

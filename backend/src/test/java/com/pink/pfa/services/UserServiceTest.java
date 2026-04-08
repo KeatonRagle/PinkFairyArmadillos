@@ -8,12 +8,18 @@ import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import org.junit.jupiter.api.Test;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
+import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
+import org.springframework.security.core.context.SecurityContext;
+import org.springframework.security.core.context.SecurityContextHolder;
 
 import com.pink.pfa.context.PfaBase;
 import com.pink.pfa.controllers.requests.UserRequest;
 import com.pink.pfa.models.User;
 import com.pink.pfa.models.datatransfer.UserDTO;
+import com.pink.pfa.models.details.UserPrincipal;
 
 /**
  * Authentication Security Tests for {@link UserService}.
@@ -202,5 +208,34 @@ class UserServiceTest extends PfaBase {
 
         User stored = userRepository.findByEmail("normtest@pfa.com").orElseThrow();
         assertEquals("normtest@pfa.com", stored.getEmail());
+    }
+
+    
+    // -------------------------------------------------------------------------
+    // findByJWT
+    // -------------------------------------------------------------------------
+    private void mockSecurityContext(User user) {
+        UserPrincipal principal = new UserPrincipal(user);
+
+        Authentication auth = mock(Authentication.class);
+        when(auth.getPrincipal()).thenReturn(principal);
+
+        SecurityContext context = mock(SecurityContext.class);
+        when(context.getAuthentication()).thenReturn(auth);
+
+        SecurityContextHolder.setContext(context);
+    }
+
+    @Test
+    void findByJWT_returnsUserDTO_whenUserExists() {
+        SeededUser user = getRandUserAndPassByRole(User.Role.ROLE_USER);
+        mockSecurityContext(user.user());
+
+        // set any other fields needed for UserDTO::fromEntity
+        UserDTO result = userService.findByJWT();
+
+        assertNotNull(result);
+        assertEquals(user.user().getEmail(), result.email());
+        SecurityContextHolder.clearContext();
     }
 }

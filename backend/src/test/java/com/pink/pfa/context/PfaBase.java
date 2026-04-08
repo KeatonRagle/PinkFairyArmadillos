@@ -144,6 +144,12 @@ public abstract class PfaBase {
         return user.getUserId();
     }
 
+    protected SeededUser getUserAndPassByEmail(String email) {
+        User user = userRepository.findByEmail(email).orElseThrow();
+        String password = SEEDED_USERS.get(user.getEmail());
+        return new SeededUser(user, password);
+    }
+
     protected SeededUser getRandUserAndPassByRole(User.Role role) {
         List<User> results = new ArrayList<>(
             userRepository.findAll().stream()

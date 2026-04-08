@@ -5,6 +5,7 @@ import java.util.List;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -15,6 +16,7 @@ import com.pink.pfa.exceptions.ResourceNotFoundException;
 import com.pink.pfa.exceptions.UserAlreadyExistsException;
 import com.pink.pfa.models.User;
 import com.pink.pfa.models.datatransfer.UserDTO;
+import com.pink.pfa.models.details.UserPrincipal;
 import com.pink.pfa.repos.UserRepository;
 
 import jakarta.servlet.http.HttpServletRequest;
@@ -123,16 +125,11 @@ public class UserService {
      * @return the {@link UserDTO} corresponding to the authenticated user
      * @throws UsernameNotFoundException if no user is found for the extracted email
      */
-    public UserDTO findByJWT(HttpServletRequest request) {
-        String authHeader = request.getHeader("Authorization");
-        String email = jwtService.extractEmailFromHeader(authHeader);
+    public UserDTO findByJWT() {
+        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+        String email = ((UserPrincipal) auth.getPrincipal()).getUsername();
         return userRepository.findByEmail(email)
                 .map(UserDTO::fromEntity)
-
-                // if this exception gets thrown then 3 things could have happened 
-                // 1. the packet degraded during transit
-                // 2. the jwt sent is expired
-                // 3. (more concerning) someone is generating their own JWTs and sending them to us
                 .orElseThrow(() -> new UsernameNotFoundException("Failed to find user by JWT"));
     }
 

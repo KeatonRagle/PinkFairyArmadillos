@@ -106,10 +106,9 @@ public class UserController {
      */
     @GetMapping("/findMe")
     public ResponseEntity<UserDTO> getUserByJWT(
-        HttpServletRequest request
     ) {
         try {
-            return ResponseEntity.ok().body(userService.findByJWT(request));
+            return ResponseEntity.ok().body(userService.findByJWT());
         } catch (ResourceNotFoundException e) {
             return ResponseEntity.notFound().build();
         } catch (Exception e) {
