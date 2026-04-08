@@ -8,12 +8,12 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 import java.util.Date;
 
 import org.junit.jupiter.api.Test;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.userdetails.UserDetails;
 
 import com.pink.pfa.config.TestDataConfig;
 import com.pink.pfa.config.TestcontainersConfiguration;
 import com.pink.pfa.context.PfaBase;
+import com.pink.pfa.models.User;
 
 
 /**
@@ -56,16 +56,6 @@ class JWTServiceTest extends PfaBase {
      * @param jwtService         the JWT service under test
      * @param userDetailsService used to load seeded test users for validation assertions
      */
-    @Autowired
-    public JWTServiceTest (JWTService jwtService, CustomUserDetailsService userDetailsService) {
-        this.jwtService = jwtService;
-        this.userDetailsService = userDetailsService;
-    }
-
-
-    private static final String AUSTIN_EMAIL = "austin@pfa.com";
-    private static final String DYLAN_EMAIL = "dylan@pfa.com";
-    private static final String KEATON_EMAIL = "keaton@pfa.com";
 
 
     /**
@@ -73,9 +63,10 @@ class JWTServiceTest extends PfaBase {
      */
     @Test
     void shouldGenerateValidToken() {
-        UserDetails userDetails = userDetailsService.loadUserByUsername(AUSTIN_EMAIL);
+        SeededUser user = getRandUserAndPassByRole(User.Role.ROLE_USER);
+        UserDetails userDetails = userDetailsService.loadUserByUsername(user.user().getEmail());
 
-        String token = jwtService.generateToken(AUSTIN_EMAIL);
+        String token = jwtService.generateToken(user.user().getEmail());
         assertTrue(jwtService.validateToken(token, userDetails));
     }
 
@@ -89,7 +80,8 @@ class JWTServiceTest extends PfaBase {
      */
     @Test
     void extractExpiration_ShouldBeApproximatelyThirtyMinutesFromNow() {
-        String token = jwtService.generateToken(DYLAN_EMAIL);
+        SeededUser user = getRandUserAndPassByRole(User.Role.ROLE_USER);
+        String token = jwtService.generateToken(user.user().getEmail());
         Date expiration = jwtService.extractExpiration(token);
         long diff = expiration.getTime() - System.currentTimeMillis();
         long thirtyMinutesMs = 1000L * 60 * 30;
@@ -107,8 +99,9 @@ class JWTServiceTest extends PfaBase {
      */
     @Test
     void extractEmail_ShouldReturnCorrectSubject() {
-        String token = jwtService.generateToken(KEATON_EMAIL);
-        assertEquals(KEATON_EMAIL, jwtService.extractEmail(token));
+        SeededUser user = getRandUserAndPassByRole(User.Role.ROLE_USER);
+        String token = jwtService.generateToken(user.user().getEmail());
+        assertEquals(user.user().getEmail(), jwtService.extractEmail(token));
     }
 
 
@@ -118,9 +111,10 @@ class JWTServiceTest extends PfaBase {
      */
     @Test
     void extractEmailFromHeader_WithValidBearerToken_ShouldReturnEmail() {
-        String token = jwtService.generateToken(AUSTIN_EMAIL);
+        SeededUser user = getRandUserAndPassByRole(User.Role.ROLE_USER);
+        String token = jwtService.generateToken(user.user().getEmail());
         String header = "Bearer " + token;
-        assertEquals(AUSTIN_EMAIL, jwtService.extractEmailFromHeader(header));
+        assertEquals(user.user().getEmail(), jwtService.extractEmailFromHeader(header));
     }
 
 
@@ -130,7 +124,8 @@ class JWTServiceTest extends PfaBase {
      */
     @Test
     void extractEmailFromHeader_WithNoBearerPrefix_ShouldReturnNull() {
-        String token = jwtService.generateToken(DYLAN_EMAIL);
+        SeededUser user = getRandUserAndPassByRole(User.Role.ROLE_USER);
+        String token = jwtService.generateToken(user.user().getEmail());
         assertNull(jwtService.extractEmailFromHeader(token));
     }
 
@@ -154,8 +149,10 @@ class JWTServiceTest extends PfaBase {
      */
     @Test
     void validateToken_WithWrongUser_ShouldReturnFalse() {
-        String token = jwtService.generateToken(KEATON_EMAIL);
-        UserDetails wrongUser = userDetailsService.loadUserByUsername(DYLAN_EMAIL);
+        SeededUser user = getRandUserAndPassByRole(User.Role.ROLE_USER);
+        SeededUser admin = getRandUserAndPassByRole(User.Role.ROLE_ADMIN);
+        String token = jwtService.generateToken(user.user().getEmail());
+        UserDetails wrongUser = userDetailsService.loadUserByUsername(admin.user().getEmail());
         assertFalse(jwtService.validateToken(token, wrongUser));
     }
 
@@ -167,11 +164,12 @@ class JWTServiceTest extends PfaBase {
      */
     @Test
     void validateToken_WithTamperedToken_ShouldThrowOrReturnFalse() {
-        String token = jwtService.generateToken(AUSTIN_EMAIL);
+        SeededUser user = getRandUserAndPassByRole(User.Role.ROLE_USER);
+        String token = jwtService.generateToken(user.user().getEmail());
         // Replace the entire signature segment with garbage
         String[] parts = token.split("\\.");
         String tampered = parts[0] + "." + parts[1] + ".invalidsignatureXXXXXXXXXXXXXXXX";
-        UserDetails userDetails = userDetailsService.loadUserByUsername(AUSTIN_EMAIL);
+        UserDetails userDetails = userDetailsService.loadUserByUsername(user.user().getEmail());
         try {
             boolean result = jwtService.validateToken(tampered, userDetails);
             assertFalse(result, "Tampered token should not validate");
@@ -195,8 +193,9 @@ class JWTServiceTest extends PfaBase {
         JWTService instanceA = new JWTService();
         JWTService instanceB = new JWTService();
 
-        String tokenFromA = instanceA.generateToken(DYLAN_EMAIL);
-        UserDetails userDetails = userDetailsService.loadUserByUsername(DYLAN_EMAIL);
+        SeededUser user = getRandUserAndPassByRole(User.Role.ROLE_USER);
+        String tokenFromA = instanceA.generateToken(user.user().getEmail());
+        UserDetails userDetails = userDetailsService.loadUserByUsername(user.user().getEmail());
 
         // instanceB has a different key, so it should reject instanceA's token
         try {

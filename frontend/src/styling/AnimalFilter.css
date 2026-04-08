@@ -123,6 +123,17 @@ body.animalfilter-body {
 	font-size: 16px;
 }
 
+.animal-results-empty {
+	grid-column: 1 / -1;
+	margin: 0;
+	padding: 32px;
+	border-radius: 18px;
+	background: #fff4ee;
+	color: #8a3b1d;
+	font-size: 20px;
+	box-shadow: 0 2px 10px rgba(0, 0, 0, 0.08);
+}
+
 /* Placeholder card state */
 .animal-card-placeholder {
 	opacity: 0.55;
@@ -491,6 +502,14 @@ body.animalfilter-body {
 	box-shadow: 0 1px 2px rgba(0, 0, 0, 0.2);
 	text-align: left;
 	cursor: pointer;
+}
+
+.gender-option-button.is-selected,
+.size-option-button.is-selected,
+.age-option-button.is-selected {
+	background: #b44b25;
+	color: #f8f8f8;
+	border-color: #b44b25;
 }
 
 /* Compatibility filter: toggle button */

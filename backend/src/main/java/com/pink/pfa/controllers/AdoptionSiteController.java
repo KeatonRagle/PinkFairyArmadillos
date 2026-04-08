@@ -2,7 +2,10 @@ package com.pink.pfa.controllers;
 
 import java.util.List;
 
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -13,102 +16,43 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.pink.pfa.controllers.requests.AdoptionSiteRequest;
 import com.pink.pfa.exceptions.ResourceNotFoundException;
+import com.pink.pfa.exceptions.SiteAlreadyExistsException;
 import com.pink.pfa.models.datatransfer.AdoptionSiteDTO;
-import com.pink.pfa.models.datatransfer.UserDTO;
-import com.pink.pfa.services.UserService;
 import com.pink.pfa.services.AdoptionSiteService;
 
+
+@EnableMethodSecurity
 @RestController
-@RequestMapping("/api/admin")
-public class AdminController {
+@RequestMapping("/api/adoptionSite")
+public class AdoptionSiteController {
 
-    private final UserService userService;
     private final AdoptionSiteService adoptionSiteService;
-
-    public AdminController (UserService userService, AdoptionSiteService adoptionSiteService) {
-        this.userService = userService;
+    
+    public AdoptionSiteController (AdoptionSiteService adoptionSiteService) {
         this.adoptionSiteService = adoptionSiteService;
     }
 
 
     /**
-     * Retrieves all registered users.
-     * <p>
-     * Access is restricted to ADMIN users via role-based authorization.
-     * Returns HTTP 200 (ok) along with a list of users upon success.
+     * Submits a new adoption site for admin review.
      *
-     * @return list containing users
-     */
-    @GetMapping("/getAllUsers")
-    public ResponseEntity<List<UserDTO>> getAllUsers() {
+     * @param request payload containing the new site's details
+     * @return {@code 200} with the created site; {@code 409} if the URL already exists;
+     *         {@code 500} on unexpected error
+     */   
+    @PreAuthorize("hasAnyRole('CONTRIBUTOR', 'ADMIN')")
+    @PostMapping("/submitSite")
+    public ResponseEntity<AdoptionSiteDTO> submitNewSite(@RequestBody AdoptionSiteRequest request) {
         try {
-            return ResponseEntity.ok().body(userService.findAll());
-        } catch (Exception e) {
-            return ResponseEntity.internalServerError().build();
-        }
-
-    }
-    
-    
-    /**
-     * Promotes a user to ADMIN role.
-     * <p>
-     * Access is restricted to existing ADMIN users.
-     * Returns HTTP 204 (No Content) upon successful promotion.
-     *
-     * Returns HTTP 500 (Internal Server Error) if unsuccessful.
-     *
-     * @param id ID of the user to promote
-     * @return empty {@link ResponseEntity} with 204 status
-     */
-    @PatchMapping("/promoteToAdmin/{id}")
-    public ResponseEntity<Void> promoteToAdmin(@PathVariable int id) {
-        try {
-            userService.promoteToAdmin(id);
-            return ResponseEntity.noContent().build();
-        } catch (ResourceNotFoundException e) {
-            return ResponseEntity.notFound().build();
+            return ResponseEntity.ok().body(adoptionSiteService.submitNewSite(request));
+        } catch (SiteAlreadyExistsException e){
+            return ResponseEntity.status(HttpStatus.CONFLICT).build();
         } catch (Exception e) {
             return ResponseEntity.internalServerError().build();
         }
     }
 
-
-    /**
-     * Promotes a user to CONTRIBUTOR role.
-     * <p>
-     * Access is restricted to existing ADMIN users.
-     * Returns HTTP 204 (No Content) upon successful promotion.
-     *
-     * Returns HTTP 500 (Internal Server Error) if unsuccessful.
-     *
-     * @param id ID of the user to promote
-     * @return empty {@link ResponseEntity} with corresponding status
-     */
-    @PatchMapping("/promoteToContributor/{id}")
-    public ResponseEntity<Void> promoteToContributor(@PathVariable int id) {
-        try {
-            userService.promoteToContributor(id);
-            return ResponseEntity.noContent().build();
-        } catch (ResourceNotFoundException e) {
-            return ResponseEntity.notFound().build();
-        } catch (Exception e) {
-            return ResponseEntity.internalServerError().build();
-        }
-    }
-
-
-    @GetMapping("/getSite/{id}")
-    public ResponseEntity<AdoptionSiteDTO> getSiteById(@PathVariable int id) {
-        try {
-            return ResponseEntity.ok().body(adoptionSiteService.findSiteById(id));
-        } catch (ResourceNotFoundException e) {
-            return ResponseEntity.notFound().build();
-        } catch (Exception e) {
-            return ResponseEntity.internalServerError().build();
-        }
-    }
-
+    @PreAuthorize("hasAnyRole('CONTRIBUTOR', 'ADMIN')")
     @GetMapping("/getAllSites")
     public ResponseEntity<List<AdoptionSiteDTO>> getAllSites() {
         try {
@@ -119,6 +63,20 @@ public class AdminController {
     }
 
 
+    @PreAuthorize("hasAnyRole('CONTRIBUTOR', 'ADMIN')")
+    @GetMapping("/{id}")
+    public ResponseEntity<AdoptionSiteDTO> getSiteById(@PathVariable int id) {
+        try {
+            return ResponseEntity.ok().body(adoptionSiteService.findSiteById(id));
+        } catch (ResourceNotFoundException e) {
+            return ResponseEntity.notFound().build();
+        } catch (Exception e) {
+            return ResponseEntity.internalServerError().build();
+        }
+    }
+
+
+    @PreAuthorize("hasRole('ADMIN')")
     @GetMapping("/getApprovedSites")
     public ResponseEntity<List<AdoptionSiteDTO>> getApprovedSites() {
         try {
@@ -128,6 +86,8 @@ public class AdminController {
         }
     }
 
+
+    @PreAuthorize("hasRole('ADMIN')")
     @GetMapping("/getDeniedSites")
     public ResponseEntity<List<AdoptionSiteDTO>> getDeniedSites() {
         try {
@@ -137,6 +97,8 @@ public class AdminController {
         }
     }
 
+
+    @PreAuthorize("hasRole('ADMIN')")
     @GetMapping("/getPendingSites")
     public ResponseEntity<List<AdoptionSiteDTO>> getPendingSites() {
         try {
@@ -147,6 +109,7 @@ public class AdminController {
     }
 
 
+    @PreAuthorize("hasRole('ADMIN')")
     @PatchMapping("/approveSite/{id}")
     public ResponseEntity<Void> approveSite(@PathVariable int id){
         System.out.println("approve site endpoint hit");
@@ -161,6 +124,7 @@ public class AdminController {
     }
 
 
+    @PreAuthorize("hasRole('ADMIN')")
     @PatchMapping("/denySite/{id}")
     public ResponseEntity<Void> denySite(@PathVariable int id){
         System.out.println("deny site endpoint hit");
@@ -175,6 +139,7 @@ public class AdminController {
     }
 
 
+    @PreAuthorize("hasRole('ADMIN')")
     @PostMapping("/editSite/{id}")
     public ResponseEntity<AdoptionSiteDTO> editSite(@RequestBody AdoptionSiteRequest request, @PathVariable int id) {
         try {

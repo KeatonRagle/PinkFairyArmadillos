@@ -6,10 +6,10 @@ import java.util.stream.Collectors;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.boot.context.properties.source.InvalidConfigurationPropertyValueException;
 import org.springframework.stereotype.Service;
 import org.springframework.web.bind.annotation.RequestMapping;
 
+import com.pink.pfa.exceptions.ResourceNotFoundException;
 import com.pink.pfa.models.AdoptionSite;
 import com.pink.pfa.models.Pet;
 import com.pink.pfa.models.datatransfer.PetDTO;
@@ -73,7 +73,7 @@ public class PetService {
     public PetDTO findById(Integer id) {
         return petRepository.findById(id)
             .map(PetDTO::fromEntity)
-            .orElseThrow(() -> new InvalidConfigurationPropertyValueException("Failed to Find ID", null, "Pet Not Found"));
+            .orElseThrow(() -> new ResourceNotFoundException("Pet", id));
     }
 
     /**
@@ -106,13 +106,15 @@ public class PetService {
         List<Pet> allPets = petRepository.findAll();
 
         if (petType != null) {
-            allPets = allPets.stream().filter(pet -> pet.getPetType().equals(petType)).toList();
+            allPets = allPets.stream()
+                .filter(pet -> pet.getPetType().equalsIgnoreCase(petType))
+                .toList();
         }
-
         if (gender != null) {
-            allPets = allPets.stream().filter(pet -> String.valueOf(pet.getGender()).equals(gender)).toList();
+            allPets = allPets.stream()
+                .filter(pet -> String.valueOf(pet.getGender()).equalsIgnoreCase(gender))
+                .toList();
         }
-
         if (startAge == null && endAge != null) {
             allPets = allPets.stream().filter(pet -> pet.getAge() <= endAge).toList();
         } else if (startAge != null && endAge == null) {
@@ -120,13 +122,19 @@ public class PetService {
         } else if (startAge != null && endAge != null) {
             allPets = allPets.stream().filter(pet -> pet.getAge() >= startAge && pet.getAge() <= endAge).toList();
         }
-
-        if (breed != null) {
-            allPets = allPets.stream().filter(pet -> ((String) pet.getBreed()).equals(breed)).toList();
+        if (breed != null && !breed.isBlank()) {
+            allPets = allPets.stream()
+                .filter(pet -> pet.getBreed().toLowerCase().contains(breed.toLowerCase()))
+                .toList();
+        }
+        if (size != null) {
+            allPets = allPets.stream()
+                .filter(pet -> pet.getSize().equalsIgnoreCase(size))
+                .toList();
         }
 
-        if (size != null) {
-            allPets = allPets.stream().filter(pet -> ((String) pet.getSize()).equals(size)).toList();
+        if(allPets.isEmpty()) {
+            throw new ResourceNotFoundException("Pet", petType + gender + startAge + endAge + breed + size);
         }
 
         return allPets.stream()

@@ -72,39 +72,58 @@ export function getAllPets() {
   });
 }
 
+export function getFilteredPets(filters = {}) {
+  const searchParams = new URLSearchParams();
+
+  Object.entries(filters).forEach(([key, value]) => {
+    if (value !== null && value !== undefined && value !== "") {
+      searchParams.append(key, value);
+    }
+  });
+
+  const queryString = searchParams.toString();
+  const path = queryString
+    ? `/api/pets/getFiltered?${queryString}`
+    : "/api/pets/getFiltered";
+
+  return apiFetchUnauthenicated(path, {
+    method: "GET",
+  });
+}
+
 export function submitSite(contribution) {
-  return apiFetchAuthenticated("/api/contributor/submitSite", {
+  return apiFetchAuthenticated("/api/adoptionSite/submitSite", {
     method: "POST",
     body: JSON.stringify(contribution),
   });
 }
 
 export function getApprovedSites() {
-  return apiFetchAuthenticated("/api/admin/getApprovedSites", { 
+  return apiFetchAuthenticated("/api/adoptionSite/getApprovedSites", { 
     method: "GET" 
   });
 }
 
 export function getDeniedSites() {
-  return apiFetchAuthenticated("/api/admin/getDeniedSites", { 
+  return apiFetchAuthenticated("/api/adoptionSite/getDeniedSites", { 
     method: "GET" 
   });
 }
 
 export function getPendingSites() {
-  return apiFetchAuthenticated("/api/admin/getPendingSites", { 
+  return apiFetchAuthenticated("/api/adoptionSite/getPendingSites", { 
         method: "GET" 
   });
 }
 
 export function approveSite(id) {
-  return apiFetchAuthenticated(`/api/admin/approveSite/${id}`, { 
+  return apiFetchAuthenticated(`/api/adoptionSite/approveSite/${id}`, { 
     method: "PATCH"
   });
 }
 
 export function denySite(id) {
-  return apiFetchAuthenticated(`/api/admin/denySite/${id}`, { 
+  return apiFetchAuthenticated(`/api/adoptionSite/denySite/${id}`, { 
     method: "PATCH" 
   });
 }

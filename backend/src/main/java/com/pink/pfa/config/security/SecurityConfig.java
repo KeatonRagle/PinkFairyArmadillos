@@ -100,7 +100,7 @@ public class SecurityConfig {
             "http://localhost:3000",
             "https://adoptpetsforall.com"
         ));
-        config.setAllowedMethods(List.of("GET","POST","PUT","DELETE","OPTIONS", "PATCH"));
+        config.setAllowedMethods(List.of("GET","POST","PUT","DELETE","OPTIONS","PATCH"));
         config.setAllowedHeaders(List.of("Authorization","Content-Type"));
         config.setExposedHeaders(List.of("Authorization"));
         // uncomment if we want to use cookies/session auth
@@ -138,14 +138,13 @@ public class SecurityConfig {
             .addFilterBefore(jwtFilter, UsernamePasswordAuthenticationFilter.class)
             .authorizeHttpRequests(request -> request
                 //.anyRequest().permitAll() // ONLY UNCOMMENT FOR DEBUG
+                // REAL MATCHER BEHAVIOR
                 .requestMatchers(
                     "/api/users/login",
                     "/api/users/register",
                     "/api/pets/**",
                     "/api/public/**"
                 ).permitAll() // any endpoint starting with /api/public is public and does not require auth
-                .requestMatchers("/api/admin/**").hasRole("ADMIN")
-                .requestMatchers("/api/contributor/**").hasAnyRole("CONTRIBUTOR", "ADMIN")
                 .anyRequest().authenticated() // any endpoint that does not start with /api/public is private and does require auth
             )
             .exceptionHandling(ex -> ex

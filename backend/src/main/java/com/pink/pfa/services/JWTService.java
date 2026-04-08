@@ -173,7 +173,7 @@ public class JWTService {
      * @param email email to store as the token subject
      * @return compact JWT string
      */
-    String generateExpiredToken(String email) {
+    public String generateExpiredToken(String email) {
         return Jwts.builder()
                 .subject(email)
                 .issuedAt(new Date(System.currentTimeMillis() - 60_000))
@@ -197,7 +197,6 @@ public class JWTService {
      */
     public boolean validateToken(String token, UserDetails userDetails) {
         final String email = extractEmail(token);
-        System.out.println("VALIDATE: token_email='" + email + "' userDetails_username='" + userDetails.getUsername() + "' expired=" + isTokenExpired(token));
         return (email.equals(userDetails.getUsername()) && !isTokenExpired(token));
     }
 

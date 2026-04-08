@@ -9,14 +9,9 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.pink.pfa.models.AdoptionSite;
-import com.pink.pfa.models.Pet;
+import com.pink.pfa.exceptions.ResourceNotFoundException;
 import com.pink.pfa.models.datatransfer.PetDTO;
-import com.pink.pfa.services.AdoptionSiteService;
-import com.pink.pfa.services.DatabaseBackupService;
 import com.pink.pfa.services.PetService;
-import com.pink.pfa.services.WebScraperService;
-
 
 /**
  * REST controller exposing the {@code /api/pets} API surface for the Pets for All platform.
@@ -41,20 +36,9 @@ import com.pink.pfa.services.WebScraperService;
 public class PetController {
 
     private final PetService petService;
-    private final WebScraperService webScraperService;
-    private final DatabaseBackupService databaseBackupService;
-    private final AdoptionSiteService adoptionSiteService;
 
-    public PetController (
-        PetService petService,
-        WebScraperService webScraperService, 
-        DatabaseBackupService databaseBackupService,
-        AdoptionSiteService adoptionSiteService
-    ) {
+    public PetController (PetService petService) {
         this.petService = petService;
-        this.webScraperService = webScraperService;
-        this.databaseBackupService = databaseBackupService;
-        this.adoptionSiteService = adoptionSiteService;
     }
  
 
@@ -83,6 +67,8 @@ public class PetController {
     ) {
         try {
             return ResponseEntity.ok().body(petService.findByFilter(petType, gender, startAge, endAge, breed, size));
+        } catch (ResourceNotFoundException e) {
+            return ResponseEntity.notFound().build();
         } catch (Exception e) {
             return ResponseEntity.internalServerError().build();
         }
@@ -101,29 +87,10 @@ public class PetController {
     ) {
         try {
             return ResponseEntity.ok().body(petService.findById(id));
-        } catch (Exception e) {
-            return ResponseEntity.internalServerError().build();           
-        }
-    }
-
-
-    /**
-     * Returns a single pet by its ID, along with a UTC timestamp.
-     *
-     * @param id the unique identifier of the pet
-     * @return a map containing the matched {@code Pet} and a {@code Timestamp} string
-     */
-    @GetMapping("/scrape")
-    public ResponseEntity<Void> scrapeForPets () {
-        try {
-            List<AdoptionSite> sites = adoptionSiteService.findAllForScrape();
-            databaseBackupService.backup("pre_scrape");
-            List<Pet> scrapedPets = webScraperService.runScraper(sites);
-            petService.sync(scrapedPets);
-            return ResponseEntity.ok().build();
+        } catch (ResourceNotFoundException e) {
+            return ResponseEntity.notFound().build();
         } catch (Exception e) {
             return ResponseEntity.internalServerError().build();
         }
     }
-
 }
