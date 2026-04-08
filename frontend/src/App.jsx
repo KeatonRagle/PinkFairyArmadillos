@@ -14,6 +14,7 @@ import Profile from './pages/profile.jsx'
 import Request from './pages/request.jsx'
 import AdoptersInfo from './pages/adoptersinfo.jsx'
 import UserManage from './pages/usermange.jsx'
+import SpecificAnimal from './pages/specificanimal.jsx'
 
 function App() {
   return (
@@ -35,6 +36,7 @@ function App() {
         <Route path="/request" element={<Request />} />
         <Route path="/user-management" element={<UserManage />} />
         <Route path="/adopters-info" element={<AdoptersInfo />} />
+        <Route path="/specific-animal" element={<SpecificAnimal />} />
       </Routes>
     </Router>
   )

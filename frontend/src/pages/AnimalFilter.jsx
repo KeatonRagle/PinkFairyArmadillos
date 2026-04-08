@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from 'react'
-import { useLocation } from 'react-router-dom'
+import { Link, useLocation } from 'react-router-dom'
 import HomeHeader from '../components/header'
 import HomeFooter from '../components/footer'
 import { getFilteredPets } from '../fetch/api'
@@ -51,6 +51,9 @@ function mapPetToAnimal(pet) {
 		breed: pet.breed,
 		age: pet.age,
 		gender: pet.gender === 'M' ? 'Male' : pet.gender === 'F' ? 'Female' : pet.gender,
+		location: pet.location,
+		misc: pet.pet_status || pet.pet_type || 'More details coming soon.',
+		adoptionSite: 'Adoption site information coming soon.',
 		image: pet.img_url || '/images/waveShort.png',
 	}
 }
@@ -381,16 +384,23 @@ export default function AnimalFilter() {
 						<p className="animal-results-empty">No animals match the selected filters.</p>
 					) : (
 						animals.map((animal) => (
-							<article key={animal.id} className="animal-card">
-								<div className="animal-card-image-wrap">
-									<img src={animal.image} alt={animal.name} className="animal-card-image" />
-								</div>
-								<div className="animal-card-info">
-									<h2>{animal.name}</h2>
-									<p>Breed: {animal.breed}</p>
-									<p>Gender: {animal.gender}</p>
-								</div>
-							</article>
+							<Link
+								key={animal.id}
+								to="/specific-animal"
+								state={{ animal }}
+								className="animal-card-link"
+							>
+								<article className="animal-card">
+									<div className="animal-card-image-wrap">
+										<img src={animal.image} alt={animal.name} className="animal-card-image" />
+									</div>
+									<div className="animal-card-info">
+										<h2>{animal.name}</h2>
+										<p>Breed: {animal.breed}</p>
+										<p>Gender: {animal.gender}</p>
+									</div>
+								</article>
+							</Link>
 						))
 					)}
 				</section>

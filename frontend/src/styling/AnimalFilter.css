@@ -67,6 +67,23 @@ body.animalfilter-body {
 	min-height: 300px;
 }
 
+.animal-card-link {
+	text-decoration: none;
+	color: inherit;
+	display: block;
+}
+
+.animal-card-link .animal-card {
+	transition: transform 0.2s ease, box-shadow 0.2s ease;
+	cursor: pointer;
+}
+
+.animal-card-link:hover .animal-card,
+.animal-card-link:focus-visible .animal-card {
+	transform: translateY(-3px);
+	box-shadow: 0 8px 24px rgba(0, 0, 0, 0.24);
+}
+
 /* Card image wrapper */
 .animal-card-image-wrap {
 	width: 100%;
@@ -312,8 +329,8 @@ body.animalfilter-body {
 }
 
 /* Shared text input styles for breed and shelter */
-.breed-search-input,
-.shelter-search-input {
+.breed-options .breed-search-input,
+.shelter-options .shelter-search-input {
 	width: 85%;
 	height: 32px;
 	margin: 0;
@@ -321,6 +338,7 @@ body.animalfilter-body {
 	border-radius: 10px;
 	border: 1px solid #d1d5db;
 	padding: 0 12px;
+	box-sizing: border-box;
 	background: #F8F8F8;
 	color: #b44b25;
 	font-size: 16px;
