@@ -137,15 +137,15 @@ public class SecurityConfig {
             .csrf(customizer -> customizer.disable()) // disable Cross-Site Request Forgery protection since we pass auth as a header in the request
             .addFilterBefore(jwtFilter, UsernamePasswordAuthenticationFilter.class)
             .authorizeHttpRequests(request -> request
-                //.anyRequest().permitAll() // ONLY UNCOMMENT FOR DEBUG
+                .anyRequest().permitAll() // ONLY UNCOMMENT FOR DEBUG
                 // REAL MATCHER BEHAVIOR
-                .requestMatchers(
-                    "/api/users/login",
-                    "/api/users/register",
-                    "/api/pets/**",
-                    "/api/public/**"
-                ).permitAll() // any endpoint starting with /api/public is public and does not require auth
-                .anyRequest().authenticated() // any endpoint that does not start with /api/public is private and does require auth
+                // .requestMatchers(
+                //     "/api/users/login",
+                //     "/api/users/register",
+                //     "/api/pets/**",
+                //     "/api/public/**"
+                // ).permitAll() // any endpoint starting with /api/public is public and does not require auth
+                // .anyRequest().authenticated() // any endpoint that does not start with /api/public is private and does require auth
             )
             .exceptionHandling(ex -> ex
 

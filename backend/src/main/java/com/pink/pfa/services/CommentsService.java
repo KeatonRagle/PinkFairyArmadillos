@@ -1,6 +1,6 @@
 package com.pink.pfa.services;
 
-import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -11,11 +11,13 @@ import com.pink.pfa.exceptions.ResourceNotFoundException;
 import com.pink.pfa.models.Comments;
 import com.pink.pfa.models.datatransfer.CommentDTO;
 import com.pink.pfa.repos.CommentsRepository;
+import com.pink.pfa.repos.PostsRepository;
 import com.pink.pfa.repos.UserRepository;
 
 @Service
 public class CommentsService {
     @Autowired private CommentsRepository commentsRepository;
+    @Autowired private PostsRepository postsRepository;
     @Autowired private UserRepository userRepository;
 
     public List<CommentDTO> findAll() { 
@@ -35,15 +37,18 @@ public class CommentsService {
         return commentsRepository.existsById(id);
     }
 
-    public void deletePost(Integer id) { 
+    public void deleteComment(Integer id) { 
         commentsRepository.deleteById(id); 
     }
 
     public CommentDTO submitNewComment(CommentRequest request) {
         Comments comment = new Comments();
-        comment.setCtDate(LocalDate.now());
+        comment.setCtDate(LocalDateTime.now());
         comment.setCtComment(request.comment());
         comment.setUser(userRepository.findById(request.userID())
+            .orElseThrow(() -> new ResourceNotFoundException("User", request.userID()))
+        );
+        comment.setPost(postsRepository.findById(request.postID())
             .orElseThrow(() -> new ResourceNotFoundException("User", request.userID()))
         );
 

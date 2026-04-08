@@ -1,6 +1,8 @@
 package com.pink.pfa.models;
 
-import java.time.LocalDate;
+import java.time.LocalDateTime;
+
+import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
@@ -9,7 +11,6 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
-import jakarta.persistence.OneToMany;
 import lombok.Data;
 
 
@@ -44,14 +45,14 @@ public class Comments {
 	
 	
 	/** Foreign Key identifier for the post. */
-	@OneToMany(fetch = FetchType.LAZY)
+	@ManyToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
 	@JoinColumn(name = "post_id", nullable = false)
 	private Posts post;
 	
 	
 	/** Comment's date. */
 	@Column(name = "ct_date", nullable = false)
-	private LocalDate ctDate;
+	private LocalDateTime ctDate;
 	
 	
 	/** Comment's comment. */
@@ -68,7 +69,7 @@ public class Comments {
      * @param ctDate date of comment left
      * @param ctComment user-written comment
      */
-	public Comments(LocalDate ctDate, String ctComment) {
+	public Comments(LocalDateTime ctDate, String ctComment) {
 		this.ctDate = ctDate;
 		this.ctComment = ctComment;
 	}

@@ -2,6 +2,7 @@ package com.pink.pfa.controllers;
 
 import java.util.List;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -12,11 +13,12 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.pink.pfa.controllers.requests.CommentRequest;
+import com.pink.pfa.controllers.requests.PostRequest;
 import com.pink.pfa.exceptions.ResourceNotFoundException;
 import com.pink.pfa.exceptions.SiteAlreadyExistsException;
-import com.pink.pfa.models.datatransfer.CommentDTO;
+import com.pink.pfa.models.datatransfer.PostDTO;
 import com.pink.pfa.services.CommentsService;
+import com.pink.pfa.services.PostsService;
 
 /**
  * REST controller exposing the {@code /api/comments} API surface for the Pets for All platform.
@@ -37,15 +39,9 @@ import com.pink.pfa.services.CommentsService;
  * responsible only for request mapping, response shaping, and timestamp injection.
  */
 @RestController
-@RequestMapping("/api/comments")
-public class CommentsController {
-
-    private final CommentsService commentsService;
-
-    public CommentsController (CommentsService commentsService) {
-        this.commentsService = commentsService;
-    }
- 
+@RequestMapping("/api/posts")
+public class PostsController {
+    @Autowired private PostsService postsService; 
 
     /**
      * Returns all comments currently stored in the database, along with a UTC timestamp.
@@ -53,9 +49,9 @@ public class CommentsController {
      * @return a map containing a {@code Comments} list and a {@code Timestamp} string
      */
     @GetMapping("/getAll")
-    public ResponseEntity<List<CommentDTO>> getAllComments() {
+    public ResponseEntity<List<PostDTO>> getAllComments() {
         try {
-            return ResponseEntity.ok().body(commentsService.findAll());
+            return ResponseEntity.ok().body(postsService.findAll());
         } catch (Exception e) {
             return ResponseEntity.internalServerError().build();
         }
@@ -68,11 +64,11 @@ public class CommentsController {
      * @return a map containing the matched {@code Comment} and a {@code Timestamp} string
      */
     @GetMapping("/{id}")
-    public ResponseEntity<CommentDTO> getCommentById(
+    public ResponseEntity<PostDTO> getCommentById(
         @PathVariable Integer id
     ) {
         try {
-            return ResponseEntity.ok().body(commentsService.findById(id));
+            return ResponseEntity.ok().body(postsService.findById(id));
         } catch (ResourceNotFoundException e) {
             return ResponseEntity.notFound().build();
         } catch (Exception e) {
@@ -86,12 +82,12 @@ public class CommentsController {
      * @param id the unique identifier of the comment
      * @return a map containing the matched {@code Comment} and a {@code Timestamp} string
      */
-    @PostMapping("/submitComment")
-    public ResponseEntity<CommentDTO> createComment(
-        @RequestBody CommentRequest comment
+    @PostMapping("/submitPost")
+    public ResponseEntity<PostDTO> createPost(
+        @RequestBody PostRequest post
     ) {
-        try {
-            return ResponseEntity.ok().body(commentsService.submitNewComment(comment));
+        try { 
+            return ResponseEntity.ok().body(postsService.submitNewPost(post));
         } catch (SiteAlreadyExistsException e){
             return ResponseEntity.status(HttpStatus.CONFLICT).build();
         } catch (Exception e) {
@@ -106,14 +102,14 @@ public class CommentsController {
      * @return a map containing the response from the operation with a {@code Timestamp} string
      */
     @DeleteMapping("/{id}") 
-    public ResponseEntity<Void> deleteComment(
+    public ResponseEntity<Void> deletePost(
         @PathVariable Integer id
     ) {
-        if (!commentsService.existsById(id)) {
+        if (!postsService.existsById(id)) {
             return ResponseEntity.notFound().build();   
         }
 
-        commentsService.deleteComment(id);
+        postsService.deletePost(id);
         return ResponseEntity.noContent().build();
     }
 }

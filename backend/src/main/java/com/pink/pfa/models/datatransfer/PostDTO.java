@@ -1,9 +1,9 @@
 package com.pink.pfa.models.datatransfer;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 
 import com.pink.pfa.models.AdoptionSite;
-import com.pink.pfa.models.Comments;
 import com.pink.pfa.models.Posts;
 
 /**
@@ -12,12 +12,11 @@ import com.pink.pfa.models.Posts;
  * Used to decouple the internal {@link AdoptionSite} entity from the API response shape,
  * ensuring only intended fields are serialized and returned to the client.
  */
-public record CommentDTO(
-    Posts post,
-    Integer commentID,
+public record PostDTO(
+    Integer postID,
     Integer userID,
     LocalDateTime date,
-    String comment
+    String content
 ) {
     /**
      * Maps an {@link AdoptionSite} entity to an {@link AdoptionSiteDTO}.
@@ -25,13 +24,12 @@ public record CommentDTO(
      * @param site the entity to convert
      * @return an {@link AdoptionSiteDTO} populated with the entity's data
      */
-    public static CommentDTO fromEntity(Comments comment) {
-        return new CommentDTO(
-            comment.getPost(),
-            comment.getCommentId(),
-            comment.getUser().getUserId(),
-            comment.getCtDate(),
-            comment.getCtComment()
+    public static PostDTO fromEntity(Posts post) {
+        return new PostDTO(
+            post.getPostId(),
+            post.getUser().getUserId(),
+            post.getPostDate(),
+            post.getPostContent()
         );
     }
 }
