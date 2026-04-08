@@ -52,10 +52,23 @@
   margin-right: 0;
   font-family: 'Hind Kochi', sans-serif;
   font-weight: 300;
+  min-width: 0;
 }
 
 .header-nav > * {
   flex: 0 0 auto;
+}
+
+.header-nav-links {
+  display: flex;
+  align-items: center;
+  gap: 100px;
+}
+
+.header-account-section {
+  display: inline-flex;
+  align-items: center;
+  gap: 100px;
 }
 
 .header-nav span {
@@ -87,6 +100,17 @@
   justify-content: center;
   font: inherit;
   line-height: 1;
+}
+
+.header-username {
+  display: inline-flex;
+  align-items: center;
+  color: #343434;
+  font: inherit;
+  line-height: 1;
+  white-space: nowrap;
+  cursor: default;
+  text-transform: uppercase;
 }
 
 .account-button {
@@ -194,9 +218,19 @@
   }
 
   .header-nav {
-    gap: 28px;
     margin-left: 0;
     margin-right: 0;
     flex-wrap: wrap;
+    justify-content: center;
+    gap: 18px;
+  }
+
+  .header-nav-links {
+    flex-wrap: wrap;
+    gap: 28px;
+  }
+
+  .header-account-section {
+    gap: 28px;
   }
 }

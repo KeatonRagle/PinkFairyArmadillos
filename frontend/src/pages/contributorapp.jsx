@@ -80,10 +80,9 @@ export default function ContributorApp() {
 			return
 		}
 
-		const trimmedReason = reason.trim()
 		const nextRecord = {
 			status: 'PENDING',
-			reason: trimmedReason,
+			reason: reason.trim(),
 			submittedAt: new Date().toISOString(),
 		}
 
@@ -113,6 +112,7 @@ export default function ContributorApp() {
 					</div>
 
 					<form className="contributorapp-form" onSubmit={handleSubmit}>
+						{/*
 						<div className="contributorapp-form-header">
 							<h2>Request Contributor Access</h2>
 						</div>
@@ -126,10 +126,10 @@ export default function ContributorApp() {
 								disabled={Boolean(applicationRecord)}
 							/>
 						</label>
-
+*/}
 						<div className="contributorapp-actions">
 							{!applicationRecord ? (
-								<button type="submit" className="contributorapp-button" disabled={!reason.trim()}>
+								<button type="submit" className="contributorapp-button">
 									Submit Application
 								</button>
 							) : null}

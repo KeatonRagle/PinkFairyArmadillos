@@ -69,6 +69,16 @@ function roleLabel(role) {
 	return ROLE_OPTIONS.find((option) => option.value === role)?.label || role
 }
 
+function loadAdminData(currentUsername, currentRole, setApplications, setUserRecords) {
+	const storedApplications = readStorageObject(CONTRIBUTOR_APPLICATIONS_KEY)
+	const storedUsers = readStorageObject(USER_RECORDS_KEY)
+	const normalizedUsers = ensureUserRecords(storedUsers, currentUsername, currentRole, storedApplications)
+
+	writeStorageObject(USER_RECORDS_KEY, normalizedUsers)
+	setApplications(storedApplications)
+	setUserRecords(normalizedUsers)
+}
+
 export default function UserManage() {
 	const navigate = useNavigate()
 	const { token, username, role, setAuth } = useAuth()
@@ -92,14 +102,34 @@ export default function UserManage() {
 			return
 		}
 
-		const storedApplications = readStorageObject(CONTRIBUTOR_APPLICATIONS_KEY)
-		const storedUsers = readStorageObject(USER_RECORDS_KEY)
-		const normalizedUsers = ensureUserRecords(storedUsers, username, role, storedApplications)
-
-		writeStorageObject(USER_RECORDS_KEY, normalizedUsers)
-		setApplications(storedApplications)
-		setUserRecords(normalizedUsers)
+		loadAdminData(username, role, setApplications, setUserRecords)
 	}, [navigate, role, username])
+
+	useEffect(() => {
+		if (role !== 'ROLE_ADMIN' || !username) {
+			return undefined
+		}
+
+		const handleStorageChange = (event) => {
+			if (
+				event.key &&
+				event.key !== CONTRIBUTOR_APPLICATIONS_KEY &&
+				event.key !== USER_RECORDS_KEY
+			) {
+				return
+			}
+
+			loadAdminData(username, role, setApplications, setUserRecords)
+		}
+
+		window.addEventListener('storage', handleStorageChange)
+		window.addEventListener('focus', handleStorageChange)
+
+		return () => {
+			window.removeEventListener('storage', handleStorageChange)
+			window.removeEventListener('focus', handleStorageChange)
+		}
+	}, [role, username])
 
 	const userEntries = useMemo(
 		() => Object.values(userRecords).sort((left, right) => left.username.localeCompare(right.username)),

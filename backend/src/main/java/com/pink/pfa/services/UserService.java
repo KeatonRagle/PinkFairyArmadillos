@@ -10,6 +10,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.web.bind.annotation.RequestMapping;
 
+import com.pink.pfa.controllers.requests.UpdateUserNameRequest;
 import com.pink.pfa.controllers.requests.UserRequest;
 import com.pink.pfa.exceptions.ResourceNotFoundException;
 import com.pink.pfa.exceptions.UserAlreadyExistsException;
@@ -134,6 +135,18 @@ public class UserService {
                 // 2. the jwt sent is expired
                 // 3. (more concerning) someone is generating their own JWTs and sending them to us
                 .orElseThrow(() -> new UsernameNotFoundException("Failed to find user by JWT"));
+    }
+
+
+    @Transactional
+    public UserDTO updateNameByJWT(HttpServletRequest request, UpdateUserNameRequest updateRequest) {
+        String authHeader = request.getHeader("Authorization");
+        String email = jwtService.extractEmailFromHeader(authHeader);
+        User user = userRepository.findByEmail(email)
+                .orElseThrow(() -> new UsernameNotFoundException("Failed to find user by JWT"));
+
+        user.setName(updateRequest.name().trim());
+        return UserDTO.fromEntity(user);
     }
 
 

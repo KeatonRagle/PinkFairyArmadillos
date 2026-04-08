@@ -2,17 +2,20 @@ import { useEffect, useState } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
 import HomeHeader from '../components/header'
 import { useAuth } from '../auth/AuthContext'
+import { getCurrentUser, updateCurrentUsername } from '../fetch/api'
 import '../styling/profile.css'
 
 export default function Profile() {
 	const navigate = useNavigate()
-	const { username, role } = useAuth()
+	const { token, username, role, setAuth } = useAuth()
 	const [usernameDraft, setUsernameDraft] = useState('')
 	const [emailDraft, setEmailDraft] = useState('')
 	const [currentPasswordDraft, setCurrentPasswordDraft] = useState('')
 	const [newPasswordDraft, setNewPasswordDraft] = useState('')
 	const [confirmPasswordDraft, setConfirmPasswordDraft] = useState('')
 	const [statusMessage, setStatusMessage] = useState('')
+	const [currentEmail, setCurrentEmail] = useState('')
+	const [isSavingUsername, setIsSavingUsername] = useState(false)
 
 	useEffect(() => {
 		document.body.classList.add('profile-body')
@@ -25,6 +28,36 @@ export default function Profile() {
 		}
 	}, [navigate, username])
 
+	useEffect(() => {
+		if (!token) {
+			return
+		}
+
+		let isMounted = true
+
+		const loadCurrentUser = async () => {
+			try {
+				const user = await getCurrentUser()
+				if (!isMounted) {
+					return
+				}
+
+				setCurrentEmail(user.email ?? '')
+				setUsernameDraft(user.name ?? '')
+			} catch {
+				if (isMounted) {
+					setCurrentEmail('')
+				}
+			}
+		}
+
+		loadCurrentUser()
+
+		return () => {
+			isMounted = false
+		}
+	}, [token])
+
 	const roleLabel = role === 'ROLE_ADMIN'
 		? 'Admin'
 		: role === 'ROLE_CONTRIBUTOR'
@@ -34,6 +67,31 @@ export default function Profile() {
 	const handlePlaceholderSubmit = (event, message) => {
 		event.preventDefault()
 		setStatusMessage(message)
+	}
+
+	const handleUsernameSubmit = async (event) => {
+		event.preventDefault()
+
+		const trimmedUsername = usernameDraft.trim()
+		if (!trimmedUsername) {
+			setStatusMessage('Username cannot be empty.')
+			return
+		}
+
+		setIsSavingUsername(true)
+		setStatusMessage('')
+
+		try {
+			const updatedUser = await updateCurrentUsername(trimmedUsername)
+			setAuth(token, updatedUser.name ?? trimmedUsername, updatedUser.role)
+			setUsernameDraft(updatedUser.name ?? trimmedUsername)
+			setCurrentEmail(updatedUser.email ?? currentEmail)
+			setStatusMessage('Username updated.')
+		} catch {
+			setStatusMessage('Unable to update username right now.')
+		} finally {
+			setIsSavingUsername(false)
+		}
 	}
 
 	return (
@@ -52,7 +110,7 @@ export default function Profile() {
 						</div>
 						<div className="profile-field">
 							<span className="profile-label">Current Email</span>
-							<span className="profile-value">{username || 'Not signed in'}</span>
+							<span className="profile-value">{currentEmail || 'Not signed in'}</span>
 						</div>
 						<div className="profile-field">
 							<span className="profile-label">Role</span>
@@ -65,7 +123,7 @@ export default function Profile() {
 					<div className="profile-settings-sections">
 						<form
 							className="profile-settings-panel"
-							onSubmit={(event) => handlePlaceholderSubmit(event, '')}
+							onSubmit={handleUsernameSubmit}
 						>
 							<h2>Create Username</h2>
 							<label className="profile-input-group">
@@ -77,7 +135,9 @@ export default function Profile() {
 									placeholder="Choose a username"
 								/>
 							</label>
-							<button type="submit" className="profile-button">Save Username</button>
+							<button type="submit" className="profile-button" disabled={isSavingUsername}>
+								{isSavingUsername ? 'Saving...' : 'Save Username'}
+							</button>
 						</form>
 
 						<form

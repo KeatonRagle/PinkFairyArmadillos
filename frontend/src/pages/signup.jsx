@@ -16,6 +16,7 @@ export default function Signup() {
   const navigate = useNavigate()
   const { setAuth } = useAuth();
 
+    const [username, setUsername] = useState("")
     const [email, setEmail] = useState("")
     const [password, setPassword] = useState("")
     const [confirmPassword, setConfirmPassword] = useState("")
@@ -38,12 +39,10 @@ export default function Signup() {
 
     setLoading(true)
     try {
-      const data = await registerUser({ name: "User", email, password })
+      const data = await registerUser({ name: username, email, password })
       const token = data.token
       const userObj = data.user
-      //const displayName = userObj.username ?? userObj.name ?? userObj.email;
-      const displayName = userObj.email;
-      // changes
+      const displayName = userObj.name ?? username ?? userObj.email
       const role = userObj.role;
 
       setAuth(token, displayName, role);
@@ -71,6 +70,17 @@ export default function Signup() {
         <Logo className="card-logo" />
 
         <Heading>Create your account</Heading>
+
+        <Field>
+          <Input
+            type="text"
+            name="username"
+            placeholder="Username"
+            value={username}
+            onChange={(e) => setUsername(e.target.value)}
+            required
+          />
+        </Field>
 
         <Field>
           <Input

@@ -57,56 +57,65 @@ export default function HomeHeader() {
       </div>
 
       <nav className="header-nav">
-        {username && (
-          <div className="account-menu" ref={menuRef}>
-            <button
-              type="button"
-              className="header-link account-button"
-              onClick={() => setMenuOpen((current) => !current)}
-              aria-haspopup="menu"
-              aria-expanded={menuOpen}
-            >
-              ACCOUNT
-            </button>
+        <div className="header-nav-links">
+          <Link to="/home" className="header-link">HOME</Link>
+          <Link to="/about" className="header-link">ABOUT US</Link>
+          <Link to="/help" className="header-link">HELP</Link>
+          <Link to="/select-animal" className="header-link">FIND A PET</Link>
+          {!username && (
+            <Link to="/login" className="header-link">LOG IN</Link>
+          )}
+        </div>
 
-            {menuOpen && (
-              <div className="account-dropdown" role="menu">
-                <Link to="/profile" className="account-dropdown-link" role="menuitem" onClick={closeMenu}>
-                  Account Settings
-                </Link>
-                {isRegularUser ? (
-                  <Link to="/contributor-application" className="account-dropdown-link" role="menuitem" onClick={closeMenu}>
-                    Contributor Application
+        {username && (
+          <div className="header-account-section">
+            <div className="account-menu" ref={menuRef}>
+              <button
+                type="button"
+                className="header-link account-button"
+                onClick={() => setMenuOpen((current) => !current)}
+                aria-haspopup="menu"
+                aria-expanded={menuOpen}
+              >
+                ACCOUNT
+              </button>
+
+              {menuOpen && (
+                <div className="account-dropdown" role="menu">
+                  <Link to="/profile" className="account-dropdown-link" role="menuitem" onClick={closeMenu}>
+                    Account Settings
                   </Link>
-                ) : null}
-                {isContributor ? (
-                  <Link to="/contribute" className="account-dropdown-link" role="menuitem" onClick={closeMenu}>
-                    Contribute
-                  </Link>
-                ) : null}
-                {isAdmin ? (
-                  <Link to="/request" className="account-dropdown-link" role="menuitem" onClick={closeMenu}>
-                    Approval
-                  </Link>
-                ) : null}
-                {isAdmin ? (
-                  <Link to="/user-management" className="account-dropdown-link" role="menuitem" onClick={closeMenu}>
-                    User Management
-                  </Link>
-                ) : null}
-                <button type="button" className="account-dropdown-link" role="menuitem" onClick={handleLogout}>
-                  Log Out
-                </button>
-              </div>
-            )}
+                  {isRegularUser ? (
+                    <Link to="/contributor-application" className="account-dropdown-link" role="menuitem" onClick={closeMenu}>
+                      Contributor Application
+                    </Link>
+                  ) : null}
+                  {isContributor ? (
+                    <Link to="/contribute" className="account-dropdown-link" role="menuitem" onClick={closeMenu}>
+                      Contribute
+                    </Link>
+                  ) : null}
+                  {isAdmin ? (
+                    <Link to="/request" className="account-dropdown-link" role="menuitem" onClick={closeMenu}>
+                      Approval
+                    </Link>
+                  ) : null}
+                  {isAdmin ? (
+                    <Link to="/user-management" className="account-dropdown-link" role="menuitem" onClick={closeMenu}>
+                      User Management
+                    </Link>
+                  ) : null}
+                  <button type="button" className="account-dropdown-link" role="menuitem" onClick={handleLogout}>
+                    Log Out
+                  </button>
+                </div>
+              )}
+            </div>
+
+            <span className="header-username" aria-label="Signed in username">
+              {username}
+            </span>
           </div>
-        )}
-        <Link to="/home" className="header-link">HOME</Link>
-        <Link to="/about" className="header-link">ABOUT US</Link>
-        <Link to="/help" className="header-link">HELP</Link>
-        <Link to="/select-animal" className="header-link">FIND A PET</Link>
-        {!username && (
-          <Link to="/login" className="header-link">LOG IN</Link>
         )}
       </nav>
     </header>
