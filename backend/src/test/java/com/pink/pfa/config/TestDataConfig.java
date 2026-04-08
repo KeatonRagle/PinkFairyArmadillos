@@ -1,4 +1,5 @@
 package com.pink.pfa.config;
+import java.time.LocalDate;
 
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.test.context.TestConfiguration;
@@ -48,28 +49,30 @@ public class TestDataConfig {
                     "",
                     "",
                     0,
-                    "https://hsdallascounty.org"
+                    "https://hsdallascounty.org",
+                    'A',
+                    LocalDate.now()
                 );
 
                 site = siteRepo.save(site);
                 
-                Pet dog = new Pet("Buddy", "Labrador Retriever", 24, 'M', "Dog", "Austin, TX", 150.0, "Medium", "available", 85);
+                Pet dog = new Pet("Buddy", "Labrador Retriever", 24, 'M', "Dog", "Austin, TX", 150.0, "Medium", "available", 85, "Placeholder", "Large", LocalDate.now());
                 dog.setSite(site);
                 petRepo.save(dog);
 
-                Pet dog2 = new Pet("Rex", "Golden Retriever", 104, 'F', "Dog", "Austin, TX", 150.0, "Large", "pending", 85);
+                Pet dog2 = new Pet("Rex", "Golden Retriever", 104, 'F', "Dog", "Austin, TX", 150.0, "Large", "pending", 85, "Placeholder", "Medium", LocalDate.now());
                 dog2.setSite(site);
                 petRepo.save(dog2);
 
-                Pet dog3 = new Pet("Pal", "German Shephard", 50, 'M', "Dog", "Austin, TX", 150.0, "Large", "available", 85);
+                Pet dog3 = new Pet("Pal", "German Shephard", 50, 'M', "Dog", "Austin, TX", 150.0, "Large", "available", 85, "Placeholder", "Small", LocalDate.now());
                 dog3.setSite(site);
                 petRepo.save(dog3);
 
-                Pet cat = new Pet("Luna", "Domestic Shorthair", 12, 'F', "Cat", "Austin, TX", 75.0, "Small", "available", 90);
+                Pet cat = new Pet("Luna", "Domestic Shorthair", 12, 'F', "Cat", "Austin, TX", 75.0, "Small", "available", 90, "Placeholder", "Small", LocalDate.now());
                 cat.setSite(site);
                 petRepo.save(cat);
 
-                Pet cat2 = new Pet("Sol", "Domestic Shorthair", 36, 'M', "Cat", "Austin, TX", 75.0, "Medium", "available", 90);
+                Pet cat2 = new Pet("Sol", "Domestic Shorthair", 36, 'M', "Cat", "Austin, TX", 75.0, "Medium", "available", 90, "Placeholder", "Small", LocalDate.now());
                 cat2.setSite(site);
                 petRepo.save(cat2);
             } catch (Exception ignored) {
