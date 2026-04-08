@@ -10,6 +10,7 @@ import org.springframework.boot.context.properties.source.InvalidConfigurationPr
 import org.springframework.stereotype.Service;
 import org.springframework.web.bind.annotation.RequestMapping;
 
+import com.pink.pfa.exceptions.ResourceNotFoundException;
 import com.pink.pfa.models.AdoptionSite;
 import com.pink.pfa.models.Pet;
 import com.pink.pfa.models.datatransfer.PetDTO;
@@ -73,7 +74,7 @@ public class PetService {
     public PetDTO findById(Integer id) {
         return petRepository.findById(id)
             .map(PetDTO::fromEntity)
-            .orElseThrow(() -> new InvalidConfigurationPropertyValueException("Failed to Find ID", null, "Pet Not Found"));
+            .orElseThrow(() -> new ResourceNotFoundException("Pet", id));
     }
 
     /**
@@ -131,6 +132,10 @@ public class PetService {
             allPets = allPets.stream()
                 .filter(pet -> pet.getSize().equalsIgnoreCase(size))
                 .toList();
+        }
+
+        if(allPets.isEmpty()) {
+            throw new ResourceNotFoundException("Pet", petType + gender + startAge + endAge + breed + size);
         }
 
         return allPets.stream()

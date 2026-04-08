@@ -1,10 +1,12 @@
 package com.pink.pfa.controllers;
 
+import java.util.List;
 import java.util.Map;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -45,6 +47,7 @@ import jakarta.validation.Valid;
  *   <li>JWT authentication is handled by the security filter layer.</li>
  * </ul>
  */
+@EnableMethodSecurity
 @RestController
 @RequestMapping("/api/users")
 public class UserController {
@@ -69,6 +72,7 @@ public class UserController {
      *         an empty 404 if the user does not exist,
      *         or an empty 500 on unexpected error
      */
+    @PreAuthorize("hasRole('ADMIN')")
     @GetMapping("/{id}")
     public ResponseEntity<UserDTO> getUserById(
         @PathVariable Integer id
@@ -81,7 +85,6 @@ public class UserController {
             return ResponseEntity.internalServerError().build();
         }
     }
-
 
     /**
      * Retrieves the currently authenticated user based on the JWT in the request.
@@ -205,4 +208,71 @@ public class UserController {
         }
     }
 
+    /**
+     * Retrieves all registered users.
+     * <p>
+     * Access is restricted to ADMIN users via role-based authorization.
+     * Returns HTTP 200 (ok) along with a list of users upon success.
+     *
+     * @return list containing users
+     */
+    @PreAuthorize("hasRole('ADMIN')")
+    @GetMapping("/getAllUsers")
+    public ResponseEntity<List<UserDTO>> getAllUsers() {
+        try {
+            return ResponseEntity.ok().body(userService.findAll());
+        } catch (Exception e) {
+            return ResponseEntity.internalServerError().build();
+        }
+    }
+    
+    
+    /**
+     * Promotes a user to ADMIN role.
+     * <p>
+     * Access is restricted to existing ADMIN users.
+     * Returns HTTP 204 (No Content) upon successful promotion.
+     *
+     * Returns HTTP 500 (Internal Server Error) if unsuccessful.
+     *
+     * @param id ID of the user to promote
+     * @return empty {@link ResponseEntity} with 204 status
+     */
+    @PreAuthorize("hasRole('ADMIN')")
+    @PatchMapping("/promoteToAdmin/{id}")
+    public ResponseEntity<Void> promoteToAdmin(@PathVariable int id) {
+        try {
+            userService.promoteToAdmin(id);
+            return ResponseEntity.noContent().build();
+        } catch (ResourceNotFoundException e) {
+            return ResponseEntity.notFound().build();
+        } catch (Exception e) {
+            return ResponseEntity.internalServerError().build();
+        }
+    }
+
+
+    /**
+     * Promotes a user to CONTRIBUTOR role.
+     * <p>
+     * Access is restricted to existing ADMIN users.
+     * Returns HTTP 204 (No Content) upon successful promotion.
+     *
+     * Returns HTTP 500 (Internal Server Error) if unsuccessful.
+     *
+     * @param id ID of the user to promote
+     * @return empty {@link ResponseEntity} with corresponding status
+     */
+    @PreAuthorize("hasRole('ADMIN')")
+    @PatchMapping("/promoteToContributor/{id}")
+    public ResponseEntity<Void> promoteToContributor(@PathVariable int id) {
+        try {
+            userService.promoteToContributor(id);
+            return ResponseEntity.noContent().build();
+        } catch (ResourceNotFoundException e) {
+            return ResponseEntity.notFound().build();
+        } catch (Exception e) {
+            return ResponseEntity.internalServerError().build();
+        }
+    }
 }
