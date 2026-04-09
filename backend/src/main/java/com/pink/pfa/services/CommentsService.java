@@ -32,6 +32,13 @@ public class CommentsService {
             .map(CommentDTO::fromEntity)
             .orElseThrow(() -> new ResourceNotFoundException("Comment", id));
     }
+
+    public List<CommentDTO> findByPostId(Integer postId) {
+        return commentsRepository.findByPost_PostId(postId)
+        .stream()
+        .map(CommentDTO::fromEntity)
+        .toList(); 
+    }
     
     public Boolean existsById(Integer id) { 
         return commentsRepository.existsById(id);

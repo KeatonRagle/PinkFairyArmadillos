@@ -62,6 +62,21 @@ public class CommentsController {
     }
  
     /**
+     * Returns all comments that are linked to a given post currently, along with a UTC timestamp.
+     *
+     * @param id the unique identifier of the post
+     * @return a map containing a {@code Comments} list and a {@code Timestamp} string
+     */
+    @GetMapping("/getByPost/{id}")
+    public ResponseEntity<List<CommentDTO>> getCommentsByPost(@PathVariable Integer id) {
+        try {
+            return ResponseEntity.ok().body(commentsService.findByPostId(id));
+        } catch (Exception e) {
+            return ResponseEntity.internalServerError().build();
+        }
+    }
+
+    /**
      * Returns a comment by its ID, along with a UTC timestamp.
      *
      * @param id the unique identifier of the comment

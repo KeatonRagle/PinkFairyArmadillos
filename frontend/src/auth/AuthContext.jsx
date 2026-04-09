@@ -7,22 +7,26 @@ export function AuthProvider({ children }) {
   const [token, setToken] = useState(null);
   const [username, setUsername] = useState(null);
   const [role, setRole] = useState(null);
+  const [id, setId] = useState(null);
 
   useEffect(() => {
     setToken(localStorage.getItem("token"));
     setUsername(localStorage.getItem("username"));
     // changes
     setRole(localStorage.getItem("role"));
+    setId(localStorage.getItem("id"));
   }, []);
 
   // changes
-  const setAuth = (newToken, newUsername, newRole) => {
+  const setAuth = (newToken, newUsername, newRole, newId) => {
     localStorage.setItem("token", newToken);
     localStorage.setItem("username", newUsername);
     localStorage.setItem("role", newRole);
+    localStorage.setItem("id", newId);
     setToken(newToken);
     setUsername(newUsername);
     setRole(newRole);
+    setId(newId);
   };
 
   const clearAuth = () => {
@@ -30,16 +34,18 @@ export function AuthProvider({ children }) {
     localStorage.removeItem("username");
     // changes
     localStorage.removeItem("role");
+    localStorage.removeItem("id");
     setToken(null);
     setUsername(null);
     setRole(null);
+    setId(null);
   };
 
   // changes
   const getRole = () => role;
 
   return (
-    <AuthContext.Provider value={{ token, username, role, getRole, setAuth, clearAuth }}>
+    <AuthContext.Provider value={{ token, username, role, id, getRole, setAuth, clearAuth }}>
       {children}
     </AuthContext.Provider>
   );
