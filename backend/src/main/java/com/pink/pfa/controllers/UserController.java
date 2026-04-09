@@ -7,7 +7,6 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
-import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -17,8 +16,10 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.pink.pfa.controllers.requests.UserRequest;
+import com.pink.pfa.exceptions.ActionNotAllowedException;
 import com.pink.pfa.exceptions.ResourceNotFoundException;
 import com.pink.pfa.exceptions.UserAlreadyExistsException;
+import com.pink.pfa.exceptions.UserAlreadyRequestedContributor;
 import com.pink.pfa.models.datatransfer.UserDTO;
 import com.pink.pfa.services.UserService;
 
@@ -85,7 +86,6 @@ public class UserController {
             return ResponseEntity.internalServerError().build();
         }
     }
-
     /**
      * Retrieves the currently authenticated user based on the JWT in the request.
      * <p>
@@ -106,8 +106,7 @@ public class UserController {
      *         or an empty 500 on unexpected error
      */
     @GetMapping("/findMe")
-    public ResponseEntity<UserDTO> getUserByJWT(
-    ) {
+    public ResponseEntity<UserDTO> getUserByJWT() {
         try {
             return ResponseEntity.ok().body(userService.findByJWT());
         } catch (ResourceNotFoundException e) {
@@ -255,6 +254,52 @@ public class UserController {
             return ResponseEntity.noContent().build();
         } catch (ResourceNotFoundException e) {
             return ResponseEntity.notFound().build();
+        } catch (Exception e) {
+            return ResponseEntity.internalServerError().build();
+        }
+    }
+
+
+    @PreAuthorize("hasRole('ADMIN')")
+    @PatchMapping("/banUser/{id}")
+    public ResponseEntity<Void> banUser(@PathVariable int id) {
+        try {
+            userService.banUser(id);
+            return ResponseEntity.noContent().build();
+        } catch (ResourceNotFoundException e) {
+            return ResponseEntity.notFound().build();
+        } catch (ActionNotAllowedException e) {
+            return ResponseEntity.status(HttpStatus.CONFLICT).build();
+        } catch (Exception e) {
+            return ResponseEntity.internalServerError().build();
+        }
+    }
+
+    @PreAuthorize("hasRole('ADMIN')")
+    @PatchMapping("/unbanUser/{id}")
+    public ResponseEntity<Void> unbanUser(@PathVariable int id) {
+        try {
+            userService.unbanUser(id);
+            return ResponseEntity.noContent().build();
+        } catch (ResourceNotFoundException e) {
+            return ResponseEntity.notFound().build();
+        } catch (ActionNotAllowedException e) {
+            return ResponseEntity.status(HttpStatus.CONFLICT).build();
+        } catch (Exception e) {
+            return ResponseEntity.internalServerError().build();
+        }
+    }
+
+    @PreAuthorize("hasRole('USER')")
+    @PatchMapping("/requestContributor")
+    public ResponseEntity<Void> requestContributor() {
+        try {
+            userService.requestContributor();
+            return ResponseEntity.noContent().build();
+        } catch (ResourceNotFoundException e) {
+            return ResponseEntity.notFound().build();
+        } catch (UserAlreadyRequestedContributor e) {
+            return ResponseEntity.status(HttpStatus.CONFLICT).build();
         } catch (Exception e) {
             return ResponseEntity.internalServerError().build();
         }

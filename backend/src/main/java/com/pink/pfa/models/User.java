@@ -68,12 +68,12 @@ public class User {
 	
 	/** User's banned status.  */
 	@Column(name = "is_banned", nullable = false)
-	private boolean isBanned;
+	private boolean isBanned = false;
 	
 	
 	/** User's contributor status check. */
 	@Column(name = "requested_contributor", nullable = false)
-	private boolean requestedContributor;
+	private boolean requestedContributor = false;
 	
 	
     /** Optional location metadata associated with the user. */
