@@ -42,18 +42,15 @@ public class CommentsService {
     }
 
     public CommentDTO submitNewComment(CommentRequest request) {
-        Comments comment = new Comments();
-        comment.setCtDate(LocalDateTime.now());
-        comment.setCtComment(request.comment());
+        Comments comment = new Comments(LocalDateTime.now(), request.comment());
         comment.setUser(userRepository.findById(request.userID())
             .orElseThrow(() -> new ResourceNotFoundException("User", request.userID()))
         );
         comment.setPost(postsRepository.findById(request.postID())
-            .orElseThrow(() -> new ResourceNotFoundException("User", request.userID()))
+            .orElseThrow(() -> new ResourceNotFoundException("Post", request.postID()))
         );
 
         Comments savedComment = commentsRepository.save(comment);
-
         return CommentDTO.fromEntity(savedComment);
     }
 }

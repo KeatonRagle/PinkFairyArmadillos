@@ -40,9 +40,7 @@ public class PostsService {
     }
 
     public PostDTO submitNewPost(PostRequest request) {
-        Posts post = new Posts();
-        post.setPostDate(LocalDateTime.now());
-        post.setPostContent(request.comment());
+        Posts post = new Posts(LocalDateTime.now(), request.post());
         post.setUser(userRepository.findById(request.userID())
             .orElseThrow(() -> new ResourceNotFoundException("User", request.userID()))
         );

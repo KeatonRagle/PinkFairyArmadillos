@@ -1,6 +1,7 @@
 package com.pink.pfa.models;
 
 import java.time.LocalDate;
+
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
@@ -139,7 +140,7 @@ import lombok.Data;
 	public Pet(String name, String breed, int age, char gender, 
 		String pet_type, String location, double price, 
 		String petSize, String petStatus, int compatibilityScore,
-		String imgUrl, String size, LocalDate createdAt
+		String imgUrl, LocalDate createdAt
 	) {
 		this.name = name;
 		this.breed = breed;
@@ -152,7 +153,6 @@ import lombok.Data;
 		this.petStatus = petStatus;
 		this.compatibilityScore = compatibilityScore;
 		this.imgUrl = imgUrl;
-		this.size = size;
 		this.createdAt = createdAt;
 	}
  }

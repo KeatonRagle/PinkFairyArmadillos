@@ -178,7 +178,7 @@ public abstract class PfaBase {
 
     protected Comments getRandComment() {
         List<Comments> results = commentRepository.findAll();
-        if (results.isEmpty()) throw new RuntimeException("No pets found");
+        if (results.isEmpty()) throw new RuntimeException("No comments found");
 
         Collections.shuffle(results);
         return results.get(0);

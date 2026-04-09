@@ -7,6 +7,6 @@ public record PostRequest(
     @NotNull
     Integer userID,
     @NotBlank
-    String comment
+    String post
 ) {}
 

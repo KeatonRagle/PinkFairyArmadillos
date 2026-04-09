@@ -2,7 +2,6 @@ package com.pink.pfa.models;
 
 import java.time.LocalDateTime;
 
-import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
@@ -45,7 +44,7 @@ public class Comments {
 	
 	
 	/** Foreign Key identifier for the post. */
-	@ManyToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+	@ManyToOne(fetch = FetchType.LAZY)
 	@JoinColumn(name = "post_id", nullable = false)
 	private Posts post;
 	

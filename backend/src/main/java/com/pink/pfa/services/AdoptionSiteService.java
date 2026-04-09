@@ -1,7 +1,9 @@
 package com.pink.pfa.services;
 
+import java.time.LocalDate;
 import java.util.List;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.web.bind.annotation.RequestMapping;
 
@@ -11,6 +13,7 @@ import com.pink.pfa.exceptions.SiteAlreadyExistsException;
 import com.pink.pfa.models.AdoptionSite;
 import com.pink.pfa.models.datatransfer.AdoptionSiteDTO;
 import com.pink.pfa.repos.AdoptionSiteRepository;
+import com.pink.pfa.repos.UserRepository;
 
 import jakarta.transaction.Transactional;
 
@@ -38,6 +41,8 @@ import jakarta.transaction.Transactional;
 public class AdoptionSiteService {
 
     private final AdoptionSiteRepository adoptionSiteRepository;
+
+    @Autowired private UserRepository userRepository;
 
     public AdoptionSiteService (AdoptionSiteRepository adoptionSiteRepository) {
         this.adoptionSiteRepository = adoptionSiteRepository;
@@ -116,6 +121,10 @@ public class AdoptionSiteService {
         site.setName(request.name());
         site.setEmail(request.email());
         site.setPhone(request.phone());
+        site.setSubmittedAt(LocalDate.now());
+        site.setUser(userRepository.findById(request.userID())
+            .orElseThrow(() -> new ResourceNotFoundException("User", request.userID())) 
+        );
 
         AdoptionSite savedSite = adoptionSiteRepository.save(site);
 
@@ -132,7 +141,6 @@ public class AdoptionSiteService {
         site.setName(request.name());
         site.setEmail(request.email());
         site.setPhone(request.phone());
-        site.setRating(request.rating());
 
         return AdoptionSiteDTO.fromEntity(site);
     }
