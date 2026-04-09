@@ -2,8 +2,6 @@ package com.pink.pfa;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
-import org.springframework.boot.flyway.autoconfigure.FlywayMigrationStrategy;
-import org.springframework.context.annotation.Bean;
 import org.springframework.scheduling.annotation.EnableAsync;
 import org.springframework.scheduling.annotation.EnableScheduling;
 
@@ -43,13 +41,5 @@ public class PfaApplication {
 	 */
 	public static void main(String[] args) {
 		SpringApplication.run(PfaApplication.class, args);
-	}
-
-	@Bean
-	public FlywayMigrationStrategy repairStrategy() {
-		return flyway -> {
-			flyway.repair();
-			flyway.migrate();
-		};
 	}
 }

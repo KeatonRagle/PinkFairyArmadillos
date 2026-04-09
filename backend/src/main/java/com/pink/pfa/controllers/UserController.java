@@ -7,6 +7,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -110,8 +111,8 @@ public class UserController {
     ) {
         try {
             return ResponseEntity.ok().body(userService.findByJWT(request));
-        } catch (ResourceNotFoundException e) {
-            return ResponseEntity.notFound().build();
+        } catch (UsernameNotFoundException e) {
+            return ResponseEntity.status(401).build();
         } catch (Exception e) {
             return ResponseEntity.internalServerError().build();
         }

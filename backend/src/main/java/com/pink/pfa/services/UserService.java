@@ -125,6 +125,11 @@ public class UserService {
      */
     public UserDTO findByJWT(HttpServletRequest request) {
         String authHeader = request.getHeader("Authorization");
+        
+        if (authHeader == null || !authHeader.startsWith("Bearer ")) {
+            throw new UsernameNotFoundException("Missing or invalid Authorization header");
+        }
+        
         String email = jwtService.extractEmailFromHeader(authHeader);
         return userRepository.findByEmail(email)
                 .map(UserDTO::fromEntity)
