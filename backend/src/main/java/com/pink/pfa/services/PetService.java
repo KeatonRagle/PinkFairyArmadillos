@@ -133,7 +133,7 @@ public class PetService {
                 .toList();
         }
 
-        if(allPets.isEmpty()) {
+        if (allPets.isEmpty()) {
             throw new ResourceNotFoundException("Pet", petType + gender + startAge + endAge + breed + size);
         }
 

@@ -1,7 +1,8 @@
 package com.pink.pfa.controllers;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
+import java.time.LocalDate;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.http.MediaType;
@@ -35,6 +36,8 @@ class AdoptionSiteControllerTest extends PfaBase {
         testSite.setEmail("test@controllershelter.org");
         testSite.setPhone("555-7777");
         testSite.setStatus('P');
+        testSite.setSubmittedAt(LocalDate.now());
+        testSite.setUser(getRandUserAndPassByRole(User.Role.ROLE_CONTRIBUTOR).user());
         testSite = adoptionSiteRepository.save(testSite);
     }
 
@@ -48,20 +51,24 @@ class AdoptionSiteControllerTest extends PfaBase {
     @Test
     void submitSite_WithValidToken_ShouldReturn200() {
         SeededUser contributor = getRandUserAndPassByRole(User.Role.ROLE_CONTRIBUTOR);
+        System.out.println(contributor.user().getName());
         String token = loginAndGetToken(contributor.user().getEmail(), contributor.password());
         String uniqueUrl = "https://submit-test-" + System.nanoTime() + ".org";
-
+        String bVal = """
+            {
+                "name": "New Shelter",
+                "url": "%s",
+                "email": "info@newshelter.org",
+                "phone": "555-1234",
+                "rating": 0.8,
+                "userID": %d
+            }
+        """.formatted(uniqueUrl, contributor.user().getUserId());
+        
         webTestClient.post().uri("/api/adoptionSite/submitSite")
             .header("Authorization", "Bearer " + token)
             .contentType(MediaType.APPLICATION_JSON)
-            .bodyValue("""
-                {
-                    "name": "New Shelter",
-                    "url": "%s",
-                    "email": "info@newshelter.org",
-                    "phone": "555-1234"
-                }
-            """.formatted(uniqueUrl))
+            .bodyValue(bVal)
             .exchange()
             .expectStatus().isOk()
             .expectBody()
