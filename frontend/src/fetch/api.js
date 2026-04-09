@@ -127,3 +127,29 @@ export function denySite(id) {
     method: "PATCH" 
   });
 }
+
+export function submitPost(post) {
+  return apiFetchAuthenticated("/api/posts/submitPost", {
+    method: "POST",
+    body: JSON.stringify(post),
+  });
+}
+
+export function getAllPosts() {
+  return apiFetchUnauthenicated("/api/posts/getAll", {
+    method: "GET"
+  });
+}
+
+export function submitComment(comment) {
+  return apiFetchAuthenticated("/api/comments/submitComment", {
+    method: "POST",
+    body: JSON.stringify(comment),
+  });
+}
+
+export function getCommentsByPost(postId) {
+  return apiFetchUnauthenicated(`/api/comments/getByPost/${postId}`, {
+    method: "GET"
+  });
+}

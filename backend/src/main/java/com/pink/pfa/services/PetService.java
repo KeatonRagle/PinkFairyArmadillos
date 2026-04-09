@@ -6,7 +6,6 @@ import java.util.stream.Collectors;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.boot.context.properties.source.InvalidConfigurationPropertyValueException;
 import org.springframework.stereotype.Service;
 import org.springframework.web.bind.annotation.RequestMapping;
 
@@ -134,7 +133,7 @@ public class PetService {
                 .toList();
         }
 
-        if(allPets.isEmpty()) {
+        if (allPets.isEmpty()) {
             throw new ResourceNotFoundException("Pet", petType + gender + startAge + endAge + breed + size);
         }
 

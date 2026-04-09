@@ -1,14 +1,14 @@
 package com.pink.pfa.services;
 
+import java.time.LocalDate;
+import java.util.List;
+
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
-
-import java.util.List;
-
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
@@ -17,6 +17,7 @@ import com.pink.pfa.controllers.requests.AdoptionSiteRequest;
 import com.pink.pfa.exceptions.ResourceNotFoundException;
 import com.pink.pfa.exceptions.SiteAlreadyExistsException;
 import com.pink.pfa.models.AdoptionSite;
+import com.pink.pfa.models.User;
 import com.pink.pfa.models.datatransfer.AdoptionSiteDTO;
 
 /**
@@ -38,6 +39,8 @@ class AdoptionSiteServiceTest extends PfaBase {
         testSite.setEmail("contact@testshelter.org");
         testSite.setPhone("555-9999");
         testSite.setStatus('P');
+        testSite.setSubmittedAt(LocalDate.now());
+        testSite.setUser(getRandUserAndPassByRole(User.Role.ROLE_USER).user());
         testSite = adoptionSiteRepository.saveAndFlush(testSite);
     }
 
@@ -184,7 +187,8 @@ class AdoptionSiteServiceTest extends PfaBase {
             "New Shelter",
             "info@newshelter.org",
             "555-0001",
-            0.0
+            0.0,
+            getRandUserAndPassByRole(User.Role.ROLE_USER).user().getUserId()
         );
 
         AdoptionSiteDTO result = adoptionSiteService.submitNewSite(request);
@@ -205,7 +209,8 @@ class AdoptionSiteServiceTest extends PfaBase {
             "Duplicate Shelter",
             "other@email.org",
             "555-0002",
-            0.0
+            0.0,
+            getRandUserAndPassByRole(User.Role.ROLE_USER).user().getUserId()
         );
 
         assertThrows(SiteAlreadyExistsException.class,
@@ -236,7 +241,8 @@ class AdoptionSiteServiceTest extends PfaBase {
             "Edited Shelter",
             "info@editedshelter.org",
             "555-0003",
-            0.2
+            0.2,
+            getRandUserAndPassByRole(User.Role.ROLE_USER).user().getUserId()
         );
         adoptionSiteService.editSite(request, testSite.getSiteId());
         AdoptionSite updated = adoptionSiteRepository.findById(testSite.getSiteId()).orElseThrow();
@@ -259,7 +265,8 @@ class AdoptionSiteServiceTest extends PfaBase {
             "Edited Shelter",
             "info@editedshelter.org",
             "555-0004",
-            0.3
+            0.3,
+            getRandUserAndPassByRole(User.Role.ROLE_USER).user().getUserId()
         );
         assertThrows(ResourceNotFoundException.class,
             () -> adoptionSiteService.editSite(request, 999999));

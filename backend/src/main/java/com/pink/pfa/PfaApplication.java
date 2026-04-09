@@ -5,9 +5,6 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.scheduling.annotation.EnableAsync;
 import org.springframework.scheduling.annotation.EnableScheduling;
 
-import com.pink.pfa.models.AdoptionSite;
-import com.pink.pfa.services.WebScraperService;
-
 
 /**
  * PfaApplication<br>
