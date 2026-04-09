@@ -66,6 +66,19 @@ export function login(user) {
   });
 }
 
+export function getCurrentUser() {
+  return apiFetchAuthenticated("/api/users/findMe", {
+    method: "GET",
+  });
+}
+
+export function updateCurrentUsername(name) {
+  return apiFetchAuthenticated("/api/users/me/name", {
+    method: "PATCH",
+    body: JSON.stringify({ name }),
+  });
+}
+
 export function getAllPets() {
   return apiFetchAuthenticated("/api/pets/getAll", {
     method: "GET"

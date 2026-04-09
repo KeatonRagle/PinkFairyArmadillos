@@ -53,22 +53,6 @@ body.animalfilter-body {
 	min-height: calc(100vh - 260px);
 }
 
-/* Next page button */
-.animal-results-next {
-	height: 48px;
-	width: 48px;
-	border-radius: 9999px;
-	border: 1px solid #d1d5db;
-	background: #f8f8f8;
-	color: #b44b25;
-	font-size: 28px;
-	line-height: 1;
-	cursor: pointer;
-	box-shadow: 0 1px 2px rgba(0, 0, 0, 0.2);
-	justify-self: end;
-	align-self: center;
-}
-
 /* ai added these comments, this is for the api stuff */
 /* Animal card container: keep this background orange for the theme card behind image + text. */
 /* Result card styles */
@@ -81,6 +65,23 @@ body.animalfilter-body {
 	flex-direction: column;
 	gap: 12px;
 	min-height: 300px;
+}
+
+.animal-card-link {
+	text-decoration: none;
+	color: inherit;
+	display: block;
+}
+
+.animal-card-link .animal-card {
+	transition: transform 0.2s ease, box-shadow 0.2s ease;
+	cursor: pointer;
+}
+
+.animal-card-link:hover .animal-card,
+.animal-card-link:focus-visible .animal-card {
+	transform: translateY(-3px);
+	box-shadow: 0 8px 24px rgba(0, 0, 0, 0.24);
 }
 
 /* Card image wrapper */
@@ -115,12 +116,14 @@ body.animalfilter-body {
 	margin: 0;
 	font-size: 22px;
 	font-weight: 500;
+	color: #f8f8f8;
 }
 
 /* Card metadata lines */
 .animal-card-info p {
 	margin: 0;
 	font-size: 16px;
+	color: #ffffff;
 }
 
 .animal-results-empty {
@@ -326,8 +329,8 @@ body.animalfilter-body {
 }
 
 /* Shared text input styles for breed and shelter */
-.breed-search-input,
-.shelter-search-input {
+.breed-options .breed-search-input,
+.shelter-options .shelter-search-input {
 	width: 85%;
 	height: 32px;
 	margin: 0;
@@ -335,6 +338,7 @@ body.animalfilter-body {
 	border-radius: 10px;
 	border: 1px solid #d1d5db;
 	padding: 0 12px;
+	box-sizing: border-box;
 	background: #F8F8F8;
 	color: #b44b25;
 	font-size: 16px;
@@ -743,4 +747,60 @@ body.animalfilter-body {
 .price-option-button:hover,
 .compatibility-option-item:hover {
 	background: #e5e7eb;
+}
+
+/* Keep open dropdowns in normal document flow so lower filters move down. */
+.gender-filter-group.open,
+.breed-filter-group.open,
+.size-filter-group.open,
+.age-filter-group.open,
+.compatibility-filter-group.open,
+.shelter-filter-group.open,
+.price-filter-group.open {
+	z-index: auto;
+	gap: 8px;
+	padding: 0 0 12px;
+	background: #F8F8F8;
+	border: 1px solid #d1d5db;
+	border-radius: 10px;
+	box-shadow: 0 1px 2px rgba(0, 0, 0, 0.2);
+}
+
+.gender-filter-group.open .gender-toggle,
+.breed-filter-group.open .breed-toggle,
+.size-filter-group.open .size-toggle,
+.age-filter-group.open .age-toggle,
+.compatibility-filter-group.open .compatibility-toggle,
+.shelter-filter-group.open .shelter-toggle,
+.price-filter-group.open .price-toggle {
+	border: none;
+	border-bottom: 1px solid #d1d5db;
+	border-radius: 10px 10px 0 0;
+	box-shadow: none;
+}
+
+.gender-filter-group.open .gender-toggle::after,
+.breed-filter-group.open .breed-toggle::after,
+.size-filter-group.open .size-toggle::after,
+.age-filter-group.open .age-toggle::after,
+.compatibility-filter-group.open .compatibility-toggle::after,
+.shelter-filter-group.open .shelter-toggle::after,
+.price-filter-group.open .price-toggle::after {
+	display: none;
+}
+
+.gender-options,
+.breed-options,
+.size-options,
+.age-options,
+.compatibility-options,
+.shelter-options,
+.price-options {
+	position: static;
+	top: auto;
+	left: auto;
+	width: 100%;
+	margin-top: 0;
+	padding: 0 0 0 0;
+	z-index: auto;
 }

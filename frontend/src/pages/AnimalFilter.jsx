@@ -1,11 +1,10 @@
 import { useEffect, useRef, useState } from 'react'
-import { useLocation } from 'react-router-dom'
+import { Link, useLocation } from 'react-router-dom'
 import HomeHeader from '../components/header'
 import HomeFooter from '../components/footer'
 import { getFilteredPets } from '../fetch/api'
 import '../styling/AnimalFilter.css'
 
-const animalsPerPage = 6
 const placeholderCards = [1, 2, 3, 4, 5, 6]
 const genderOptions = [
 	{ value: 'M', label: 'Male' },
@@ -52,6 +51,9 @@ function mapPetToAnimal(pet) {
 		breed: pet.breed,
 		age: pet.age,
 		gender: pet.gender === 'M' ? 'Male' : pet.gender === 'F' ? 'Female' : pet.gender,
+		location: pet.location,
+		misc: pet.pet_status || pet.pet_type || 'More details coming soon.',
+		adoptionSite: 'Adoption site information coming soon.',
 		image: pet.img_url || '/images/waveShort.png',
 	}
 }
@@ -72,7 +74,6 @@ export default function AnimalFilter() {
 	const [isLoading, setIsLoading] = useState(true)
 	const [hasLoaded, setHasLoaded] = useState(false)
 	const [errorMessage, setErrorMessage] = useState('')
-	const [currentPage, setCurrentPage] = useState(1)
 	const [animals, setAnimals] = useState([])
 
 	const [compatibilitySelections, setCompatibilitySelections] = useState({
@@ -155,7 +156,6 @@ export default function AnimalFilter() {
 		const loadFilteredPets = async () => {
 			setIsLoading(true)
 			setErrorMessage('')
-			setCurrentPage(1)
 
 			try {
 				// Fetch all pets (no server-side filters) and filter client-side
@@ -197,16 +197,6 @@ export default function AnimalFilter() {
 		selectedPetType,
 		selectedSize,
 	])
-
-	const totalPages = Math.max(1, Math.ceil(animals.length / animalsPerPage))
-	const startIndex = (currentPage - 1) * animalsPerPage
-	const paginatedAnimals = animals.slice(startIndex, startIndex + animalsPerPage)
-
-	useEffect(() => {
-		if (currentPage > totalPages) {
-			setCurrentPage(totalPages)
-		}
-	}, [currentPage, totalPages])
 
 	const genderLabel = selectedGender === 'M' ? 'Male' : selectedGender === 'F' ? 'Female' : null
 	const ageLabel = selectedAgeRange?.label ?? null
@@ -390,33 +380,28 @@ export default function AnimalFilter() {
 						))
 					) : errorMessage ? (
 						<p className="animal-results-empty">{errorMessage}</p>
-					) : hasLoaded && paginatedAnimals.length === 0 ? (
+					) : hasLoaded && animals.length === 0 ? (
 						<p className="animal-results-empty">No animals match the selected filters.</p>
 					) : (
-						paginatedAnimals.map((animal) => (
-							<article key={animal.id} className="animal-card">
-								<div className="animal-card-image-wrap">
-									<img src={animal.image} alt={animal.name} className="animal-card-image" />
-								</div>
-								<div className="animal-card-info">
-									<h2>{animal.name}</h2>
-									<p>Breed: {animal.breed}</p>
-									<p>Age: {animal.age}</p>
-									<p>Gender: {animal.gender}</p>
-								</div>
-							</article>
+						animals.map((animal) => (
+							<Link
+								key={animal.id}
+								to="/specific-animal"
+								state={{ animal }}
+								className="animal-card-link"
+							>
+								<article className="animal-card">
+									<div className="animal-card-image-wrap">
+										<img src={animal.image} alt={animal.name} className="animal-card-image" />
+									</div>
+									<div className="animal-card-info">
+										<h2>{animal.name}</h2>
+										<p>Breed: {animal.breed}</p>
+										<p>Gender: {animal.gender}</p>
+									</div>
+								</article>
+							</Link>
 						))
-					)}
-
-					{!isLoading && !errorMessage && animals.length > animalsPerPage && currentPage < totalPages && (
-						<button
-							type="button"
-							className="animal-results-next"
-							onClick={() => setCurrentPage((page) => page + 1)}
-							aria-label="Next results page"
-						>
-							→
-						</button>
 					)}
 				</section>
 			</main>

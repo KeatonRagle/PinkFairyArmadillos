@@ -1,0 +1,349 @@
+.usermanage-body {
+	margin: 0;
+	background: #f8f8f8;
+	min-height: 100vh;
+	font-family: 'Hind Kochi', sans-serif;
+	font-weight: 300;
+	color: #343434;
+}
+
+.usermanage-page {
+	min-height: 100vh;
+	display: flex;
+	flex-direction: column;
+	background: #f8f8f8;
+}
+
+.usermanage-main {
+	flex: 1;
+	width: min(1100px, calc(100% - 3rem));
+	margin: 2rem auto 0;
+	padding: 0 1.5rem 2rem;
+	box-sizing: border-box;
+}
+
+.usermanage-card {
+	width: 100%;
+	display: flex;
+	flex-direction: column;
+	gap: 28px;
+	padding: 0;
+	box-sizing: border-box;
+}
+
+.usermanage-heading {
+	width: fit-content;
+	padding: 0.5rem 0.75rem;
+	margin-bottom: 1.5rem;
+	background: rgba(248, 248, 248, 0.94);
+	border: 1px solid rgba(180, 75, 37, 0.16);
+	border-radius: 18px;
+	box-shadow: 0 10px 24px rgba(0, 0, 0, 0.08);
+}
+
+.usermanage-heading h1 {
+	margin: 0;
+	font: inherit;
+	font-size: 1rem;
+	letter-spacing: 0.08em;
+	text-transform: uppercase;
+	color: #b44b25;
+}
+
+.usermanage-filters {
+	display: grid;
+	grid-template-columns: repeat(4, minmax(0, 1fr));
+	gap: 1.25rem;
+	align-items: start;
+}
+
+.usermanage-filter {
+	display: grid;
+	align-content: start;
+	justify-items: center;
+	justify-content: center;
+	gap: 0.75rem;
+	min-height: 92px;
+	padding: 1.2rem;
+	border: 1px solid rgba(52, 52, 52, 0.08);
+	border-radius: 22px;
+	background: #ffffff;
+	color: #343434;
+	font-family: 'Hind Kochi', sans-serif;
+	font-size: 1rem;
+	cursor: pointer;
+	box-shadow: 0 8px 24px rgba(0, 0, 0, 0.08);
+	transition: border-color 0.2s ease, background-color 0.2s ease, transform 0.2s ease, box-shadow 0.2s ease;
+	text-align: center;
+}
+
+.usermanage-filter strong {
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+	min-width: 2rem;
+	height: 2rem;
+	padding: 0 0.5rem;
+	border-radius: 999px;
+	background: #f4dfd7;
+	color: #b44b25;
+	font-size: 0.95rem;
+	line-height: 1;
+	justify-self: start;
+}
+
+.usermanage-filter.is-active,
+.usermanage-filter:hover {
+	border-color: #b44b25;
+	background: #fffaf8;
+	transform: translateY(-1px);
+	box-shadow: 0 12px 28px rgba(0, 0, 0, 0.1);
+}
+
+.usermanage-list-section {
+	display: grid;
+	gap: 1rem;
+	margin-top: 1.5rem;
+}
+
+.usermanage-empty {
+	margin: 0;
+	color: #6b6b6b;
+}
+
+.usermanage-list {
+	display: grid;
+	grid-template-columns: 1fr;
+	gap: 1rem;
+}
+
+.usermanage-entry {
+	display: grid;
+	gap: 18px;
+	padding: 1rem;
+	border-radius: 18px;
+	background: #fcfcfc;
+	border: 1px solid #e3e3e3;
+	box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+}
+
+.usermanage-entry-header {
+	display: flex;
+	justify-content: space-between;
+	gap: 16px;
+	align-items: flex-start;
+}
+
+.usermanage-entry-header h2 {
+	margin: 0;
+	font: inherit;
+	font-size: 1.1rem;
+	text-transform: uppercase;
+	letter-spacing: 0.04em;
+	color: #343434;
+}
+
+.usermanage-entry-header p {
+	margin: 0.35rem 0 0;
+	color: #6b6b6b;
+	font-size: 14px;
+}
+
+.usermanage-badges {
+	display: flex;
+	gap: 10px;
+	flex-wrap: wrap;
+	justify-content: flex-end;
+}
+
+.usermanage-badge {
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+	padding: 0.45rem 0.75rem;
+	border-radius: 999px;
+	font-size: 13px;
+	font-weight: 600;
+	background: #f1f1f1;
+	color: #5d5651;
+}
+
+.usermanage-badge.is-whitelisted {
+	background: #eaf6eb;
+	color: #2f6b3b;
+}
+
+.usermanage-badge.is-blacklisted {
+	background: #fff0ec;
+	color: #9b4020;
+}
+
+.usermanage-badge.is-role {
+	background: #ececec;
+	color: #4f4a46;
+}
+
+.usermanage-badge.is-pending {
+	background: #fff3dc;
+	color: #8b6410;
+}
+
+.usermanage-badge.is-denied {
+	background: #ffeae5;
+	color: #9d4121;
+}
+
+.usermanage-badge.is-approved {
+	background: #eaf6eb;
+	color: #2f6b3b;
+}
+
+.usermanage-controls {
+	display: grid;
+	grid-template-columns: minmax(220px, 260px) auto;
+	gap: 14px;
+	align-items: end;
+}
+
+.usermanage-role-stack {
+	display: grid;
+	gap: 20px;
+}
+
+.usermanage-control {
+	display: grid;
+	gap: 8px;
+}
+
+.usermanage-control span {
+	font-size: 12px;
+	letter-spacing: 0.12em;
+	text-transform: uppercase;
+	color: #8a7669;
+}
+
+.usermanage-control select {
+	height: 44px;
+	padding: 0 14px;
+	border-radius: 12px;
+	border: 1px solid #d9d9d9;
+	background: #ffffff;
+	color: #343434;
+	font-family: 'Hind Kochi', sans-serif;
+	font-size: 15px;
+	outline: none;
+}
+
+.usermanage-button,
+.usermanage-button.is-secondary {
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+	height: auto;
+	padding: 0.45rem 0.85rem;
+	border: 1px solid #b44b25;
+	border-radius: 999px;
+	font-family: 'Hind Kochi', sans-serif;
+	font-size: 15px;
+	cursor: pointer;
+	transition: background-color 0.2s ease, transform 0.2s ease;
+}
+
+.usermanage-button {
+	background: #fff4ef;
+	color: #b44b25;
+}
+
+.usermanage-button.is-secondary {
+	background: #fffaf7;
+	border-color: #d3c0b5;
+	color: #7a6354;
+}
+
+.usermanage-list-button {
+	justify-self: start;
+	background: #b44b25;
+	color: #ffffff;
+}
+
+.usermanage-button:hover,
+.usermanage-button.is-secondary:hover {
+	transform: translateY(-1px);
+}
+
+.usermanage-button:hover {
+	background: #973a18;
+	color: #ffffff;
+}
+
+.usermanage-button.is-secondary:hover {
+	background: #f1e4dc;
+}
+
+.usermanage-list-button:hover {
+	background: #973a18;
+	color: #ffffff;
+}
+
+.usermanage-application-actions {
+	display: flex;
+	gap: 12px;
+	flex-wrap: wrap;
+}
+
+.usermanage-reason {
+	margin: 0;
+	padding: 1rem;
+	border-radius: 18px;
+	background: #fff9f5;
+	border: 1px solid #e9ddd6;
+	color: #5f564f;
+	line-height: 1.45;
+}
+
+@media (max-width: 900px) {
+	.usermanage-filters {
+		grid-template-columns: repeat(2, minmax(0, 1fr));
+	}
+
+	.usermanage-controls {
+		grid-template-columns: 1fr;
+	}
+
+	.usermanage-entry-header {
+		flex-direction: column;
+	}
+
+	.usermanage-badges {
+		justify-content: flex-start;
+	}
+}
+
+@media (max-width: 640px) {
+	.usermanage-main {
+		width: calc(100% - 1.5rem);
+		padding: 0.75rem 0 1.5rem 0.75rem;
+	}
+
+	.usermanage-filters {
+		grid-template-columns: 1fr;
+	}
+
+	.usermanage-heading {
+		width: calc(100% - 0.75rem);
+		padding: 0.85rem 1rem;
+	}
+
+	.usermanage-heading h1 {
+		font-size: 1.5rem;
+	}
+
+	.usermanage-application-actions {
+		flex-direction: column;
+	}
+
+	.usermanage-button,
+	.usermanage-button.is-secondary {
+		width: 100%;
+	}
+}

@@ -15,6 +15,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.pink.pfa.controllers.requests.UpdateUserNameRequest;
 import com.pink.pfa.controllers.requests.UserRequest;
 import com.pink.pfa.exceptions.ActionNotAllowedException;
 import com.pink.pfa.exceptions.ResourceNotFoundException;
@@ -109,6 +110,21 @@ public class UserController {
     public ResponseEntity<UserDTO> getUserByJWT() {
         try {
             return ResponseEntity.ok().body(userService.findByJWT());
+        } catch (ResourceNotFoundException e) {
+            return ResponseEntity.notFound().build();
+        } catch (Exception e) {
+            return ResponseEntity.internalServerError().build();
+        }
+    }
+
+
+    @PatchMapping("/me/name")
+    public ResponseEntity<UserDTO> updateMyName(
+        HttpServletRequest request,
+        @Valid @RequestBody UpdateUserNameRequest updateRequest
+    ) {
+        try {
+            return ResponseEntity.ok().body(userService.updateNameByJWT(request, updateRequest));
         } catch (ResourceNotFoundException e) {
             return ResponseEntity.notFound().build();
         } catch (Exception e) {

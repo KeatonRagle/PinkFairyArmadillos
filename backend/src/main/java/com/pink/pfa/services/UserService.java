@@ -11,6 +11,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.web.bind.annotation.RequestMapping;
 
+import com.pink.pfa.controllers.requests.UpdateUserNameRequest;
 import com.pink.pfa.controllers.requests.UserRequest;
 import com.pink.pfa.exceptions.ActionNotAllowedException;
 import com.pink.pfa.exceptions.ResourceNotFoundException;
@@ -134,6 +135,18 @@ public class UserService {
         return userRepository.findByEmail(email)
                 .map(UserDTO::fromEntity)
                 .orElseThrow(() -> new ResourceNotFoundException("User", email));
+    }
+
+
+    @Transactional
+    public UserDTO updateNameByJWT(HttpServletRequest request, UpdateUserNameRequest updateRequest) {
+        String authHeader = request.getHeader("Authorization");
+        String email = jwtService.extractEmailFromHeader(authHeader);
+        User user = userRepository.findByEmail(email)
+                .orElseThrow(() -> new UsernameNotFoundException("Failed to find user by JWT"));
+
+        user.setName(updateRequest.name().trim());
+        return UserDTO.fromEntity(user);
     }
 
 
