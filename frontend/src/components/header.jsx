@@ -62,7 +62,6 @@ export default function HomeHeader() {
           <Link to="/about" className="header-link">ABOUT US</Link>
           <Link to="/help" className="header-link">HELP</Link>
           <Link to="/select-animal" className="header-link">FIND A PET</Link>
-          <Link to="/specific-animal" className="header-link">PET DETAILS</Link>
           {!username && (
             <Link to="/login" className="header-link">LOG IN</Link>
           )}
