@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react'
 import HomeHeader from '../components/header'
 import HomeFooter from '../components/footer'
+import Popup from '../components/popup.jsx'
 import { useAuth } from '../auth/AuthContext.jsx'
 import { submitPost, getAllPosts, getCommentsByPost, submitComment } from '../fetch/api'
 import '../styling/DiscussionBoard.css'
@@ -30,34 +31,29 @@ export default function DiscussionBoard() {
 	}, [])
 
 	const { username, id } = useAuth()
+	const [activePopupIndex, setActivePopupIndex] = useState(-1)
 
-	const [postContent, setPostContent] = useState('')
 	const [posts, setPosts] = useState([])
-	const [openPosts, setOpenPosts] = useState([])
-
-	const [comments, setComments] = useState([])
-	const [commentsContent, setCommentsContent] = useState([])
 
 	const [loading, setLoading] = useState(false)
 	const [error, setError] = useState('')
-	const [success, setSuccess] = useState('')
 
 	useEffect(() => {
 		const loadPosts = async () => {
 			try {
-				// Fetch all pets (no server-side filters) and filter client-side
-				setPosts(await getAllPosts())
-				setComments(posts.map(() => []))
-				setOpenPosts(posts.map(() => false))
-				console.log("openPosts:")
-				console.log(openPosts)
-				console.log("comments:")
-				console.log(comments)
+				const initialPosts = await getAllPosts()
+				const formattedPosts = await Promise.all(initialPosts.map(async (post) => {
+					const fetchedComments = await getCommentsByPost(post.postID);
+					return {
+						...post,
+						isOpen: false,
+						comments: fetchedComments,
+					}
+				}))
+				setPosts(formattedPosts)
 			} catch (err) {
 				console.log(err.message)
 				setPosts([])
-				setOpenPosts([])
-				setComments([])
 				setError('Unable to load posts right now.')
 			} 
 		}
@@ -65,41 +61,41 @@ export default function DiscussionBoard() {
 		loadPosts()
 	}, [])
 
-	useEffect(() => {
-		console.log("openPosts:")
-		console.log(openPosts)
-		const newComments = openPosts.map((isOpen, index, arr) => {
-			if (isOpen) {
-				const loadComments = async() => {
-					return await getCommentsByPost(posts[index].postID)
-				}
+	const toggleComments = async (index) => {
+		const updatedPosts = [...posts];
+		const post = updatedPosts[index];
 
-				return loadComments()
-			} else {
-				return []
+		post.isOpen = !post.isOpen;
+
+		if (post.isOpen) {
+			try {
+				const fetchedComments = await getCommentsByPost(post.postID);
+				post.comments = fetchedComments;
+			} catch (err) {
+				console.error("Failed to load comments", err);
 			}
-		})
+		}
 
-		setComments(newComments)
-	}, [openPosts])
+		setPosts(updatedPosts);
+	};
 
-	const handleChangePost = (event) => {
-		const { value } = event.target
-		setPostContent(value)
-	}
-
-	const handleSubmitPost = async (event) => {
-		event.preventDefault()
+	const handleSubmitPost = async (index, post) => {
 		setError('')
-		setSuccess('')
 		setLoading(true)
 		try {
-			await submitPost({
+			const newPost = await submitPost({
 				userID: id,
-				comment: postContent
+				post: post
 			})
-			setSuccess('Post created successfully')
-			setPostContent('')
+
+			setPosts(prevPosts => [
+            {
+                ...newPost,
+                isOpen: false,
+                comments: [],
+            },
+            ...prevPosts
+        ]);
 		} catch (err) {
 			if (err.status === 409) {
 				setError('Post has already been created')
@@ -111,97 +107,94 @@ export default function DiscussionBoard() {
 		}
 	}
 
-	const handleChangeComment = (event) => {
-		const { value } = event.target
-		const { index } = event.currentTarget.dataset.id
-		const newCommentsContent = [...commentsContent]
-		newCommentsContent[index] = value
-		setCommentsContent(newCommentsContent)
-	}
+	const handleSubmitComment = async (index, comment) => {
+		setError('');
+		setLoading(true);
 
-	const handleSubmitComment = async (event) => {
-		const { index } = event.currentTarget.dataset.id
-
-		event.preventDefault()
-		setError('')
-		setSuccess('')
-		setLoading(true)
 		try {
-			console.log(id)
-			console.log(posts[index].postID)
-			console.log(commentsContent[index])
-			await submitComment({
+			const newComment = await submitComment({
 				userID: id,
 				postID: posts[index].postID,
-				comment: commentsContent[index]
-			})
-			setSuccess('Comment created successfully')
-			setPostContent('')
+				comment: comment
+			});
+
+			setPosts(prevPosts => {
+				const updatedPosts = [...prevPosts];
+				const targetPost = { ...updatedPosts[index] };
+				targetPost.comments = [...targetPost.comments, newComment];
+				updatedPosts[index] = targetPost;
+				
+				return updatedPosts;
+			});
 		} catch (err) {
-			if (err.status === 409) {
-				setError('Comment has already been created')
-			} else {
-				setError('Failed to create comment.\n' + err.message)
-			}
+			setError('Failed to add comment: ' + err.message);
 		} finally {
-			setLoading(false)
+			setLoading(false);
 		}
 	}
 
-	console.log(posts)
 	return (
 		<div className="discussionboard-page">
 			<HomeHeader />
 			<main className="discussionboard-main">
 				<section className="discussionposts-panel">
-					<h1>Discussion Posts</h1>
-					{
-						posts.map((post, index, arr) => (
-
-							<div>
-								<p>{post.content}</p>
-								<div className={`post-comments-group ${openPosts[index] === true ? 'open' : ''}`}>
-									<button
-										type="button"
-										className="post-comments-dropdown post-comments-toggle"
-										onClick={() => setOpenPosts(prevToggles =>{
-											const newToggles = [...prevToggles]
-											newToggles[index] = !newToggles[index]
-											return newToggles
-										})}
-									/>
-									{openPosts[index] === true && (
-										<div className="post-comments-panel">
-											{
-												comments[index].map((comment, commentIndex, commentArr) => (
-													<div>
-														<p>{comment.comment}</p>
-													</div>
-												))
-											}
-											<form data-id={index} className="discussionboard-form" onSubmit={handleSubmitComment}>
-												<h3>Make a Comment</h3>
-												<textarea name="content" rows="8" onChange={handleChangeComment} required>{commentsContent[index]}</textarea>
-												<button type="submit" disabled={loading}>{loading ? 'Submitting...' : 'Submit'}</button>
-												{error && <p className="contribute-error">{error}</p>}
-												{success && <p className="contribute-success">{success}</p>}
-											</form>
-										</div>
-									)}
-								</div>
+					<h1>Discussions</h1>
+					<button 
+						className="create-post-trigger" 
+						onClick={() => setActivePopupIndex(0)}
+					>
+						Start a New Discussion
+					</button>
+					{posts.map((post, index) => (
+						<article key={post.postID || index} className="post-card">
+							<div className="post-header">
+								<div className="user-avatar-tiny">{post.username?.charAt(0).toUpperCase()}</div>
+								<span className="username">{post.username}</span>
 							</div>
+							<p className="post-content">{post.content}</p>
 							
-						))
-					}
+							<button 
+								type="button" 
+								className="post-comments-toggle"
+								onClick={() => toggleComments(index)}
+							>
+								{post.isOpen ? 'Close Comments' : `View Comments (${post.comments.length})`}
+								<span>{post.isOpen ? '▲' : '▼'}</span>
+							</button>
+
+							{post.isOpen && (
+								<div className="comments-container">
+									{post.comments.map((comment, cIndex) => (
+										<div key={comment.commentID || cIndex} className="comment-item">
+											<div className="comment-header">
+												<span className="username">{comment.username}</span>
+											</div>
+											<p className="comment-content">{comment.comment}</p>
+										</div>
+									))}
+									<button 
+										className="add-comment-btn" 
+										onClick={() => setActivePopupIndex(index + 1)}
+									>
+										+ Leave a Comment
+									</button>
+									
+									<Popup 
+										index={index}
+										isOpen={activePopupIndex === index + 1}
+										isLoading={loading}
+										errorMessage={error}
+										placeholder="Write your reply..."
+										title="Reply to Post"
+										onClose={() => setActivePopupIndex(-1)}
+										onSubmit={handleSubmitComment}
+									/>
+								</div>
+							)}
+						</article>
+					))}
 				</section>
-				<form className="discussionboard-form" onSubmit={handleSubmitPost}>
-					<h3>Make a Post</h3>
-					<textarea name="content" rows="8" onChange={handleChangePost} required>{postContent}</textarea>
-					<button type="submit" disabled={loading}>{loading ? 'Submitting...' : 'Submit'}</button>
-					{error && <p className="contribute-error">{error}</p>}
-					{success && <p className="contribute-success">{success}</p>}
-				</form>
-				{/* <aside className="toppost-sidebar" aria-label="Top posts">
+				<aside className="toppost-sidebar" aria-label="Top posts">
 					<h2>Top Post</h2>
 					<div className="toppost-timeframes" role="group" aria-label="Top post timeframe">
 						{timeframeOptions.map((timeframeOption) => (
@@ -226,9 +219,21 @@ export default function DiscussionBoard() {
 							</li>
 						))}
 					</ol>
-				</aside> */}
+				</aside>
 			</main>
+			
 			<HomeFooter />
+			
+			<Popup 
+				index={0}
+				isOpen={activePopupIndex === 0}
+				isLoading={loading}
+				errorMessage={error}
+				placeholder="What's on your mind?"
+				title="New Discussion"
+				onClose={() => setActivePopupIndex(-1)}
+				onSubmit={handleSubmitPost}
+			/>
 		</div>
 	)
 }
