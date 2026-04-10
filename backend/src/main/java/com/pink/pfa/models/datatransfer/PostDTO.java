@@ -1,6 +1,5 @@
 package com.pink.pfa.models.datatransfer;
 
-import java.time.LocalDate;
 import java.time.LocalDateTime;
 
 import com.pink.pfa.models.AdoptionSite;

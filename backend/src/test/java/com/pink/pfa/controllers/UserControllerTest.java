@@ -1,9 +1,8 @@
 package com.pink.pfa.controllers;
 
-import static org.assertj.core.api.Assertions.assertThat;
-
 import java.util.Map;
 
+import static org.assertj.core.api.Assertions.assertThat;
 import org.junit.jupiter.api.Test;
 import org.springframework.http.MediaType;
 
