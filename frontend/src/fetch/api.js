@@ -35,8 +35,7 @@ export async function apiFetchUnauthenicated(path, options = {}) {
     const url = `${API_BASE_URL}${path}`;
     const res = await fetch(url, {
         ...options,
-        headers: {
-            "Content-Type": "application/json",
+        headers: { "Content-Type": "application/json",
             ...(options.headers || {}),
         },
     });
@@ -66,6 +65,19 @@ export function login(user) {
   });
 }
 
+export function getCurrentUser() {
+  return apiFetchAuthenticated("/api/users/findMe", {
+    method: "GET",
+  });
+}
+
+export function updateCurrentUsername(name) {
+  return apiFetchAuthenticated("/api/users/me/name", {
+    method: "PATCH",
+    body: JSON.stringify({ name }),
+  });
+}
+
 export function getAllPets() {
   return apiFetchAuthenticated("/api/pets/getAll", {
     method: "GET"
@@ -78,8 +90,7 @@ export function getFilteredPets(filters = {}) {
   Object.entries(filters).forEach(([key, value]) => {
     if (value !== null && value !== undefined && value !== "") {
       searchParams.append(key, value);
-    }
-  });
+    } });
 
   const queryString = searchParams.toString();
   const path = queryString
@@ -151,5 +162,47 @@ export function submitComment(comment) {
 export function getCommentsByPost(postId) {
   return apiFetchAuthenticated(`/api/comments/getByPost/${postId}`, {
     method: "GET"
+  });
+}
+
+export function banUser(id) {
+  return apiFetchAuthenticated(`/api/users/banUser/${id}`, { 
+    method: "PATCH" 
+  });
+}
+
+export function unbanUser(id) {
+  return apiFetchAuthenticated(`/api/users/unbanUser/${id}`, { 
+    method: "PATCH" 
+  });
+}
+
+export function requestContributor() {
+  return apiFetchAuthenticated(`/api/users/requestContributor`, { 
+    method: "PATCH" 
+  });
+}
+
+export function getBannedUsers() {
+  return apiFetchAuthenticated(`/api/users/getBannedUsers`, { 
+    method: "GET" 
+  });
+}
+
+export function getUnbannedUsers() {
+  return apiFetchAuthenticated(`/api/users/getUnbannedUsers`, { 
+    method: "GET" 
+  });
+}
+
+export function getRequestedContributor() {
+  return apiFetchAuthenticated(`/api/users/getRequestedContributor`, { 
+    method: "GET" 
+  });
+}
+
+export function promoteToContributor(id) {
+  return apiFetchAuthenticated(`/api/users/promoteToContributor/${id}`, { 
+    method: "PATCH" 
   });
 }
