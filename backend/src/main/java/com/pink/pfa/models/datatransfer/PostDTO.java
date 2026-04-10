@@ -1,6 +1,5 @@
 package com.pink.pfa.models.datatransfer;
 
-import java.time.LocalDate;
 import java.time.LocalDateTime;
 
 import com.pink.pfa.models.AdoptionSite;
@@ -14,7 +13,7 @@ import com.pink.pfa.models.Posts;
  */
 public record PostDTO(
     Integer postID,
-    Integer userID,
+    String username,
     LocalDateTime date,
     String content
 ) {
@@ -27,7 +26,7 @@ public record PostDTO(
     public static PostDTO fromEntity(Posts post) {
         return new PostDTO(
             post.getPostId(),
-            post.getUser().getUserId(),
+            post.getUser().getName(),
             post.getPostDate(),
             post.getPostContent()
         );

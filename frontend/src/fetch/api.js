@@ -147,7 +147,7 @@ export function submitPost(post) {
 }
 
 export function getAllPosts() {
-  return apiFetchUnauthenicated("/api/posts/getAll", {
+  return apiFetchAuthenticated("/api/posts/getAll", {
     method: "GET"
   });
 }
@@ -160,7 +160,7 @@ export function submitComment(comment) {
 }
 
 export function getCommentsByPost(postId) {
-  return apiFetchUnauthenicated(`/api/comments/getByPost/${postId}`, {
+  return apiFetchAuthenticated(`/api/comments/getByPost/${postId}`, {
     method: "GET"
   });
 }
