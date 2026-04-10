@@ -2,7 +2,7 @@ import { useEffect, useState } from 'react'
 import HomeHeader from '../components/header'
 import HomeFooter from '../components/footer'
 import { useAuth } from '../auth/AuthContext.jsx'
-import { submitPost, getAllPosts } from '../fetch/api'
+import { submitPost, getAllPosts, getCommentsByPost, submitComment } from '../fetch/api'
 import '../styling/DiscussionBoard.css'
 
 export default function DiscussionBoard() {
@@ -31,10 +31,12 @@ export default function DiscussionBoard() {
 
 	const { username, id } = useAuth()
 
-	const [postContent, setPostContent] = useState('Content')
-	
+	const [postContent, setPostContent] = useState('')
 	const [posts, setPosts] = useState([])
 	const [openPosts, setOpenPosts] = useState([])
+
+	const [comments, setComments] = useState([])
+	const [commentsContent, setCommentsContent] = useState([])
 
 	const [loading, setLoading] = useState(false)
 	const [error, setError] = useState('')
@@ -45,11 +47,17 @@ export default function DiscussionBoard() {
 			try {
 				// Fetch all pets (no server-side filters) and filter client-side
 				setPosts(await getAllPosts())
+				setComments(posts.map(() => []))
 				setOpenPosts(posts.map(() => false))
+				console.log("openPosts:")
+				console.log(openPosts)
+				console.log("comments:")
+				console.log(comments)
 			} catch (err) {
 				console.log(err.message)
 				setPosts([])
 				setOpenPosts([])
+				setComments([])
 				setError('Unable to load posts right now.')
 			} 
 		}
@@ -57,19 +65,35 @@ export default function DiscussionBoard() {
 		loadPosts()
 	}, [])
 
-	const handleChange = (event) => {
+	useEffect(() => {
+		console.log("openPosts:")
+		console.log(openPosts)
+		const newComments = openPosts.map((isOpen, index, arr) => {
+			if (isOpen) {
+				const loadComments = async() => {
+					return await getCommentsByPost(posts[index].postID)
+				}
+
+				return loadComments()
+			} else {
+				return []
+			}
+		})
+
+		setComments(newComments)
+	}, [openPosts])
+
+	const handleChangePost = (event) => {
 		const { value } = event.target
 		setPostContent(value)
 	}
 
-	const handleSubmit = async (event) => {
+	const handleSubmitPost = async (event) => {
 		event.preventDefault()
 		setError('')
 		setSuccess('')
 		setLoading(true)
 		try {
-			console.log(id)
-			console.log(postContent)
 			await submitPost({
 				userID: id,
 				comment: postContent
@@ -81,6 +105,43 @@ export default function DiscussionBoard() {
 				setError('Post has already been created')
 			} else {
 				setError('Failed to create post.\n' + err.message)
+			}
+		} finally {
+			setLoading(false)
+		}
+	}
+
+	const handleChangeComment = (event) => {
+		const { value } = event.target
+		const { index } = event.currentTarget.dataset.id
+		const newCommentsContent = [...commentsContent]
+		newCommentsContent[index] = value
+		setCommentsContent(newCommentsContent)
+	}
+
+	const handleSubmitComment = async (event) => {
+		const { index } = event.currentTarget.dataset.id
+
+		event.preventDefault()
+		setError('')
+		setSuccess('')
+		setLoading(true)
+		try {
+			console.log(id)
+			console.log(posts[index].postID)
+			console.log(commentsContent[index])
+			await submitComment({
+				userID: id,
+				postID: posts[index].postID,
+				comment: commentsContent[index]
+			})
+			setSuccess('Comment created successfully')
+			setPostContent('')
+		} catch (err) {
+			if (err.status === 409) {
+				setError('Comment has already been created')
+			} else {
+				setError('Failed to create comment.\n' + err.message)
 			}
 		} finally {
 			setLoading(false)
@@ -110,7 +171,22 @@ export default function DiscussionBoard() {
 										})}
 									/>
 									{openPosts[index] === true && (
-										<div className="post-comments-options"></div>
+										<div className="post-comments-panel">
+											{
+												comments[index].map((comment, commentIndex, commentArr) => (
+													<div>
+														<p>{comment.comment}</p>
+													</div>
+												))
+											}
+											<form data-id={index} className="discussionboard-form" onSubmit={handleSubmitComment}>
+												<h3>Make a Comment</h3>
+												<textarea name="content" rows="8" onChange={handleChangeComment} required>{commentsContent[index]}</textarea>
+												<button type="submit" disabled={loading}>{loading ? 'Submitting...' : 'Submit'}</button>
+												{error && <p className="contribute-error">{error}</p>}
+												{success && <p className="contribute-success">{success}</p>}
+											</form>
+										</div>
 									)}
 								</div>
 							</div>
@@ -118,9 +194,9 @@ export default function DiscussionBoard() {
 						))
 					}
 				</section>
-				<form className="discussionboard-form" onSubmit={handleSubmit}>
+				<form className="discussionboard-form" onSubmit={handleSubmitPost}>
 					<h3>Make a Post</h3>
-					<textarea name="content" rows="8" onChange={handleChange} required>{postContent}</textarea>
+					<textarea name="content" rows="8" onChange={handleChangePost} required>{postContent}</textarea>
 					<button type="submit" disabled={loading}>{loading ? 'Submitting...' : 'Submit'}</button>
 					{error && <p className="contribute-error">{error}</p>}
 					{success && <p className="contribute-success">{success}</p>}

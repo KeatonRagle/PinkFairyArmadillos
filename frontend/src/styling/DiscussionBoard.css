@@ -120,7 +120,7 @@ body.discussionboard-body {
 }
 
 /* Size filter: options list */
-.post-comments-options {
+.post-comments-panel {
 	position: absolute;
 	top: 46px;
 	left: 0;
@@ -134,7 +134,7 @@ body.discussionboard-body {
 }
 
 /* Size filter: option button */
-.post-comments-option-button {
+.post-comments-panel-button {
 	width: 85%;
 	height: 32px;
 	margin: 0;
