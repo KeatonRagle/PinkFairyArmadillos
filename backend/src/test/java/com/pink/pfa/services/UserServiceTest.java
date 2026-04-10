@@ -9,18 +9,13 @@ import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import org.junit.jupiter.api.Test;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.when;
-import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
-import org.springframework.security.core.context.SecurityContext;
 import org.springframework.security.core.context.SecurityContextHolder;
 
 import com.pink.pfa.context.PfaBase;
 import com.pink.pfa.controllers.requests.UserRequest;
 import com.pink.pfa.models.User;
 import com.pink.pfa.models.datatransfer.UserDTO;
-import com.pink.pfa.models.details.UserPrincipal;
 
 /**
  * Authentication Security Tests for {@link UserService}.
@@ -35,17 +30,6 @@ import com.pink.pfa.models.details.UserPrincipal;
  */
 class UserServiceTest extends PfaBase {
 
-    private void mockSecurityContext(User user) {
-        UserPrincipal principal = new UserPrincipal(user);
-
-        Authentication auth = mock(Authentication.class);
-        when(auth.getPrincipal()).thenReturn(principal);
-
-        SecurityContext context = mock(SecurityContext.class);
-        when(context.getAuthentication()).thenReturn(auth);
-
-        SecurityContextHolder.setContext(context);
-    }
 
     // -------------------------------------------------------------------------
     // Authentication Security Tests
