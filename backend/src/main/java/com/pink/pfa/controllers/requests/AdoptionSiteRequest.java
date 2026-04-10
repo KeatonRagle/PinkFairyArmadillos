@@ -8,6 +8,5 @@ public record AdoptionSiteRequest(
     String name,
     String email,
     String phone,
-    Double rating,
-    Integer userID
+    Double rating
 ) {}
