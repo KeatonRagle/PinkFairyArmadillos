@@ -1,0 +1,98 @@
+/* The background overlay */
+.popup-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    z-index: 9999; /* Ensure it's above everything */
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background-color: rgba(0, 0, 0, 0.4);
+    backdrop-filter: blur(4px);
+    padding: 20px; /* Space for mobile screens */
+}
+
+.popup-content {
+    width: 100%;
+    max-width: 550px;
+    background-color: #F8F8F8; /* Matches your site background */
+    border-radius: 20px;
+    padding: 32px;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+    animation: modalFadeIn 0.3s ease-out;
+}
+
+/* Modal Form Layout */
+.popup-content form {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+}
+
+.popup-content h3 {
+    font-family: 'Hind Kochi', sans-serif;
+    font-weight: 500;
+    text-transform: uppercase;
+    margin: 0;
+    text-align: center;
+    color: #343434;
+}
+
+.popup-content textarea {
+    width: 100%; /* Spans full width of the padding */
+    box-sizing: border-box; /* Crucial for width: 100% to work with padding */
+    resize: none;
+    padding: 12px;
+    border: 1px solid #d1d5db;
+    border-radius: 10px;
+    font-family: inherit;
+    font-size: 1rem;
+}
+
+/* Button Grouping */
+.popup-actions {
+    display: flex;
+    gap: 12px;
+    justify-content: flex-end; /* Buttons on the right */
+}
+
+.popup-content button {
+    padding: 10px 24px;
+    border-radius: 8px;
+    font-weight: 600;
+    cursor: pointer;
+    font-family: 'Hind Kochi', sans-serif;
+    transition: opacity 0.2s;
+}
+
+.popup-content button[type="submit"] {
+    background: #b44b25;
+    color: white;
+    border: none;
+}
+
+.popup-content button[type="submit"]:disabled {
+    background: #ccc;
+    cursor: not-allowed;
+}
+
+.popup-content .cancel-btn {
+    background: transparent;
+    border: 1px solid #d1d5db;
+    color: #7a7a7a;
+}
+
+.popup-error {
+    color: #b44b25;
+    font-size: 0.9rem;
+    text-align: center;
+    margin: 0;
+}
+
+/* Animation */
+@keyframes modalFadeIn {
+    from { opacity: 0; transform: translateY(-10px); }
+    to { opacity: 1; transform: translateY(0); }
+}
