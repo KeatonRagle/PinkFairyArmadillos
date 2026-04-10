@@ -1,7 +1,11 @@
 package com.pink.pfa.services;
 
+import java.time.LocalDate;
 import java.util.List;
 
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.web.bind.annotation.RequestMapping;
 
@@ -11,6 +15,8 @@ import com.pink.pfa.exceptions.SiteAlreadyExistsException;
 import com.pink.pfa.models.AdoptionSite;
 import com.pink.pfa.models.datatransfer.AdoptionSiteDTO;
 import com.pink.pfa.repos.AdoptionSiteRepository;
+import com.pink.pfa.repos.UserRepository;
+import com.pink.pfa.models.details.UserPrincipal;
 
 import jakarta.transaction.Transactional;
 
@@ -39,6 +45,8 @@ public class AdoptionSiteService {
 
     private final AdoptionSiteRepository adoptionSiteRepository;
 
+    @Autowired private UserRepository userRepository;
+
     public AdoptionSiteService (AdoptionSiteRepository adoptionSiteRepository) {
         this.adoptionSiteRepository = adoptionSiteRepository;
     }
@@ -61,6 +69,10 @@ public class AdoptionSiteService {
             .stream()
             .map(AdoptionSiteDTO::fromEntity)
             .toList();
+    }
+
+    public List<AdoptionSiteDTO> findSubmitionsByJwt() {
+        return null;
     }
 
 
@@ -110,12 +122,19 @@ public class AdoptionSiteService {
         if (adoptionSiteRepository.existsByUrl(request.url())) {
             throw new SiteAlreadyExistsException(request.url());
         }
+        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+        if (auth == null) throw new ResourceNotFoundException("User", "Token either unreadable or not provided");
+        String email = ((UserPrincipal) auth.getPrincipal()).getUsername();
 
         AdoptionSite site = new AdoptionSite();
         site.setUrl(request.url());
         site.setName(request.name());
         site.setEmail(request.email());
         site.setPhone(request.phone());
+        site.setSubmittedAt(LocalDate.now());
+        site.setUser(userRepository.findByEmail(email)
+            .orElseThrow(() -> new ResourceNotFoundException("User", email)) 
+        );
 
         AdoptionSite savedSite = adoptionSiteRepository.save(site);
 
@@ -132,7 +151,6 @@ public class AdoptionSiteService {
         site.setName(request.name());
         site.setEmail(request.email());
         site.setPhone(request.phone());
-        site.setRating(request.rating());
 
         return AdoptionSiteDTO.fromEntity(site);
     }

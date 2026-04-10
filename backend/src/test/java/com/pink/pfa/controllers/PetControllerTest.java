@@ -82,8 +82,8 @@ public class PetControllerTest extends PfaBase {
     void getPetById_ShouldBeUnProtected() {
         Pet pet = getRandPet();
         webTestClient.get().uri("/api/pets/" + pet.getPetId())
-                .exchange()
-                .expectStatus().isOk();
+            .exchange()
+            .expectStatus().isOk();
     }
 
     /**

@@ -11,14 +11,23 @@ import org.springframework.boot.test.web.server.LocalServerPort;
 import org.springframework.context.annotation.Import;
 import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.http.MediaType;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContext;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.web.reactive.server.WebTestClient;
 
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
+
 import com.pink.pfa.config.TestDataConfig;
 import com.pink.pfa.config.TestcontainersConfiguration;
+import com.pink.pfa.models.Comments;
 import com.pink.pfa.models.Pet;
 import com.pink.pfa.models.User;
+import com.pink.pfa.models.details.UserPrincipal;
 import com.pink.pfa.repos.AdoptionSiteRepository;
+import com.pink.pfa.repos.CommentsRepository;
 import com.pink.pfa.repos.PetRepository;
 import com.pink.pfa.repos.UserRepository;
 import com.pink.pfa.services.AdoptionSiteService;
@@ -83,6 +92,8 @@ public abstract class PfaBase {
     @Autowired protected PetRepository petRepository;
     @Autowired protected AdoptionSiteService adoptionSiteService;
     @Autowired protected AdoptionSiteRepository adoptionSiteRepository;
+    @Autowired protected PetService commentService;
+    @Autowired protected CommentsRepository commentRepository;
     @Autowired protected WebScraperService webScraperService;
 
     /* WEB TEST CLIENT */
@@ -144,6 +155,12 @@ public abstract class PfaBase {
         return user.getUserId();
     }
 
+    protected SeededUser getUserAndPassByEmail(String email) {
+        User user = userRepository.findByEmail(email).orElseThrow();
+        String password = SEEDED_USERS.get(user.getEmail());
+        return new SeededUser(user, password);
+    }
+
     protected SeededUser getRandUserAndPassByRole(User.Role role) {
         List<User> results = new ArrayList<>(
             userRepository.findAll().stream()
@@ -170,5 +187,25 @@ public abstract class PfaBase {
         if (results.isEmpty()) throw new RuntimeException("No pets found");
         Collections.shuffle(results);
         return results.get(0);
+    }
+
+    protected Comments getRandComment() {
+        List<Comments> results = commentRepository.findAll();
+        if (results.isEmpty()) throw new RuntimeException("No comments found");
+
+        Collections.shuffle(results);
+        return results.get(0);
+    }
+    
+    protected void mockSecurityContext(User user) {
+        UserPrincipal principal = new UserPrincipal(user);
+
+        Authentication auth = mock(Authentication.class);
+        when(auth.getPrincipal()).thenReturn(principal);
+
+        SecurityContext context = mock(SecurityContext.class);
+        when(context.getAuthentication()).thenReturn(auth);
+
+        SecurityContextHolder.setContext(context);
     }
 }

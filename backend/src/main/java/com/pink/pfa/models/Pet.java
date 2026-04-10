@@ -1,5 +1,7 @@
 package com.pink.pfa.models;
 
+import java.time.LocalDate;
+
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
@@ -102,9 +104,16 @@ import lombok.Data;
 	@Column(name = "img_url", nullable = true)
 	private String imgUrl;
 	
+	
 	/** Pet's size. */
 	@Column(name = "pet_size", nullable = true)
     private String size;
+	
+	
+	/** Pet's listing date. */
+	@Column(name = "created_at", nullable = false)
+	private LocalDate createdAt;
+
 
 	/** Default constructor required by JPA. */
 	public Pet() {
@@ -124,10 +133,14 @@ import lombok.Data;
      * @param pet_size pet's size
      * @param pet_status pet's adoption status
      * @param compatability_score pet's listed compatability score
+	 * @param imgUrl pet's accompanying image/s
+	 * @param size pet's listed size
+	 * @param createdAt pet's time of listing
      */
 	public Pet(String name, String breed, int age, char gender, 
 		String pet_type, String location, double price, 
-		String petSize, String petStatus, int compatibilityScore
+		String petSize, String petStatus, int compatibilityScore,
+		String imgUrl, LocalDate createdAt
 	) {
 		this.name = name;
 		this.breed = breed;
@@ -139,5 +152,7 @@ import lombok.Data;
 		this.size = petSize;
 		this.petStatus = petStatus;
 		this.compatibilityScore = compatibilityScore;
+		this.imgUrl = imgUrl;
+		this.createdAt = createdAt;
 	}
  }

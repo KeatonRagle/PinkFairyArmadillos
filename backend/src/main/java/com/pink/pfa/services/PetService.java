@@ -1,15 +1,16 @@
 package com.pink.pfa.services;
 
+import java.time.LocalDate;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.boot.context.properties.source.InvalidConfigurationPropertyValueException;
 import org.springframework.stereotype.Service;
 import org.springframework.web.bind.annotation.RequestMapping;
 
+import com.pink.pfa.controllers.requests.PetRequest;
 import com.pink.pfa.exceptions.ResourceNotFoundException;
 import com.pink.pfa.models.AdoptionSite;
 import com.pink.pfa.models.Pet;
@@ -63,6 +64,19 @@ public class PetService {
             .toList();
     }
 
+    public PetDTO addPet(PetRequest request) {
+        Pet pet = new Pet(request.name(), request.breed(), request.age(), request.gender(), 
+            request.petType(), request.location(), request.price(), request.size(), 
+            request.petStatus(), request.compatibilityScore(), request.imgUrl(), LocalDate.now()
+        );
+
+        pet.setSite(adoptionRepository.findById(request.siteId())
+            .orElseThrow(() -> new ResourceNotFoundException("AdoptionSite", request.siteId()))
+        );
+
+        Pet savedPet = petRepository.save(pet);
+        return PetDTO.fromEntity(savedPet);
+    }
 
     /**
      * Fetches a single pet by ID and returns it as a {@link PetDTO}.
@@ -134,7 +148,7 @@ public class PetService {
                 .toList();
         }
 
-        if(allPets.isEmpty()) {
+        if (allPets.isEmpty()) {
             throw new ResourceNotFoundException("Pet", petType + gender + startAge + endAge + breed + size);
         }
 

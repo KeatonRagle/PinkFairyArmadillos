@@ -37,12 +37,11 @@ export default function Login() {
       const data = await login({ email, password })
       const token = data.token
       const userObj = data.user
-      //const displayName = userObj.username ?? userObj.name ?? userObj.email;
-      const displayName = userObj.email;
-      // changes
+      const displayName = userObj.name ?? userObj.email;
       const role = userObj.role;
+      const id = userObj.id;
 
-      setAuth(token, displayName, role);
+      setAuth(token, displayName, role, id);
 
       navigate('/home')
     } catch (err) {
