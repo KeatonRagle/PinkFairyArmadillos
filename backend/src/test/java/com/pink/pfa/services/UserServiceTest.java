@@ -218,7 +218,6 @@ class UserServiceTest extends PfaBase {
         User stored = userRepository.findByEmail("normtest@pfa.com").orElseThrow();
         assertEquals("normtest@pfa.com", stored.getEmail());
     }
-
     
     // -------------------------------------------------------------------------
     // findByJWT
@@ -332,5 +331,41 @@ class UserServiceTest extends PfaBase {
     @Test
     void requestContributor_WithNoContext_ShouldThrowException() {
         assertThrows(Exception.class, () -> userService.requestContributor());
+    }
+
+    // -------------------------------------------------------------------------
+    // findAllBanned 
+    // -------------------------------------------------------------------------
+    @Test
+    void findAllBanned_ShouldOnlyReturnBannedUsers() {
+        SeededUser target = getRandUserAndPassByRole(User.Role.ROLE_USER);
+        target.user().setIsBanned(true);
+        userRepository.save(target.user());
+
+        List<UserDTO> users = userService.findAllBanned();
+
+        assertFalse(users.stream().anyMatch(u -> u.isBanned() == false),
+            "No returned users should be unbanned");
+
+        target.user().setIsBanned(false);
+        userRepository.save(target.user());
+    }
+
+    // -------------------------------------------------------------------------
+    // findAllBanned 
+    // -------------------------------------------------------------------------
+    @Test
+    void findAllUnbanned_ShouldOnlyReturnUnbannedUsers() {
+        SeededUser target = getRandUserAndPassByRole(User.Role.ROLE_USER);
+        target.user().setIsBanned(true);
+        userRepository.save(target.user());
+
+        List<UserDTO> users = userService.findAllUnBanned();
+
+        assertFalse(users.stream().anyMatch(u -> u.isBanned() == true),
+            "No returned users should be banned");
+
+        target.user().setIsBanned(false);
+        userRepository.save(target.user());
     }
 }

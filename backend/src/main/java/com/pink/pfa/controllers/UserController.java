@@ -11,9 +11,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.RequestBody; import org.springframework.web.bind.annotation.RequestMapping; import org.springframework.web.bind.annotation.RestController;
 
 import com.pink.pfa.controllers.requests.UpdateUserNameRequest;
 import com.pink.pfa.controllers.requests.UserRequest;
@@ -315,6 +313,48 @@ public class UserController {
         } catch (ResourceNotFoundException e) {
             return ResponseEntity.notFound().build();
         } catch (UserAlreadyRequestedContributor e) {
+            return ResponseEntity.status(HttpStatus.CONFLICT).build();
+        } catch (Exception e) {
+            return ResponseEntity.internalServerError().build();
+        }
+    }
+
+    @PreAuthorize("hasRole('ADMIN')")
+    @GetMapping("/getBannedUsers")
+    public ResponseEntity<List<UserDTO>> getBannedUsers() {
+        try {
+            return ResponseEntity.ok().body(userService.findAllBanned());
+        } catch (ResourceNotFoundException e) {
+            return ResponseEntity.notFound().build();
+        } catch (ActionNotAllowedException e) {
+            return ResponseEntity.status(HttpStatus.CONFLICT).build();
+        } catch (Exception e) {
+            return ResponseEntity.internalServerError().build();
+        }
+    }
+
+    @PreAuthorize("hasRole('ADMIN')")
+    @GetMapping("/getUnbannedUsers")
+    public ResponseEntity<List<UserDTO>> getUnbannedUsers() {
+        try {
+            return ResponseEntity.ok().body(userService.findAllUnBanned());
+        } catch (ResourceNotFoundException e) {
+            return ResponseEntity.notFound().build();
+        } catch (ActionNotAllowedException e) {
+            return ResponseEntity.status(HttpStatus.CONFLICT).build();
+        } catch (Exception e) {
+            return ResponseEntity.internalServerError().build();
+        }
+    }
+
+    @PreAuthorize("hasRole('ADMIN')")
+    @GetMapping("/getRequestedContributor")
+    public ResponseEntity<List<UserDTO>> getRequestedContributor() {
+        try {
+            return ResponseEntity.ok().body(userService.findAllRequestedContributor());
+        } catch (ResourceNotFoundException e) {
+            return ResponseEntity.notFound().build();
+        } catch (ActionNotAllowedException e) {
             return ResponseEntity.status(HttpStatus.CONFLICT).build();
         } catch (Exception e) {
             return ResponseEntity.internalServerError().build();

@@ -85,6 +85,26 @@ public class UserService {
                 .toList();
     }
 
+    public List<UserDTO> findAllBanned() {
+        return userRepository.findByIsBannedTrue()
+            .stream()
+            .map(UserDTO::fromEntity)
+            .toList();
+    }
+
+    public List<UserDTO> findAllUnBanned() {
+        return userRepository.findByIsBannedFalse()
+            .stream()
+            .map(UserDTO::fromEntity)
+            .toList();
+    }
+
+    public List<UserDTO> findAllRequestedContributor() {
+        return userRepository.findByRequestedContributor()
+            .stream()
+            .map(UserDTO::fromEntity)
+            .toList();
+    }
 
     /**
      * Fetches a single user by ID and returns it as a {@link UserDTO}.
@@ -218,7 +238,8 @@ public class UserService {
     public void promoteToContributor(int id) {
         User user = userRepository.findById(id)
             .orElseThrow(() -> new ResourceNotFoundException("User", id));
-
+        
+        user.setRequestedContributor(false);
         user.setRole(User.Role.ROLE_CONTRIBUTOR);
     }
 

@@ -20,8 +20,6 @@ import com.pink.pfa.models.AdoptionSite;
 import com.pink.pfa.models.User;
 import com.pink.pfa.models.datatransfer.AdoptionSiteDTO;
 
-import jakarta.validation.constraints.AssertFalse;
-
 /**
  * Integration test suite for {@link AdoptionSiteService}.
  *
