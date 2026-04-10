@@ -31,6 +31,9 @@ import com.pink.pfa.models.Comments;
 public interface CommentsRepository extends JpaRepository<Comments, Integer> {
 	/** Finds all comments made by a specific user */
 	List<Comments> findByUser_UserId(Integer user);
+	
+	/** Finds all comments made by under a specific post */
+	List<Comments> findByPost_PostId(Integer post);
     
 	/** Finds all comments made within a given date range */
 	List<Comments> findByCtDateBetween(LocalDate start, LocalDate end);
