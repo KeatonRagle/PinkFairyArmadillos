@@ -118,7 +118,6 @@ public class UserController {
         }
     }
 
-
     /**
      * Registers a new user account and returns an authentication token.
      * <p>
