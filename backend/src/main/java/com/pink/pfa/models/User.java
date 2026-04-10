@@ -64,8 +64,18 @@ public class User {
     @Column(name = "role", nullable = false)
     @Enumerated(EnumType.STRING)
     private Role role = Role.ROLE_USER; // this is the default can be changed by an admin in the admin login?
-
-
+	
+	
+	/** User's banned status.  */
+	@Column(name = "is_banned", nullable = false)
+	private boolean isBanned = false;
+	
+	
+	/** User's contributor status check. */
+	@Column(name = "requested_contributor", nullable = false)
+	private boolean requestedContributor = false;
+	
+	
     /** Optional location metadata associated with the user. */
     private String location;
 
@@ -90,13 +100,19 @@ public class User {
      * @param password hashed password
      * @param role authorization role
      * @param location optional location metadata
+	 * @param isBanned profile ban status
+	 * @param requestedContributor user requested contributor status
      */
-    public User(String name, String email, String password, Role role, String location) {
+    public User(String name, String email, String password, Role role,
+		String location, boolean isBanned, boolean requestedContributor
+	) {
         this.name = name;
         this.email = email;
         this.password = password;
         this.role = role;
         this.location = location;
+		this.isBanned = isBanned;
+		this.requestedContributor = requestedContributor;
     }
 
 
@@ -120,6 +136,14 @@ public class User {
     public Role getRole() {
         return role;            
     }
+	
+	public boolean getIsBanned() {
+		return isBanned;
+	}
+	
+	public boolean getRequestedContributor() {
+		return requestedContributor;
+	}
 
 
     /*+++ Setters +++*/
@@ -138,4 +162,12 @@ public class User {
     public void setRole(Role role) {
         this.role = role;
     }
+	
+	public void setIsBanned(boolean isBanned) {
+		this.isBanned = isBanned;
+	}
+	
+	public void setRequestedContributor(boolean requestedContributor) {
+		this.requestedContributor = requestedContributor;
+	}
 }

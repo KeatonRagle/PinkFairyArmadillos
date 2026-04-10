@@ -1,22 +1,205 @@
+/* Global Body Overrides */
 body.discussionboard-body {
-	margin: 0;
-	background-color: #F8F8F8;
+    margin: 0;
+    background-color: #F8F8F8;
+    color: #343434;
+    font-family: 'Hind Kochi', sans-serif;
 }
 
 .discussionboard-page {
-	display: flex;
-	flex-direction: column;
-	min-height: 100vh;
-	position: relative;
-	padding-bottom: 180px;
+    display: flex;
+    flex-direction: column;
+    min-height: 100vh; 
 }
 
 .discussionboard-main {
-	flex: 1;
-	display: flex;
-	justify-content: flex-end;
-	padding: 32px 40px 48px;
-	box-sizing: border-box;
+    flex: 1 0 auto;
+    display: grid;
+    grid-template-columns: 1fr 320px;
+    gap: 40px;
+    width: 100%;
+    max-width: 1200px;
+    margin: 0 auto; 
+    padding: 40px 20px;
+    box-sizing: border-box;
+    justify-content: center;
+}
+
+.discussionposts-panel {
+    display: flex;
+    flex-direction: column;
+    gap: 24px;
+    width: 100%;
+}
+
+.discussionposts-panel h1 {
+    font-weight: 300;
+    text-transform: uppercase;
+    margin: 0 0 10px 0;
+    font-size: 2rem;
+}
+
+.post-card {
+    background: white;
+    border-radius: 12px;
+    padding: 24px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+    width: 100%;
+    box-sizing: border-box;
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start; 
+}
+
+.post-content {
+    font-size: 1.1rem;
+    line-height: 1.6;
+    color: #444;
+    margin-bottom: 20px;
+    text-align: left; 
+    width: 100%;
+	overflow-wrap: break-word; 
+    word-break: break-word;     
+    hyphens: auto;              
+}
+
+/* Post Meta Info (Top of the Card) */
+.post-header, .comment-header {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-bottom: 8px;
+}
+
+.user-avatar-tiny {
+    width: 24px;
+    height: 24px;
+    background-color: #e5e7eb;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 10px;
+    color: #777;
+    font-weight: bold;
+}
+
+.username {
+    font-weight: 700;
+    color: #b44b25; /* Your theme color */
+    font-size: 0.9rem;
+}
+
+.comments-container {
+    margin-top: 15px;
+    padding-left: 15px;
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 12px;
+}
+
+.comment-item {
+    background: #f9f9f9;
+    padding: 16px;
+    border-radius: 8px;
+    width: 100%;
+    box-sizing: border-box;
+    margin-bottom: 12px;
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+}
+
+.comment-content {
+    margin: 0;
+    font-size: 0.95rem;
+    color: #4a4a4a;
+    text-align: left;
+    width: 100%;
+	inline-size: 100%;
+    overflow-wrap: break-word;
+    word-break: break-word;
+}
+
+.comment-header {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-bottom: 4px;
+    justify-content: flex-start;
+}
+
+/* Comments Toggle Button (The Dropdown bar) */
+.post-comments-toggle {
+    width: 100%;
+    padding: 12px 16px;
+    background: #fdfdfd;
+    border: 1px solid #d1d5db;
+    border-radius: 10px;
+    color: #b44b25;
+    font-size: 15px;
+    cursor: pointer;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    transition: all 0.2s ease;
+}
+
+.add-comment-btn {
+    background-color: transparent;
+    color: #b44b25;
+    border: 1px dashed #b44b25;
+    padding: 10px 20px;
+    border-radius: 8px;
+    font-weight: 600;
+    cursor: pointer;
+    
+    align-self: center; 
+    margin: 20px auto 10px auto;
+    
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: background 0.2s;
+}
+
+.add-comment-btn:hover {
+    background-color: rgba(180, 75, 37, 0.05);
+}
+
+.post-comments-toggle:hover {
+    background: #f9f9f9;
+    border-color: #b44b25;
+}
+
+.create-post-trigger {
+    background: #b44b25;
+    color: white;
+    border: none;
+    padding: 14px 28px;
+    border-radius: 50px;
+    font-size: 16px;
+    font-weight: 600;
+    cursor: pointer;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    line-height: 1;
+    margin: 0 auto 30px auto; 
+    width: fit-content;
+}
+
+/* Sidebar Styles */
+.toppost-sidebar {
+    background: white;
+    border-radius: 16px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+    padding: 24px;
+    height: fit-content;
+    position: sticky;
+    top: 20px;
 }
 
 .toppost-sidebar {

@@ -1,5 +1,6 @@
 package com.pink.pfa.services;
 
+import java.time.LocalDate;
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -218,15 +219,15 @@ class PetServiceTest extends PfaBase {
 
     @Test
     void trySync_threePets_oneDupe() {
-        List<AdoptionSite> sites = List.of(new AdoptionSite("Dallas County", "", "", 0, "https://hsdallascounty.org"));
+        List<AdoptionSite> sites = List.of(new AdoptionSite("Dallas County", "", "", 0, "https://hsdallascounty.org", 'A', LocalDate.now()));
 
         // Mock some data to avoid scraping for real
         List<Pet> mockData = List.of(
             // This pet is already seeded, but the location is changed
-            new Pet("Buddy", "Labrador Retriever", 24, 'M', "Dog", "Lubbock, TX", 150.0, "Medium", "available", 85),
+            new Pet("Buddy", "Labrador Retriever", 24, 'M', "Dog", "Lubbock, TX", 150.0, "Medium", "available", 85, "placeholder", LocalDate.now()),
             // ...while these are new
-            new Pet("Mulch", "Toy Poodle", 2, 'F', "dog", "Austin, TX", 150.0, "Small", "available", 85),
-            new Pet("Pibble", "Pit Bull", 1, 'M', "dog", "Austin, TX", 150.0, "Large", "available", 85)
+            new Pet("Mulch", "Toy Poodle", 2, 'F', "dog", "Austin, TX", 150.0, "Small", "available", 85, "placeholder", LocalDate.now()),
+            new Pet("Pibble", "Pit Bull", 1, 'M', "dog", "Austin, TX", 150.0, "Large", "available", 85, "placeholder", LocalDate.now())
         );
 
         // ...and set their site to the one the other seeded animals use

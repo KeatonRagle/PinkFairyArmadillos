@@ -1,0 +1,230 @@
+.contributorapp-body {
+	margin: 0;
+	background:
+		radial-gradient(circle at top right, rgba(228, 179, 136, 0.28), transparent 32%),
+		linear-gradient(180deg, #fcf7f1 0%, #f2e9de 100%);
+	min-height: 100vh;
+	font-family: 'Hind Kochi', sans-serif;
+}
+
+.contributorapp-page {
+	min-height: 100vh;
+	display: flex;
+	flex-direction: column;
+}
+
+.contributorapp-main {
+	flex: 1;
+	display: flex;
+	justify-content: center;
+	padding: 64px 24px 96px;
+	box-sizing: border-box;
+}
+
+.contributorapp-card {
+	width: min(960px, 100%);
+	display: flex;
+	flex-direction: column;
+	gap: 28px;
+	padding: 36px;
+	border-radius: 30px;
+	background: rgba(255, 251, 246, 0.92);
+	border: 1px solid rgba(220, 203, 188, 0.85);
+	box-shadow: 0 24px 70px rgba(79, 56, 41, 0.12);
+	box-sizing: border-box;
+}
+
+.contributorapp-heading {
+	display: grid;
+	gap: 10px;
+	justify-items: center;
+}
+
+.contributorapp-heading h1 {
+	margin: 0;
+	color: #2f2520;
+	font-size: clamp(2.5rem, 5vw, 3.4rem);
+	line-height: 1;
+	text-align: center;
+}
+
+.contributorapp-grid {
+	display: grid;
+	grid-template-columns: 1fr;
+	gap: 18px;
+}
+
+.contributorapp-panel,
+.contributorapp-form {
+	padding: 26px;
+	border-radius: 22px;
+	background: #fffaf6;
+	border: 1px solid #eadccf;
+}
+
+.contributorapp-panel h2,
+.contributorapp-form h2 {
+	margin: 0 0 12px;
+	color: #2f2520;
+	font-size: 24px;
+	font-weight: 500;
+}
+
+.contributorapp-panel p,
+.contributorapp-form p {
+	margin: 0;
+	color: #66574b;
+	line-height: 1.6;
+}
+
+.contributorapp-status-panel {
+	display: grid;
+	gap: 12px;
+}
+
+.contributorapp-status-panel h2 {
+	text-align: center;
+}
+
+.contributorapp-status {
+	display: grid;
+	gap: 10px;
+	padding: 18px;
+	border-radius: 18px;
+	border: 1px solid #eadccf;
+	background: #fffdfb;
+	justify-items: center;
+	text-align: center;
+}
+
+.contributorapp-status.is-idle {
+	background: #fffbf8;
+	border-color: #ecdccf;
+}
+
+.contributorapp-status.is-pending {
+	background: #fff4df;
+	border-color: #efc979;
+}
+
+.contributorapp-status.is-denied {
+	background: #fff0ec;
+	border-color: #ebb1a0;
+}
+
+.contributorapp-status-label {
+	color: #2f2520;
+	font-size: 16px;
+	font-weight: 600;
+}
+
+.contributorapp-form {
+	display: grid;
+	gap: 18px;
+}
+
+.contributorapp-form-header {
+	display: grid;
+	gap: 8px;
+}
+
+.contributorapp-field {
+	display: grid;
+	gap: 10px;
+}
+
+.contributorapp-field span {
+	color: #8a7669;
+	font-size: 12px;
+	letter-spacing: 0.12em;
+	text-transform: uppercase;
+}
+
+.contributorapp-field textarea {
+	width: 100%;
+	padding: 16px;
+	border-radius: 18px;
+	border: 1px solid #dbcabf;
+	background: #ffffff;
+	color: #2f2520;
+	font-family: 'Hind Kochi', sans-serif;
+	font-size: 16px;
+	line-height: 1.5;
+	box-sizing: border-box;
+	resize: vertical;
+	outline: none;
+	transition: border-color 0.2s ease, box-shadow 0.2s ease;
+}
+
+.contributorapp-field textarea:focus {
+	border-color: #b44b25;
+	box-shadow: 0 0 0 3px rgba(180, 75, 37, 0.14);
+}
+
+.contributorapp-field textarea:disabled {
+	background: #f7f1ea;
+	color: #7e6e62;
+	resize: none;
+}
+
+.contributorapp-actions {
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	gap: 16px;
+	flex-wrap: wrap;
+}
+
+.contributorapp-button {
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+	min-width: 190px;
+	height: 46px;
+	padding: 0 18px;
+	border-radius: 999px;
+	font-family: 'Hind Kochi', sans-serif;
+	font-size: 15px;
+	box-sizing: border-box;
+	transition: background-color 0.2s ease, transform 0.2s ease;
+}
+
+.contributorapp-button {
+	border: none;
+	background: #b44b25;
+	color: #ffffff;
+	cursor: pointer;
+}
+
+.contributorapp-button:hover {
+	background: #973a18;
+	transform: translateY(-1px);
+}
+
+.contributorapp-button:disabled {
+	background: #d9b5a6;
+	cursor: not-allowed;
+	transform: none;
+}
+
+@media (max-width: 760px) {
+	.contributorapp-main {
+		padding: 32px 16px 64px;
+	}
+
+	.contributorapp-card {
+		padding: 24px 18px;
+	}
+
+	.contributorapp-grid {
+		grid-template-columns: 1fr;
+	}
+
+	.contributorapp-actions {
+		align-items: stretch;
+	}
+
+	.contributorapp-button {
+		width: 100%;
+	}
+}

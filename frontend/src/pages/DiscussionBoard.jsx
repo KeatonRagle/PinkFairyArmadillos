@@ -1,6 +1,9 @@
 import { useEffect, useState } from 'react'
 import HomeHeader from '../components/header'
 import HomeFooter from '../components/footer'
+import Popup from '../components/popup.jsx'
+import { useAuth } from '../auth/AuthContext.jsx'
+import { submitPost, getAllPosts, getCommentsByPost, submitComment } from '../fetch/api'
 import '../styling/DiscussionBoard.css'
 
 export default function DiscussionBoard() {
@@ -27,10 +30,170 @@ export default function DiscussionBoard() {
 		return () => document.body.classList.remove('discussionboard-body')
 	}, [])
 
+	const { username, id } = useAuth()
+	const [activePopupIndex, setActivePopupIndex] = useState(-1)
+
+	const [posts, setPosts] = useState([])
+
+	const [loading, setLoading] = useState(false)
+	const [error, setError] = useState('')
+
+	useEffect(() => {
+		const loadPosts = async () => {
+			try {
+				const initialPosts = await getAllPosts()
+				const formattedPosts = await Promise.all(initialPosts.map(async (post) => {
+					const fetchedComments = await getCommentsByPost(post.postID);
+					return {
+						...post,
+						isOpen: false,
+						comments: fetchedComments,
+					}
+				}))
+				setPosts(formattedPosts)
+			} catch (err) {
+				console.log(err.message)
+				setPosts([])
+				setError('Unable to load posts right now.')
+			} 
+		}
+
+		loadPosts()
+	}, [])
+
+	const toggleComments = async (index) => {
+		const updatedPosts = [...posts];
+		const post = updatedPosts[index];
+
+		post.isOpen = !post.isOpen;
+
+		if (post.isOpen) {
+			try {
+				const fetchedComments = await getCommentsByPost(post.postID);
+				post.comments = fetchedComments;
+			} catch (err) {
+				console.error("Failed to load comments", err);
+			}
+		}
+
+		setPosts(updatedPosts);
+	};
+
+	const handleSubmitPost = async (index, post) => {
+		setError('')
+		setLoading(true)
+		try {
+			const newPost = await submitPost({
+				userID: id,
+				post: post
+			})
+
+			setPosts(prevPosts => [
+            {
+                ...newPost,
+                isOpen: false,
+                comments: [],
+            },
+            ...prevPosts
+        ]);
+		} catch (err) {
+			if (err.status === 409) {
+				setError('Post has already been created')
+			} else {
+				setError('Failed to create post.\n' + err.message)
+			}
+		} finally {
+			setLoading(false)
+		}
+	}
+
+	const handleSubmitComment = async (index, comment) => {
+		setError('');
+		setLoading(true);
+
+		try {
+			const newComment = await submitComment({
+				userID: id,
+				postID: posts[index].postID,
+				comment: comment
+			});
+
+			setPosts(prevPosts => {
+				const updatedPosts = [...prevPosts];
+				const targetPost = { ...updatedPosts[index] };
+				targetPost.comments = [...targetPost.comments, newComment];
+				updatedPosts[index] = targetPost;
+				
+				return updatedPosts;
+			});
+		} catch (err) {
+			setError('Failed to add comment: ' + err.message);
+		} finally {
+			setLoading(false);
+		}
+	}
+
 	return (
 		<div className="discussionboard-page">
 			<HomeHeader />
 			<main className="discussionboard-main">
+				<section className="discussionposts-panel">
+					<h1>Discussions</h1>
+					<button 
+						className="create-post-trigger" 
+						onClick={() => setActivePopupIndex(0)}
+					>
+						Start a New Discussion
+					</button>
+					{posts.map((post, index) => (
+						<article key={post.postID || index} className="post-card">
+							<div className="post-header">
+								<div className="user-avatar-tiny">{post.username?.charAt(0).toUpperCase()}</div>
+								<span className="username">{post.username}</span>
+							</div>
+							<p className="post-content">{post.content}</p>
+							
+							<button 
+								type="button" 
+								className="post-comments-toggle"
+								onClick={() => toggleComments(index)}
+							>
+								{post.isOpen ? 'Close Comments' : `View Comments (${post.comments.length})`}
+								<span>{post.isOpen ? '▲' : '▼'}</span>
+							</button>
+
+							{post.isOpen && (
+								<div className="comments-container">
+									{post.comments.map((comment, cIndex) => (
+										<div key={comment.commentID || cIndex} className="comment-item">
+											<div className="comment-header">
+												<span className="username">{comment.username}</span>
+											</div>
+											<p className="comment-content">{comment.comment}</p>
+										</div>
+									))}
+									<button 
+										className="add-comment-btn" 
+										onClick={() => setActivePopupIndex(index + 1)}
+									>
+										+ Leave a Comment
+									</button>
+									
+									<Popup 
+										index={index}
+										isOpen={activePopupIndex === index + 1}
+										isLoading={loading}
+										errorMessage={error}
+										placeholder="Write your reply..."
+										title="Reply to Post"
+										onClose={() => setActivePopupIndex(-1)}
+										onSubmit={handleSubmitComment}
+									/>
+								</div>
+							)}
+						</article>
+					))}
+				</section>
 				<aside className="toppost-sidebar" aria-label="Top posts">
 					<h2>Top Post</h2>
 					<div className="toppost-timeframes" role="group" aria-label="Top post timeframe">
@@ -58,7 +221,19 @@ export default function DiscussionBoard() {
 					</ol>
 				</aside>
 			</main>
+			
 			<HomeFooter />
+			
+			<Popup 
+				index={0}
+				isOpen={activePopupIndex === 0}
+				isLoading={loading}
+				errorMessage={error}
+				placeholder="What's on your mind?"
+				title="New Discussion"
+				onClose={() => setActivePopupIndex(-1)}
+				onSubmit={handleSubmitPost}
+			/>
 		</div>
 	)
 }

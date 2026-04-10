@@ -4,6 +4,7 @@ import java.util.List;
 import java.util.Optional;
 
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
 
 import com.pink.pfa.models.User;
@@ -62,4 +63,13 @@ public interface UserRepository extends JpaRepository<User, Integer> {
      * @return {@code true} if a user with the given email exists, {@code false} otherwise
      */
     Boolean existsByEmail(String email);
+
+    @Query("SELECT u FROM User u WHERE u.isBanned = true")
+    List<User> findByIsBannedTrue();
+
+    @Query("SELECT u FROM User u WHERE u.isBanned != true")
+    List<User> findByIsBannedFalse();
+
+    @Query("SELECT u FROM User u WHERE u.requestedContributor = true")
+    List<User> findByRequestedContributor();
 }
