@@ -10,6 +10,9 @@ import org.springframework.security.web.authentication.WebAuthenticationDetailsS
 import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import com.pink.pfa.services.JWTService;
 
 import io.jsonwebtoken.ExpiredJwtException;
@@ -49,6 +52,7 @@ public class JwtFilter extends OncePerRequestFilter {
     private final JWTService jwtService;
     private final CustomUserDetailsService userDetailsService;
 
+    private static final Logger log = LoggerFactory.getLogger(JwtFilter.class);
 
     public JwtFilter (JWTService jwtService, CustomUserDetailsService userDetailsService) {
         this.jwtService = jwtService;
@@ -87,6 +91,7 @@ public class JwtFilter extends OncePerRequestFilter {
         String email = null;
 
         if (authHeader == null || !authHeader.startsWith("Bearer ")) {
+            log.debug("No Bearer token found on request: {}", request.getRequestURI());
             filterChain.doFilter(request, response);
             return;
         }
@@ -95,6 +100,7 @@ public class JwtFilter extends OncePerRequestFilter {
         try {
             email = jwtService.extractEmail(token);
         } catch (ExpiredJwtException e) {
+            log.debug("JWT expired");
             response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
             response.setContentType("application/json");
             response.getWriter().write("""
@@ -102,6 +108,7 @@ public class JwtFilter extends OncePerRequestFilter {
             """);
             return;
         } catch (Exception e) {
+            log.debug("JWT could not be parsed");
             response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
             response.setContentType("application/json");
             response.getWriter().write("""
@@ -117,6 +124,7 @@ public class JwtFilter extends OncePerRequestFilter {
 
             // token is valid set security context
             if (jwtService.validateToken(token, userDetails)) {
+                log.debug("Token has been validated");
                 UsernamePasswordAuthenticationToken authToken = 
                     new UsernamePasswordAuthenticationToken(userDetails, null, userDetails.getAuthorities());
                 authToken.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));

@@ -320,4 +320,12 @@ class AdoptionSiteServiceTest extends PfaBase {
         assertThrows(ResourceNotFoundException.class,
             () -> adoptionSiteService.denySite(999999));
     }
+
+    // -------------------------------------------------------------------------
+    // findSubmitionsByJwt
+    // -------------------------------------------------------------------------
+    @Test
+    void findSubmitionsByJwt_WithValidJwt_ShouldOnlyReturnSubmisionsFromThatUser() {
+        
+    }
 }

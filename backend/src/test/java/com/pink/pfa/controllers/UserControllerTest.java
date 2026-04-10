@@ -231,9 +231,7 @@ class UserControllerTest extends PfaBase {
                 .jsonPath("$.user.email").isEqualTo(email);
     }
 
-    @Test
-    void login_WithInvalidPassword_ShouldReturn401() {
-        SeededUser user = getRandUserAndPassByRole(User.Role.ROLE_USER);
+    @Test void login_WithInvalidPassword_ShouldReturn401() { SeededUser user = getRandUserAndPassByRole(User.Role.ROLE_USER);
         String email = user.user().getEmail();
         String pass = "the_wrong_password";
         webTestClient.post().uri("/api/users/login")
@@ -420,5 +418,252 @@ class UserControllerTest extends PfaBase {
                 .header("Authorization", "Bearer " + token)
                 .exchange()
                 .expectStatus().isNotFound();
+    }
+
+    // -------------------------------------------------------------------------
+    // banUser
+    // -------------------------------------------------------------------------
+    @Test
+    void banUser_WithUserToken_ShouldReturn403() {
+        SeededUser user = getRandUserAndPassByRole(User.Role.ROLE_USER);
+        String token = loginAndGetToken(user.user().getEmail(), user.password());
+        webTestClient.patch().uri("/api/users/banUser/" + user.user().getUserId())
+                .header("Authorization", "Bearer " + token)
+                .exchange()
+                .expectStatus().isForbidden();
+
+        User updated = userRepository.findById(user.user().getUserId()).orElseThrow();
+        updated.setIsBanned(false); 
+        userRepository.save(updated);
+    }
+
+    @Test
+    void banUser_WithContributorToken_ShouldReturn403() {
+        SeededUser user = getRandUserAndPassByRole(User.Role.ROLE_USER);
+        SeededUser contributor = getRandUserAndPassByRole(User.Role.ROLE_CONTRIBUTOR);
+        String token = loginAndGetToken(contributor.user().getEmail(), contributor.password());
+        webTestClient.patch().uri("/api/users/banUser/" + user.user().getUserId())
+                .header("Authorization", "Bearer " + token)
+                .exchange()
+                .expectStatus().isForbidden();
+
+        User updated = userRepository.findById(user.user().getUserId()).orElseThrow();
+        updated.setIsBanned(false); 
+        userRepository.save(updated);
+    }
+
+    @Test
+    void banUser_WithAdminToken_AndValidUserId_WhereUserIsUnbanned_ShouldReturn204() {
+        SeededUser user = getRandUserAndPassByRole(User.Role.ROLE_USER);
+        SeededUser admin = getRandUserAndPassByRole(User.Role.ROLE_ADMIN);
+        String token = loginAndGetToken(admin.user().getEmail(), admin.password());
+        webTestClient.patch().uri("/api/users/banUser/" + user.user().getUserId())
+                .header("Authorization", "Bearer " + token)
+                .exchange()
+                .expectStatus().isNoContent();
+
+        User updated = userRepository.findById(user.user().getUserId()).orElseThrow();
+        updated.setIsBanned(false); 
+        userRepository.save(updated);
+    }
+
+    @Test
+    void banUser_WithAdminToken_AndValidUserId_WhereUserIsAlreadyBanned_ShouldReturn409() {
+        SeededUser user = getRandUserAndPassByRole(User.Role.ROLE_USER);
+        user.user().setIsBanned(true); 
+        userRepository.save(user.user());
+
+        SeededUser admin = getRandUserAndPassByRole(User.Role.ROLE_ADMIN);
+        String token = loginAndGetToken(admin.user().getEmail(), admin.password());
+        webTestClient.patch().uri("/api/users/banUser/" + user.user().getUserId())
+                .header("Authorization", "Bearer " + token)
+                .exchange()
+                .expectStatus().isEqualTo(HttpStatus.SC_CONFLICT);
+
+        User updated = userRepository.findById(user.user().getUserId()).orElseThrow();
+        updated.setIsBanned(false); 
+        userRepository.save(updated);
+    }
+
+    @Test
+    void banUser_WithAdminToken_AndInvalidUserId_ShouldReturn404() {
+        SeededUser admin = getRandUserAndPassByRole(User.Role.ROLE_ADMIN);
+        String token = loginAndGetToken(admin.user().getEmail(), admin.password());
+        webTestClient.patch().uri("/api/users/banUser/" + 99999)
+                .header("Authorization", "Bearer " + token)
+                .exchange()
+                .expectStatus().isNotFound();
+    }
+
+    @Test
+    void banUser_WithNoToken_ShouldReturn401() {
+        SeededUser user = getRandUserAndPassByRole(User.Role.ROLE_USER);
+    
+        webTestClient.patch().uri("/api/users/banUser/" + user.user().getUserId())
+                .exchange()
+                .expectStatus().isUnauthorized();
+
+        User updated = userRepository.findById(user.user().getUserId()).orElseThrow();
+        updated.setIsBanned(false); 
+        userRepository.save(updated);
+    }
+    
+    // -------------------------------------------------------------------------
+    // unbanUser
+    // -------------------------------------------------------------------------
+    @Test
+    void unbanUser_WithUserToken_ShouldReturn403() {
+        SeededUser user = getRandUserAndPassByRole(User.Role.ROLE_USER);
+        String token = loginAndGetToken(user.user().getEmail(), user.password());
+        webTestClient.patch().uri("/api/users/unbanUser/" + user.user().getUserId())
+                .header("Authorization", "Bearer " + token)
+                .exchange()
+                .expectStatus().isForbidden();
+
+        User updated = userRepository.findById(user.user().getUserId()).orElseThrow();
+        updated.setIsBanned(false); 
+        userRepository.save(updated);
+    }
+
+    @Test
+    void unbanUser_WithContributorToken_ShouldReturn403() {
+        SeededUser user = getRandUserAndPassByRole(User.Role.ROLE_USER);
+        SeededUser contributor = getRandUserAndPassByRole(User.Role.ROLE_CONTRIBUTOR);
+        String token = loginAndGetToken(contributor.user().getEmail(), contributor.password());
+        webTestClient.patch().uri("/api/users/unbanUser/" + user.user().getUserId())
+                .header("Authorization", "Bearer " + token)
+                .exchange()
+                .expectStatus().isForbidden();
+
+        User updated = userRepository.findById(user.user().getUserId()).orElseThrow();
+        updated.setIsBanned(false); 
+        userRepository.save(updated);
+    }
+
+    @Test
+    void unbanUser_WithAdminToken_AndValidUserId_WhereUserIsBanned_ShouldReturn204() {
+        SeededUser user = getRandUserAndPassByRole(User.Role.ROLE_USER);
+        user.user().setIsBanned(true); 
+        userRepository.save(user.user());
+
+        SeededUser admin = getRandUserAndPassByRole(User.Role.ROLE_ADMIN);
+        String token = loginAndGetToken(admin.user().getEmail(), admin.password());
+        webTestClient.patch().uri("/api/users/unbanUser/" + user.user().getUserId())
+                .header("Authorization", "Bearer " + token)
+                .exchange()
+                .expectStatus().isNoContent();
+
+        User updated = userRepository.findById(user.user().getUserId()).orElseThrow();
+        updated.setIsBanned(false); 
+        userRepository.save(updated);
+    }
+
+    @Test
+    void unbanUser_WithAdminToken_AndValidUserId_WhereUserIsNotBanned_ShouldReturn409() {
+        SeededUser user = getRandUserAndPassByRole(User.Role.ROLE_USER);
+        SeededUser admin = getRandUserAndPassByRole(User.Role.ROLE_ADMIN);
+        String token = loginAndGetToken(admin.user().getEmail(), admin.password());
+        webTestClient.patch().uri("/api/users/unbanUser/" + user.user().getUserId())
+                .header("Authorization", "Bearer " + token)
+                .exchange()
+                .expectStatus().isEqualTo(HttpStatus.SC_CONFLICT);
+
+        User updated = userRepository.findById(user.user().getUserId()).orElseThrow();
+        updated.setIsBanned(false); 
+        userRepository.save(updated);
+    }
+
+    @Test
+    void unbanUser_WithAdminToken_AndInvalidUserId_ShouldReturn404() {
+        SeededUser admin = getRandUserAndPassByRole(User.Role.ROLE_ADMIN);
+        String token = loginAndGetToken(admin.user().getEmail(), admin.password());
+        webTestClient.patch().uri("/api/users/unbanUser/" + 99999)
+                .header("Authorization", "Bearer " + token)
+                .exchange()
+                .expectStatus().isNotFound();
+    }
+
+    @Test 
+    void unbanUser_WithNoToken_ShouldReturn401() {
+        SeededUser user = getRandUserAndPassByRole(User.Role.ROLE_USER);
+        user.user().setIsBanned(true); 
+        userRepository.save(user.user());
+    
+        webTestClient.patch().uri("/api/users/unbanUser/" + user.user().getUserId())
+                .exchange()
+                .expectStatus().isUnauthorized();
+
+        User updated = userRepository.findById(user.user().getUserId()).orElseThrow();
+        updated.setIsBanned(false); 
+        userRepository.save(updated);
+    }
+
+
+    // -------------------------------------------------------------------------
+    // requestContributor
+    // -------------------------------------------------------------------------
+    @Test
+    void requestContributor_WithUserToken_WithUnreqestedStatus_ShouldReturn204() {
+        SeededUser user = getRandUserAndPassByRole(User.Role.ROLE_USER);
+        String token = loginAndGetToken(user.user().getEmail(), user.password());
+
+        webTestClient.patch().uri("/api/users/requestContributor")
+                .header("Authorization", "Bearer " + token)
+                .exchange()
+                .expectStatus().isNoContent();
+
+        user.user().setRequestedContributor(false);
+        userRepository.save(user.user());
+    }
+
+    @Test
+    void requestContributor_WithUserToken_WithReqestedStatus_ShouldReturn409() {
+        SeededUser user = getRandUserAndPassByRole(User.Role.ROLE_USER);
+        user.user().setRequestedContributor(true);
+        userRepository.save(user.user());
+        String token = loginAndGetToken(user.user().getEmail(), user.password());
+
+        webTestClient.patch().uri("/api/users/requestContributor")
+                .header("Authorization", "Bearer " + token)
+                .exchange()
+                .expectStatus().isEqualTo(HttpStatus.SC_CONFLICT);
+
+        user.user().setRequestedContributor(false);
+        userRepository.save(user.user());
+    }
+
+    @Test
+    void requestContributor_WithContributorToken_ShouldReturn_403() {
+        SeededUser contributor = getRandUserAndPassByRole(User.Role.ROLE_CONTRIBUTOR);
+        String token = loginAndGetToken(contributor.user().getEmail(), contributor.password());
+
+        webTestClient.patch().uri("/api/users/requestContributor")
+                .header("Authorization", "Bearer " + token)
+                .exchange()
+                .expectStatus().isForbidden();
+
+        contributor.user().setRequestedContributor(false);
+        userRepository.save(contributor.user());
+    }
+    
+    @Test
+    void requestContributor_WithAdminToken_ShouldReturn403() {
+        SeededUser admin = getRandUserAndPassByRole(User.Role.ROLE_ADMIN);
+        String token = loginAndGetToken(admin.user().getEmail(), admin.password());
+
+        webTestClient.patch().uri("/api/users/requestContributor")
+                .header("Authorization", "Bearer " + token)
+                .exchange()
+                .expectStatus().isForbidden();
+
+        admin.user().setRequestedContributor(false);
+        userRepository.save(admin.user());
+    }
+
+    @Test
+    void requestcontributor_WithNoToken_ShouldReturn401() {
+        webTestClient.patch().uri("/api/users/requestContributor")
+                .exchange()
+                .expectStatus().isUnauthorized();
     }
 }

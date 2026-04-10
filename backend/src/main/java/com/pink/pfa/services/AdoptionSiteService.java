@@ -68,6 +68,10 @@ public class AdoptionSiteService {
             .toList();
     }
 
+    public List<AdoptionSiteDTO> findSubmitionsByJwt() {
+        return null;
+    }
+
 
     public List<AdoptionSiteDTO> findApproved() {
         return adoptionSiteRepository.findByStatus('A')

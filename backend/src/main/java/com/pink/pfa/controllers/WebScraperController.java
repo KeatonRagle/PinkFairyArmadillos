@@ -4,6 +4,7 @@ import java.util.List;
 
 import org.springframework.http.ResponseEntity;
 import org.springframework.scheduling.annotation.EnableAsync;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -45,6 +46,7 @@ public class WebScraperController {
      * @param id the unique identifier of the pet
      * @return a map containing the matched {@code Pet} and a {@code Timestamp} string
      */
+    @PreAuthorize("hasRole('ADMIN')")
     @GetMapping("/scrape")
     public ResponseEntity<Void> scrapeForPets () {
         try {

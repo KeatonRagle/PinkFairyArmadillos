@@ -3,17 +3,24 @@ package com.pink.pfa.services;
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import org.junit.jupiter.api.Test;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
+import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
+import org.springframework.security.core.context.SecurityContext;
+import org.springframework.security.core.context.SecurityContextHolder;
 
 import com.pink.pfa.context.PfaBase;
 import com.pink.pfa.controllers.requests.UserRequest;
 import com.pink.pfa.models.User;
 import com.pink.pfa.models.datatransfer.UserDTO;
+import com.pink.pfa.models.details.UserPrincipal;
 
 /**
  * Authentication Security Tests for {@link UserService}.
@@ -28,6 +35,17 @@ import com.pink.pfa.models.datatransfer.UserDTO;
  */
 class UserServiceTest extends PfaBase {
 
+    private void mockSecurityContext(User user) {
+        UserPrincipal principal = new UserPrincipal(user);
+
+        Authentication auth = mock(Authentication.class);
+        when(auth.getPrincipal()).thenReturn(principal);
+
+        SecurityContext context = mock(SecurityContext.class);
+        when(context.getAuthentication()).thenReturn(auth);
+
+        SecurityContextHolder.setContext(context);
+    }
 
     // -------------------------------------------------------------------------
     // Authentication Security Tests
@@ -128,10 +146,7 @@ class UserServiceTest extends PfaBase {
 
         
     /**
-     * Verifies that a user can be fetched by ID and the returned DTO matches
-     * the expected email.
-     */
-    @Test
+     * Verifies that a user can be fetched by ID and the returned DTO matches the expected email. */ @Test
     void findById_WithValidId_ShouldReturnCorrectUser() {
         User austin = userRepository.findByEmail("austin@pfa.com").orElseThrow();
         UserDTO result = userService.findById(austin.getUserId());
@@ -202,5 +217,155 @@ class UserServiceTest extends PfaBase {
 
         User stored = userRepository.findByEmail("normtest@pfa.com").orElseThrow();
         assertEquals("normtest@pfa.com", stored.getEmail());
+    }
+    
+    // -------------------------------------------------------------------------
+    // findByJWT
+    // -------------------------------------------------------------------------
+
+    @Test
+    void findByJWT_returnsUserDTO_whenUserExists() {
+        SeededUser user = getRandUserAndPassByRole(User.Role.ROLE_USER);
+        mockSecurityContext(user.user());
+
+        // set any other fields needed for UserDTO::fromEntity
+        UserDTO result = userService.findByJWT();
+
+        assertNotNull(result);
+        assertEquals(user.user().getEmail(), result.email());
+        SecurityContextHolder.clearContext();
+    }
+
+    // -------------------------------------------------------------------------
+    // banUser 
+    // -------------------------------------------------------------------------
+    @Test
+    void banUser_WithValidUserId_ShouldBanUser() {
+        SeededUser requester = getRandUserAndPassByRole(User.Role.ROLE_ADMIN);
+        SeededUser target = getRandUserAndPassByRole(User.Role.ROLE_USER);
+
+        mockSecurityContext(requester.user());
+        userService.banUser(target.user().getUserId());
+        
+        User updated = userRepository.findById(target.user().getUserId()).orElseThrow();
+        assertTrue(updated.getIsBanned());
+        userService.unbanUser(updated.getUserId());
+        SecurityContextHolder.clearContext();
+    }
+
+    @Test 
+    void banUser_WithInvalidUserId_ShouldThrowException() {
+        SeededUser user = getRandUserAndPassByRole(User.Role.ROLE_USER);
+        mockSecurityContext(user.user());
+        assertThrows(Exception.class, () -> userService.banUser(999999));
+        SecurityContextHolder.clearContext();
+    }
+
+    // -------------------------------------------------------------------------
+    // unbanUser 
+    // -------------------------------------------------------------------------
+    @Test
+    void unbanUser_WithValidUserId_ShouldUnbanUser() {
+        SeededUser requester = getRandUserAndPassByRole(User.Role.ROLE_ADMIN);
+        SeededUser target = getRandUserAndPassByRole(User.Role.ROLE_USER);
+        mockSecurityContext(requester.user());
+
+        target.user().setIsBanned(true);
+        userRepository.save(target.user());
+        User updated = userRepository.findById(target.user().getUserId()).orElseThrow();
+        assertTrue(updated.getIsBanned());
+
+        userService.unbanUser(updated.getUserId());
+        updated = userRepository.findById(updated.getUserId()).orElseThrow();
+        assertFalse(updated.getIsBanned());
+        SecurityContextHolder.clearContext();
+    }
+
+    @Test 
+    void unbanUser_WithInvalidUserId_ShouldThrowException() {
+        SeededUser user = getRandUserAndPassByRole(User.Role.ROLE_USER);
+        mockSecurityContext(user.user());
+        assertThrows(Exception.class, () -> userService.unbanUser(999999));
+        SecurityContextHolder.clearContext();
+    }
+
+    // -------------------------------------------------------------------------
+    // requestContributor 
+    // -------------------------------------------------------------------------
+    @Test
+    void requestContributor_WithUnrequestedStatus_ShouldRequestContributorStatus() {
+        SeededUser user = getRandUserAndPassByRole(User.Role.ROLE_USER);
+        mockSecurityContext(user.user());
+        
+        assertFalse(user.user().getRequestedContributor());
+        userService.requestContributor();
+
+        User updated = userRepository.findById(user.user().getUserId()).orElseThrow();
+        assertTrue(updated.getRequestedContributor());
+
+        updated.setRequestedContributor(false);
+        userRepository.save(updated);
+
+        SecurityContextHolder.clearContext();
+    }
+
+
+    @Test
+    void requestContributor_WithReqestedStatus_ShouldThrowExecption() {
+        SeededUser user = getRandUserAndPassByRole(User.Role.ROLE_USER);
+        mockSecurityContext(user.user());
+
+        user.user().setRequestedContributor(true);
+        userRepository.save(user.user());
+        User updated = userRepository.findById(user.user().getUserId()).orElseThrow();
+        assertTrue(user.user().getRequestedContributor());
+
+        assertThrows(Exception.class, () -> userService.requestContributor());
+        assertTrue(updated.getRequestedContributor());
+
+        updated.setRequestedContributor(false);
+        userRepository.save(updated);
+        SecurityContextHolder.clearContext();
+    }
+
+    @Test
+    void requestContributor_WithNoContext_ShouldThrowException() {
+        assertThrows(Exception.class, () -> userService.requestContributor());
+    }
+
+    // -------------------------------------------------------------------------
+    // findAllBanned 
+    // -------------------------------------------------------------------------
+    @Test
+    void findAllBanned_ShouldOnlyReturnBannedUsers() {
+        SeededUser target = getRandUserAndPassByRole(User.Role.ROLE_USER);
+        target.user().setIsBanned(true);
+        userRepository.save(target.user());
+
+        List<UserDTO> users = userService.findAllBanned();
+
+        assertFalse(users.stream().anyMatch(u -> u.isBanned() == false),
+            "No returned users should be unbanned");
+
+        target.user().setIsBanned(false);
+        userRepository.save(target.user());
+    }
+
+    // -------------------------------------------------------------------------
+    // findAllBanned 
+    // -------------------------------------------------------------------------
+    @Test
+    void findAllUnbanned_ShouldOnlyReturnUnbannedUsers() {
+        SeededUser target = getRandUserAndPassByRole(User.Role.ROLE_USER);
+        target.user().setIsBanned(true);
+        userRepository.save(target.user());
+
+        List<UserDTO> users = userService.findAllUnBanned();
+
+        assertFalse(users.stream().anyMatch(u -> u.isBanned() == true),
+            "No returned users should be banned");
+
+        target.user().setIsBanned(false);
+        userRepository.save(target.user());
     }
 }

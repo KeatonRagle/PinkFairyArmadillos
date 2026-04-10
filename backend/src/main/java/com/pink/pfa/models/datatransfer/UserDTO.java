@@ -28,7 +28,9 @@ public record UserDTO(
         Integer id,
         String name,
         String email,
-        User.Role role
+        User.Role role,
+        Boolean isBanned,
+        Boolean requestedContributor
 ) {
 
 
@@ -46,7 +48,9 @@ public record UserDTO(
             user.getUserId(),
             user.getName(),
             user.getEmail(),
-            user.getRole()
+            user.getRole(),
+            user.getIsBanned(),
+            user.getRequestedContributor()
         );
     }
 }
