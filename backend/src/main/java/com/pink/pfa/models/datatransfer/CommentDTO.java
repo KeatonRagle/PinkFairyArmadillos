@@ -15,6 +15,7 @@ import com.pink.pfa.models.Posts;
 public record CommentDTO(
     Posts post,
     Integer commentID,
+    Integer userID,
     String username,
     LocalDateTime date,
     String comment
@@ -29,6 +30,7 @@ public record CommentDTO(
         return new CommentDTO(
             comment.getPost(),
             comment.getCommentId(),
+            comment.getUser().getUserId(),
             comment.getUser().getName(),
             comment.getCtDate(),
             comment.getCtComment()
