@@ -112,7 +112,6 @@ public class AdoptionSiteController {
     @PreAuthorize("hasRole('ADMIN')")
     @PatchMapping("/approveSite/{id}")
     public ResponseEntity<Void> approveSite(@PathVariable int id){
-        System.out.println("approve site endpoint hit");
         try {
             adoptionSiteService.approveSite(id);
             return ResponseEntity.noContent().build();
@@ -127,7 +126,6 @@ public class AdoptionSiteController {
     @PreAuthorize("hasRole('ADMIN')")
     @PatchMapping("/denySite/{id}")
     public ResponseEntity<Void> denySite(@PathVariable int id){
-        System.out.println("deny site endpoint hit");
         try {
             adoptionSiteService.denySite(id);
             return ResponseEntity.noContent().build();
