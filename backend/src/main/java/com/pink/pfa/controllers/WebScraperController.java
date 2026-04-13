@@ -3,7 +3,7 @@ package com.pink.pfa.controllers;
 import java.util.List;
 
 import org.springframework.http.ResponseEntity;
-import org.springframework.scheduling.annotation.EnableAsync;
+import org.springframework.scheduling.annotation.Async;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -17,7 +17,6 @@ import com.pink.pfa.services.DatabaseBackupService;
 import com.pink.pfa.services.PetService;
 import com.pink.pfa.services.WebScraperService;
 
-@EnableAsync
 @EnableMethodSecurity
 @RestController
 @RequestMapping("/api/webScraper")
@@ -46,6 +45,7 @@ public class WebScraperController {
      * @param id the unique identifier of the pet
      * @return a map containing the matched {@code Pet} and a {@code Timestamp} string
      */
+    @Async
     @PreAuthorize("hasRole('ADMIN')")
     @GetMapping("/scrape")
     public ResponseEntity<Void> scrapeForPets () {

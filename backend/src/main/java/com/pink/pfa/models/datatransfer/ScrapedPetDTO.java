@@ -1,5 +1,6 @@
 package com.pink.pfa.models.datatransfer;
 
+import java.time.LocalDate;
 import java.util.Map;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
@@ -59,6 +60,7 @@ public record ScrapedPetDTO(
         pet.setLocation("Unknown");
         pet.setPetStatus("Available");
         pet.setSize(size != null ? size : "Unknown");
+        pet.setCreatedAt(LocalDate.now());
         return pet;
     }
 }
