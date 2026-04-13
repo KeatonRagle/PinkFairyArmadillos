@@ -138,6 +138,7 @@ public class SecurityConfig {
             .addFilterBefore(jwtFilter, UsernamePasswordAuthenticationFilter.class)
             .authorizeHttpRequests(request -> request
                 //.anyRequest().permitAll() // ONLY UNCOMMENT FOR DEBUG
+                // REAL MATCHER BEHAVIOR
                 .requestMatchers(
                     "/api/users/login",
                     "/api/users/register",

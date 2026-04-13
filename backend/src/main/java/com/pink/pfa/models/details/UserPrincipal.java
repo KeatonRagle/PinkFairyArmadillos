@@ -87,7 +87,7 @@ public class UserPrincipal implements UserDetails {
 
     /** @return true if the account is not locked */
     @Override
-    public boolean isAccountNonLocked() { return true; }
+    public boolean isAccountNonLocked() { return !user.getIsBanned(); }
 
 
     /** @return true if the credentials are not expired */

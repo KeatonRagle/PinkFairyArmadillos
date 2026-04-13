@@ -2,29 +2,15 @@ import { useEffect, useMemo, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import HomeHeader from '../components/header'
 import { useAuth } from '../auth/AuthContext'
+import { requestContributor, getCurrentUser } from '../fetch/api'
 import '../styling/contributorapp.css'
-
-const CONTRIBUTOR_APPLICATIONS_KEY = 'pfa_contributor_applications'
-
-function readContributorApplications() {
-	try {
-		const rawValue = localStorage.getItem(CONTRIBUTOR_APPLICATIONS_KEY)
-		const parsedValue = rawValue ? JSON.parse(rawValue) : {}
-		return parsedValue && typeof parsedValue === 'object' ? parsedValue : {}
-	} catch {
-		return {}
-	}
-}
-
-function writeContributorApplications(applications) {
-	localStorage.setItem(CONTRIBUTOR_APPLICATIONS_KEY, JSON.stringify(applications))
-}
 
 export default function ContributorApp() {
 	const navigate = useNavigate()
 	const { username, role } = useAuth()
-	const [reason, setReason] = useState('')
-	const [applicationRecord, setApplicationRecord] = useState(null)
+	const [submitted, setSubmitted] = useState(false)
+	const [loading, setLoading] = useState(true)
+	const [error, setError] = useState(null)
 
 	useEffect(() => {
 		document.body.classList.add('contributorapp-body')
@@ -32,70 +18,53 @@ export default function ContributorApp() {
 	}, [])
 
 	useEffect(() => {
-		if (!username) {
-			navigate('/login')
-			return
-		}
+		if (!username) { navigate('/login'); return }
+		if (role !== 'ROLE_USER') { navigate('/profile'); return }
 
-		if (role !== 'ROLE_USER') {
-			navigate('/profile')
-			return
-		}
-
-		const applications = readContributorApplications()
-		const existingRecord = applications[username] ?? null
-		setApplicationRecord(existingRecord)
-		if (existingRecord?.reason) {
-			setReason(existingRecord.reason)
-		}
+		getCurrentUser()
+			.then((user) => {
+				if (user.requestedContributor) setSubmitted(true)
+			})
+			.catch(() => setError('Failed to load user data.'))
+			.finally(() => setLoading(false))
 	}, [navigate, role, username])
 
-	const statusCopy = useMemo(() => {
-		if (!applicationRecord) {
-			return {
-				label: 'Not Submitted',
-				description: 'You have not requested contributor access yet.',
-				className: 'is-idle',
-			}
-		}
-
-		if (applicationRecord.status === 'DENIED') {
-			return {
-				label: 'Denied',
-				description: 'Your last contributor application was denied.',
-				className: 'is-denied',
-			}
-		}
-
-		return {
-			label: 'Pending',
-			description: 'Your contributor application is pending review.',
-			className: 'is-pending',
-		}
-	}, [applicationRecord])
-
-	const handleSubmit = (event) => {
+	const handleSubmit = async (event) => {
 		event.preventDefault()
-		if (!username || applicationRecord) {
-			return
+		setLoading(true)
+		setError(null)
+		try {
+			await requestContributor()
+			setSubmitted(true)
+		} catch (e) {
+			if (e.status === 409) {
+				setError('You have already submitted a contributor application.')
+			} else {
+				setError('Something went wrong. Please try again.')
+			}
+		} finally {
+			setLoading(false)
 		}
-
-		const nextRecord = {
-			status: 'PENDING',
-			reason: reason.trim(),
-			submittedAt: new Date().toISOString(),
-		}
-
-		const applications = readContributorApplications()
-		applications[username] = nextRecord
-		writeContributorApplications(applications)
-		setApplicationRecord(nextRecord)
 	}
+
+	const statusCopy = useMemo(() => {
+		if (submitted) {
+			return {
+				label: 'Pending',
+				description: 'Your contributor application is pending review.',
+				className: 'is-pending',
+			}
+		}
+		return {
+			label: 'Not Submitted',
+			description: 'You have not requested contributor access yet.',
+			className: 'is-idle',
+		}
+	}, [submitted])
 
 	return (
 		<div className="contributorapp-page">
 			<HomeHeader />
-
 			<main className="contributorapp-main">
 				<section className="contributorapp-card">
 					<div className="contributorapp-heading">
@@ -111,37 +80,29 @@ export default function ContributorApp() {
 						</section>
 					</div>
 
-					<form className="contributorapp-form" onSubmit={handleSubmit}>
-						{/*
-						<div className="contributorapp-form-header">
-							<h2>Request Contributor Access</h2>
-						</div>
-
-						<label className="contributorapp-field">
-							<textarea
-								value={reason}
-								onChange={(event) => setReason(event.target.value)}
-								placeholder="Reason for contributor application"
-								rows={7}
-								disabled={Boolean(applicationRecord)}
-							/>
-						</label>
-*/}
-						<div className="contributorapp-actions">
-							{!applicationRecord ? (
-								<button type="submit" className="contributorapp-button">
-									Submit Application
-								</button>
-							) : null}
-						</div>
-					</form>
+					{loading ? null : (
+						<form className="contributorapp-form" onSubmit={handleSubmit}>
+							{error ? <p className="contributorapp-error">{error}</p> : null}
+							<div className="contributorapp-actions">
+								{!submitted ? (
+									<button type="submit" className="contributorapp-button" disabled={loading}>
+										Submit Application
+									</button>
+								) : null}
+							</div>
+						</form>
+					)}
 
 					<section className="contributorapp-panel contributorapp-status-panel">
 						<h2>Application Status</h2>
-						<div className={`contributorapp-status ${statusCopy.className}`}>
-							<span className="contributorapp-status-label">{statusCopy.label}</span>
-							<p>{statusCopy.description}</p>
-						</div>
+						{loading ? (
+							<p>Loading...</p>
+						) : (
+							<div className={`contributorapp-status ${statusCopy.className}`}>
+								<span className="contributorapp-status-label">{statusCopy.label}</span>
+								<p>{statusCopy.description}</p>
+							</div>
+						)}
 					</section>
 				</section>
 			</main>

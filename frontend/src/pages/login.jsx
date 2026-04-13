@@ -39,8 +39,9 @@ export default function Login() {
       const userObj = data.user
       const displayName = userObj.name ?? userObj.email;
       const role = userObj.role;
+      const id = userObj.id;
 
-      setAuth(token, displayName, role);
+      setAuth(token, displayName, role, id);
 
       navigate('/home')
     } catch (err) {

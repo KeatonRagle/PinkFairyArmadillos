@@ -5,6 +5,7 @@ import java.util.List;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -12,10 +13,13 @@ import org.springframework.web.bind.annotation.RequestMapping;
 
 import com.pink.pfa.controllers.requests.UpdateUserNameRequest;
 import com.pink.pfa.controllers.requests.UserRequest;
+import com.pink.pfa.exceptions.ActionNotAllowedException;
 import com.pink.pfa.exceptions.ResourceNotFoundException;
 import com.pink.pfa.exceptions.UserAlreadyExistsException;
+import com.pink.pfa.exceptions.UserAlreadyRequestedContributor;
 import com.pink.pfa.models.User;
 import com.pink.pfa.models.datatransfer.UserDTO;
+import com.pink.pfa.models.details.UserPrincipal;
 import com.pink.pfa.repos.UserRepository;
 
 import jakarta.servlet.http.HttpServletRequest;
@@ -81,6 +85,26 @@ public class UserService {
                 .toList();
     }
 
+    public List<UserDTO> findAllBanned() {
+        return userRepository.findByIsBannedTrue()
+            .stream()
+            .map(UserDTO::fromEntity)
+            .toList();
+    }
+
+    public List<UserDTO> findAllUnBanned() {
+        return userRepository.findByIsBannedFalse()
+            .stream()
+            .map(UserDTO::fromEntity)
+            .toList();
+    }
+
+    public List<UserDTO> findAllRequestedContributor() {
+        return userRepository.findByRequestedContributor()
+            .stream()
+            .map(UserDTO::fromEntity)
+            .toList();
+    }
 
     /**
      * Fetches a single user by ID and returns it as a {@link UserDTO}.
@@ -124,17 +148,13 @@ public class UserService {
      * @return the {@link UserDTO} corresponding to the authenticated user
      * @throws UsernameNotFoundException if no user is found for the extracted email
      */
-    public UserDTO findByJWT(HttpServletRequest request) {
-        String authHeader = request.getHeader("Authorization");
-        String email = jwtService.extractEmailFromHeader(authHeader);
+    public UserDTO findByJWT() {
+        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+        if (auth == null) throw new ResourceNotFoundException("User", "Token either unreadable or not provided");
+        String email = ((UserPrincipal) auth.getPrincipal()).getUsername();
         return userRepository.findByEmail(email)
                 .map(UserDTO::fromEntity)
-
-                // if this exception gets thrown then 3 things could have happened 
-                // 1. the packet degraded during transit
-                // 2. the jwt sent is expired
-                // 3. (more concerning) someone is generating their own JWTs and sending them to us
-                .orElseThrow(() -> new UsernameNotFoundException("Failed to find user by JWT"));
+                .orElseThrow(() -> new ResourceNotFoundException("User", email));
     }
 
 
@@ -162,6 +182,7 @@ public class UserService {
         if (userRepository.existsByEmail(request.email())) {
             throw new UserAlreadyExistsException(request.email());
         }
+        
         User user = new User();
         user.setName(request.name());
         user.setEmail(request.email().trim().toLowerCase());
@@ -217,7 +238,51 @@ public class UserService {
     public void promoteToContributor(int id) {
         User user = userRepository.findById(id)
             .orElseThrow(() -> new ResourceNotFoundException("User", id));
-
+        
+        user.setRequestedContributor(false);
         user.setRole(User.Role.ROLE_CONTRIBUTOR);
+    }
+
+    @Transactional
+    public void banUser(int id) {
+        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+        if (auth == null) throw new ResourceNotFoundException("User", "Token either unreadable or not provided");
+        String email = ((UserPrincipal) auth.getPrincipal()).getUsername();
+
+        User user = userRepository.findById(id)
+            .orElseThrow(() -> new ResourceNotFoundException("User", id));
+        User requester = userRepository.findByEmail(email)
+                .orElseThrow(() -> new ResourceNotFoundException("User", email));
+
+        if (user.getUserId() == requester.getUserId()) throw new ActionNotAllowedException("ban themselves", email);
+        if (user.getIsBanned()) throw new ActionNotAllowedException("ban a user that was already banned", email);
+        else user.setIsBanned(true);
+    }
+
+    @Transactional
+    public void unbanUser(int id) {
+        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+        if (auth == null) throw new ResourceNotFoundException("User", "Token either unreadable or not provided");
+        String email = ((UserPrincipal) auth.getPrincipal()).getUsername();
+
+        User user = userRepository.findById(id)
+            .orElseThrow(() -> new ResourceNotFoundException("User", id));
+        User requester = userRepository.findByEmail(email)
+                .orElseThrow(() -> new ResourceNotFoundException("User", email));
+
+        if (user.getUserId() == requester.getUserId()) throw new ActionNotAllowedException("unban themselves", email);
+        if (!user.getIsBanned()) throw new ActionNotAllowedException("unban a user that was not banned", email);
+        else user.setIsBanned(false);
+    }
+
+    @Transactional
+    public void requestContributor() {
+        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+        if (auth == null) throw new ResourceNotFoundException("User", "Token either unreadable or not provided");
+        String email = ((UserPrincipal) auth.getPrincipal()).getUsername();
+        User user = userRepository.findByEmail(email)
+                .orElseThrow(() -> new ResourceNotFoundException("User", email));
+        if (user.getRequestedContributor()) throw new UserAlreadyRequestedContributor(email);
+        else user.setRequestedContributor(true);
     }
 }

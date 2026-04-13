@@ -1,10 +1,15 @@
 package com.pink.pfa.models;
 
+import java.time.LocalDate;
+
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
+import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
 import lombok.Data;
 
 
@@ -18,7 +23,7 @@ import lombok.Data;
  * Responsibilities:
  * <ul>
  *   <li>Store site information (name, contact information, etc.).</li>
- *   <li>Persist optional metadata such as the site's location.</li>
+ *   <li>Persist optional metadata such as the site's url.</li>
  * </ul>
  */
 @Data
@@ -33,6 +38,12 @@ public class AdoptionSite {
 	private Integer siteId;
 	
 	
+	/** Foreign key identifier for the user. */
+	@ManyToOne(fetch = FetchType.LAZY)
+	@JoinColumn(name = "user_id", nullable = false)
+	private User user;
+	
+	
 	/** Site's display name (required). */
 	@Column(name = "name", nullable = false)
 	private String name;
@@ -42,22 +53,31 @@ public class AdoptionSite {
 	@Column(name = "phone", nullable = true)
 	private String phone;
 	
+	
 	/** Site's listed email. */
 	@Column(name = "email", nullable = true)
 	private String email;
+	
 	
 	/** Site's user-determined rating. */
 	@Column(name = "rating", nullable = true)
 	private Double rating;
 	
-	/** site url. */
+	
+	/** Site's url. */
 	@Column(name = "url", nullable = false)
     private String url;
 
-	/** approval status. */
+
+	/** Site's approval status. */
 	@Column(name = "status", nullable = false)
     private char status = 'P';
+
 	
+	/** Site's submission date. */
+	@Column(name = "submitted_at", nullable = false)
+	private LocalDate submittedAt;
+
 	
 	/** Default constructor required by JPA. */
     public AdoptionSite() {}
@@ -67,15 +87,22 @@ public class AdoptionSite {
      * Constructs a fully initialized AdoptionSite entity.
      *
      * @param name site's display name
-     * @param contactInfo site's contact info
+     * @param phone site's phone number
+	 * @param email site's email address
      * @param rating user-determined rating
-     * @param location optional location metadata
+     * @param url optional site metadata
+	 * @param status site's approval status
+	 * @param submittedAt site's submission date
      */
-	public AdoptionSite(String name, String phone, String email, double rating, String url) {
+	public AdoptionSite(String name, String phone, String email,
+		double rating, String url, char status, LocalDate submittedAt
+	) {
 		this.name = name;
 		this.phone = phone;
         this.email = email;
 		this.rating = rating;
 		this.url = url;
+		this.status = status;
+		this.submittedAt = submittedAt;
 	}
 }

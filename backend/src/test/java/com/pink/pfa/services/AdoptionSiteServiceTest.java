@@ -1,22 +1,24 @@
 package com.pink.pfa.services;
 
+import java.time.LocalDate;
+import java.util.List;
+
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
-
-import java.util.List;
-
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.springframework.security.core.context.SecurityContextHolder;
 
 import com.pink.pfa.context.PfaBase;
 import com.pink.pfa.controllers.requests.AdoptionSiteRequest;
 import com.pink.pfa.exceptions.ResourceNotFoundException;
 import com.pink.pfa.exceptions.SiteAlreadyExistsException;
 import com.pink.pfa.models.AdoptionSite;
+import com.pink.pfa.models.User;
 import com.pink.pfa.models.datatransfer.AdoptionSiteDTO;
 
 /**
@@ -38,6 +40,8 @@ class AdoptionSiteServiceTest extends PfaBase {
         testSite.setEmail("contact@testshelter.org");
         testSite.setPhone("555-9999");
         testSite.setStatus('P');
+        testSite.setSubmittedAt(LocalDate.now());
+        testSite.setUser(getRandUserAndPassByRole(User.Role.ROLE_USER).user());
         testSite = adoptionSiteRepository.saveAndFlush(testSite);
     }
 
@@ -179,6 +183,8 @@ class AdoptionSiteServiceTest extends PfaBase {
      */
     @Test
     void submitNewSite_ShouldSaveAndReturnDTO_WhenUrlIsNew() {
+        SeededUser contributor = getRandUserAndPassByRole(User.Role.ROLE_CONTRIBUTOR);
+        mockSecurityContext(contributor.user());
         AdoptionSiteRequest request = new AdoptionSiteRequest(
             "https://brand-new-shelter-" + System.nanoTime() + ".org",
             "New Shelter",
@@ -192,6 +198,7 @@ class AdoptionSiteServiceTest extends PfaBase {
         assertNotNull(result);
         assertEquals(request.url(), result.url());
         assertEquals(request.name(), result.name());
+        SecurityContextHolder.clearContext();
     }
 
     /**
@@ -200,6 +207,8 @@ class AdoptionSiteServiceTest extends PfaBase {
      */
     @Test
     void submitNewSite_ShouldThrowSiteAlreadyExistsException_WhenUrlIsDuplicate() {
+        SeededUser contributor = getRandUserAndPassByRole(User.Role.ROLE_CONTRIBUTOR);
+        mockSecurityContext(contributor.user());
         AdoptionSiteRequest duplicate = new AdoptionSiteRequest(
             testSite.getUrl(),
             "Duplicate Shelter",
@@ -217,6 +226,7 @@ class AdoptionSiteServiceTest extends PfaBase {
             .count();
 
         assertEquals(1, count, "Should be exactly one site with this URL");
+        SecurityContextHolder.clearContext();
     }
 
 
@@ -229,6 +239,8 @@ class AdoptionSiteServiceTest extends PfaBase {
      * */
     @Test
     void editSite_ShouldPersistChanges() {
+        SeededUser contributor = getRandUserAndPassByRole(User.Role.ROLE_CONTRIBUTOR);
+        mockSecurityContext(contributor.user());
         AdoptionSite old = adoptionSiteRepository.findById(testSite.getSiteId()).orElseThrow();
 
         AdoptionSiteRequest request = new AdoptionSiteRequest(
@@ -246,6 +258,7 @@ class AdoptionSiteServiceTest extends PfaBase {
         assertNotEquals(old.getName(), updated.getName());
         assertNotEquals(old.getEmail(), updated.getEmail());
         assertNotEquals(old.getPhone(), updated.getPhone());
+        SecurityContextHolder.clearContext();
     }
 
 
@@ -254,6 +267,8 @@ class AdoptionSiteServiceTest extends PfaBase {
      */
     @Test
     void editSite_ShouldThrowResourceNotFoundException_WhenIdDoesNotExist() {
+        SeededUser contributor = getRandUserAndPassByRole(User.Role.ROLE_CONTRIBUTOR);
+        mockSecurityContext(contributor.user());
         AdoptionSiteRequest request = new AdoptionSiteRequest(
             "https://edited-shelter-" + System.nanoTime() + ".org",
             "Edited Shelter",
@@ -263,6 +278,7 @@ class AdoptionSiteServiceTest extends PfaBase {
         );
         assertThrows(ResourceNotFoundException.class,
             () -> adoptionSiteService.editSite(request, 999999));
+        SecurityContextHolder.clearContext();
     }
 
 
@@ -312,5 +328,13 @@ class AdoptionSiteServiceTest extends PfaBase {
     void denySite_ShouldThrowResourceNotFoundException_WhenIdDoesNotExist() {
         assertThrows(ResourceNotFoundException.class,
             () -> adoptionSiteService.denySite(999999));
+    }
+
+    // -------------------------------------------------------------------------
+    // findSubmitionsByJwt
+    // -------------------------------------------------------------------------
+    @Test
+    void findSubmitionsByJwt_WithValidJwt_ShouldOnlyReturnSubmisionsFromThatUser() {
+        
     }
 }

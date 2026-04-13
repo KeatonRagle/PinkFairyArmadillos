@@ -1,12 +1,10 @@
 package com.pink.pfa.security;
 
 import static org.junit.jupiter.api.Assertions.assertTrue;
-
 import org.junit.jupiter.api.Test;
 import org.springframework.test.web.reactive.server.EntityExchangeResult;
 
 import com.pink.pfa.context.PfaBase;
-
 import com.pink.pfa.models.User;
 
 public class ApiSecurityTest extends PfaBase {
