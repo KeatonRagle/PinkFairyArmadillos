@@ -8,7 +8,7 @@ body.home-body {
 
 .home-page {
   position: relative;
-  min-height: 250vh;
+  min-height: 320vh;
   width: 100vw;
   padding: 0;
   margin: 0;
@@ -89,106 +89,43 @@ body.home-body {
   box-shadow: 0 0 7px rgba(0, 0, 0, 0.5);
 }
 
-.ButtonRowHome {
-  position: absolute;
-  top: 96vh;
-  left: 50%;
-  transform: translateX(-50%);
-  z-index: 10;
-  
+/* About Section Styles */
+.about-section {
+  position: relative;
+  margin-top: 240vh;
+  padding: 80px 40px;
   display: flex;
-  gap: 100px;
   justify-content: center;
-  align-items: center;
+  align-items: flex-start;
+  z-index: 5;
 }
 
-.ThreeButtonsHome {
-  width: 320px;
-  height: 400px;
-  background-color: #F8F8F8;
-  color: #b44b25;
-  border: none;
-  padding: 17px 30px 13px 30px;
-  font-size: 30px;
+.about-box {
+  background-color: #ffffff;
+  border-radius: 15px;
+  padding: 40px;
+  width: 100%;
+  max-width: 1400px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+}
+
+.about-box h2 {
+  font-size: 28px;
   font-family: 'Hind Kochi', sans-serif;
-  border-radius: 25px;
-  cursor: pointer;
-  box-shadow: 0 0 7px rgba(0, 0, 0, 0.5);
-  display: flex;
-  align-items:baseline;
-  justify-content: center;
-}
-
-.newest-arrivals-button {
-  display: flex;
-  flex-direction: column;
-  align-items: flex-start;
-  justify-content: flex-start;
-  text-align: left;
-  gap: 40px;
-  padding-top: 28px;
-}
-
-.newest-arrivals-title {
+  margin: 0 0 20px 0;
   color: #b44b25;
-  font-size: 30px;
-  line-height: 1.1;
+  font-weight: 600;
 }
 
-.newest-arrivals-list {
-  margin: 0;
-  padding-left: 20px;
-  color: #2e2e2e;
-  font-size: 24px;
-  line-height: 2;
-}
-
-.discussion-board-button {
-  display: flex;
-  flex-direction: column;
-  align-items: flex-start;
-  justify-content: flex-start;
-  text-align: left;
-  gap: 40px;
-  padding-top: 28px;
-}
-
-.discussion-board-title {
+.about-box p {
+  font-family: 'Hind Kochi', sans-serif;
+  font-size: 16px;
+  line-height: 1.6;
   color: #b44b25;
-  font-size: 30px;
-  line-height: 1.1;
-}
-
-.discussion-board-list {
   margin: 0;
-  padding-left: 20px;
-  color: #2e2e2e;
-  font-size: 24px;
-  line-height: 2;
 }
 
-.shelter-info-button {
-  display: flex;
-  flex-direction: column;
-  align-items: flex-start;
-  justify-content: flex-start;
-  text-align: left;
-  gap: 40px;
-  padding-top: 28px;
-}
-
-.shelter-info-title {
-  color: #b44b25;
-  font-size: 30px;
-  line-height: 1.1;
-}
-
-.shelter-info-list {
-  margin: 0;
-  padding-left: 20px;
-  color: #2e2e2e;
-  font-size: 24px;
-  line-height: 2;
-  font-weight: 100;
+.about-box p + h2 {
+  margin-top: 32px;
 }
 
