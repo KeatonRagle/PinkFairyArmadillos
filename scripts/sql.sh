@@ -5,6 +5,11 @@ SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 REPO_ROOT="$(cd "$SCRIPT_DIR/.." && pwd)"
 ENV_FILE="$REPO_ROOT/.env"
 
+docker compose version >/dev/null 2>&1 || {
+  echo "Docker Compose v2 required (docker compose)"
+  exit 1
+}
+
 if [ -f "$ENV_FILE" ]; then
     export $(grep -v '^#' "$ENV_FILE" | xargs)
 else
@@ -14,14 +19,6 @@ fi
 
 if [ -z "$MYSQL_ROOT_PASSWORD" ]; then
     echo "Error: MYSQL_ROOT_PASSWORD is not set in .env"
-    exit 1
-fi
-
-# Check if expect is installed
-if ! command -v expect &> /dev/null; then
-    echo "Error: 'expect' is not installed."
-    echo "Install it with: sudo pacman -S expect   (Arch)"
-    echo "                 sudo apt install expect  (Debian/Ubuntu)"
     exit 1
 fi
 
@@ -61,11 +58,6 @@ echo "--------------------------"
 echo "To exit console run 'exit'"
 echo "--------------------------"
 echo " "
-expect -c "
-    spawn docker compose exec db mysql -u root -p
-    expect \"Enter password:\"
-    send \"${MYSQL_ROOT_PASSWORD}\r\"
-    expect \"mysql>\"
-    send \"use ${MYSQL_DATABASE};\r\"
-    interact
-"
+docker compose exec -e "MYSQL_PWD=${MYSQL_PASSWORD}" db mysql \
+  -u"${MYSQL_USER}" \
+  -D "${MYSQL_DATABASE}"

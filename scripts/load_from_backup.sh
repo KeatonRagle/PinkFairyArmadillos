@@ -7,6 +7,11 @@
 
 set -euo pipefail
 
+docker compose version >/dev/null 2>&1 || {
+  echo "Docker Compose v2 required (docker compose)"
+  exit 1
+}
+
 # ── Resolve Paths ────────────────────────────────────────────
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 REPO_ROOT="$(cd "$SCRIPT_DIR/.." && pwd)"
@@ -174,16 +179,35 @@ if [[ "$confirm" != "yes" ]]; then
   exit 0
 fi
 
+# ── Wait for MySQL to be ready ────────────────────────────────
+echo -e "${CYAN}Waiting for MySQL to be ready...${NC}"
+RETRIES=30
+until docker exec "$DB_CONTAINER" mysqladmin ping \
+  -u"${MYSQL_USER}" \
+  -p"${MYSQL_PASSWORD}" \
+  --silent 2>/dev/null; do
+  RETRIES=$((RETRIES - 1))
+  if [[ $RETRIES -eq 0 ]]; then
+    echo -e "${RED}MySQL did not become ready in time.${NC}"
+    exit 1
+  fi
+  echo -e "  waiting... (${RETRIES} retries left)"
+  sleep 2
+done
+echo -e "${GREEN}MySQL is ready${NC}\n"
+
 # ── Restore ───────────────────────────────────────────────────
-echo ""
 echo -e "${CYAN}Decompressing and restoring...${NC}"
 
 START=$(date +%s)
 
-gunzip -c "$SELECTED" | docker exec -i "$DB_CONTAINER" mysql \
+if ! gunzip < "$SELECTED" | docker compose exec -T db mysql \
   -u"${MYSQL_USER}" \
   -p"${MYSQL_PASSWORD}" \
-  "${MYSQL_DATABASE}"
+  -D "${MYSQL_DATABASE}"; then
+  echo -e "${RED}Restore failed — check MySQL logs.${NC}"
+  exit 1
+fi
 
 ELAPSED=$(( $(date +%s) - START ))
 

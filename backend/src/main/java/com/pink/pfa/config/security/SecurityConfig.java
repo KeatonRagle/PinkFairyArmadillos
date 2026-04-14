@@ -22,6 +22,8 @@ import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.CorsConfigurationSource;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 
+import jakarta.servlet.DispatcherType;
+
 
 /**
  * Central Spring Security configuration for the application.
@@ -139,6 +141,7 @@ public class SecurityConfig {
             .authorizeHttpRequests(request -> request
                 //.anyRequest().permitAll() // ONLY UNCOMMENT FOR DEBUG
                 // REAL MATCHER BEHAVIOR
+                .dispatcherTypeMatchers(DispatcherType.ASYNC).permitAll()
                 .requestMatchers(
                     "/api/users/login",
                     "/api/users/register",

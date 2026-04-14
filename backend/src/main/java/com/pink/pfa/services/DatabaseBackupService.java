@@ -14,6 +14,9 @@ import lombok.extern.slf4j.Slf4j;
 @Slf4j
 public class DatabaseBackupService {
 
+    @Value("${db.host:db}")
+    private String dbHost;
+
     @Value("${spring.datasource.username:Pink}")
     private String dbUser;
 
@@ -34,7 +37,8 @@ public class DatabaseBackupService {
 
             ProcessBuilder pb = new ProcessBuilder(
                 "sh", "-c",
-                "mysqldump -u " + dbUser + " -p" + dbPassword + " " + dbName + " | gzip > " + fileName
+                "mysqldump -h " + dbHost + " -u " + dbUser + " -p" + dbPassword +
+                " --single-transaction --routines --triggers " + dbName + " | gzip > " + fileName
             );
             pb.redirectErrorStream(true);
             Process process = pb.start();
