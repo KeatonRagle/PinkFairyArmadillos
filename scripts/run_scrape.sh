@@ -30,7 +30,15 @@ echo -e "  ${CYAN}1)${NC} dev"
 echo -e "  ${CYAN}2)${NC} prod"
 read -rp "Choice [1/2]: " env_choice
   case "$env_choice" in
-  1) BASE_URL="http://localhost:8080/api"  ;;
+  1)
+    BASE_URL="http://localhost:8080/api"
+    RUNNING_BACKEND=$(docker compose ps --status running --quiet backend 2>/dev/null)
+    RUNNING_DB=$(docker compose ps --status running --quiet db 2>/dev/null)
+    if [[ -z "$RUNNING_BACKEND" ]] || [[ -z "$RUNNING_DB" ]]; then
+      echo -e "${RED}PFA is not running. Start it with: ./scripts/run.sh${NC}"
+      exit 1
+    fi
+    ;;
   2) BASE_URL="https://api.adoptpetsforall.com/api" ;;
   *) echo -e "${RED}Invalid choice.${NC}"; exit 1 ;;
 esac
@@ -42,11 +50,6 @@ echo ""
 echo ""
 
 # ── Login ────────────────────────────────────────────────────
-RUNNING=$(docker compose ps --status running --quiet db 2>/dev/null)
-if [ -z "$RUNNING" ]; then
-    echo "API is not running in selected environment"
-fi
-
 echo -e "Logging in as ${CYAN}${EMAIL}${NC}..."
 
 LOGIN_RESPONSE=$(curl -s -w "\n%{http_code}" -X POST "${BASE_URL}/users/login" \
