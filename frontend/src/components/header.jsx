@@ -77,7 +77,7 @@ export default function HomeHeader() {
                 aria-haspopup="menu"
                 aria-expanded={menuOpen}
               >
-                ACCOUNT
+                {username}
               </button>
 
               {menuOpen && (
@@ -111,10 +111,6 @@ export default function HomeHeader() {
                 </div>
               )}
             </div>
-
-            <span className="header-username" aria-label="Signed in username">
-              {username}
-            </span>
           </div>
         )}
       </nav>
