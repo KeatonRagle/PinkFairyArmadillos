@@ -531,6 +531,76 @@ body.animalfilter-body {
     opacity: 0.8;
 }
 
+.advanced-age-inputs {
+    width: 85%;
+    margin-left: 15px;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    padding-bottom: 10px;
+}
+
+.age-input-row {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    color: #b44b25;
+    font-size: 14px;
+}
+
+.age-input-row span {
+    width: 35px;
+    font-weight: 500;
+}
+
+.age-number-input {
+    width: 60px;
+    height: 32px;
+    border-radius: 8px;
+    border: 1px solid #d1d5db;
+    padding: 0 8px;
+    background: #F8F8F8;
+    color: #b44b25;
+    font-family: 'Hind Kochi', sans-serif;
+    outline: none;
+}
+
+.age-unit-select {
+    flex: 1;
+    height: 32px;
+    border-radius: 8px;
+    border: 1px solid #d1d5db;
+    background: #F8F8F8;
+    color: #b44b25;
+    font-family: 'Hind Kochi', sans-serif;
+    cursor: pointer;
+    padding: 0 4px;
+}
+
+.age-number-input:focus, .age-unit-select:focus {
+    border-color: #b44b25;
+}
+
+.age-row-toggle {
+    accent-color: #b44b25;
+    width: 14px;
+    height: 14px;
+    cursor: pointer;
+}
+
+.age-input-row.is-disabled {
+    opacity: 0.5;
+    color: #9ca3af;
+}
+
+.age-number-input:disabled,
+.age-unit-select:disabled {
+    background: #e5e7eb;
+    cursor: not-allowed;
+    border-color: #d1d5db;
+    color: #9ca3af;
+}
+
 .gender-option-button.is-selected,
 .size-option-button.is-selected,
 .age-option-button.is-selected {
