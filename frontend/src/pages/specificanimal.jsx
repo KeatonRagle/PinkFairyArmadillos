@@ -1,5 +1,5 @@
 import { useEffect } from 'react'
-import { Link, useLocation, useNavigate } from 'react-router-dom'
+import { useLocation } from 'react-router-dom'
 import HomeHeader from '../components/header'
 import HomeFooter from '../components/footer'
 import '../styling/specificanimal.css'
@@ -19,6 +19,7 @@ const previewAnimal = {
 export default function SpecificAnimal() {
 	const location = useLocation()
 	const animal = location.state?.animal ?? previewAnimal
+	const filters = location.state?.filters ?? null
 	const animalAge = () => {
 		if (!animal) return null
 
@@ -41,7 +42,13 @@ export default function SpecificAnimal() {
 
 	return (
 		<div className="specificanimal-page">
-			<HomeHeader />
+			<HomeHeader
+				backLink={{
+					to: '/animal-filter',
+					label: 'BACK TO FILTERS',
+					state: filters ? { filters, petType: filters.petType } : undefined,
+				}}
+			/>
 
 			<main className="specificanimal-main">
 				<section className="specificanimal-media-column">

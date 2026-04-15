@@ -86,22 +86,23 @@ function convertFromWeeks(rank, val) {
 export default function AnimalFilter() {
 	const filterPanelRef = useRef(null)
 	const location = useLocation()
-	const selectedPetType = location.state?.petType ?? null
+	const initialFilters = location.state?.filters ?? {}
+	const selectedPetType = initialFilters.petType ?? location.state?.petType ?? null
 
 	const [openFilter, setOpenFilter] = useState(null)
-	const [breedSearchText, setBreedSearchText] = useState('')
-	const [debouncedBreedSearchText, setDebouncedBreedSearchText] = useState('')
+	const [breedSearchText, setBreedSearchText] = useState(initialFilters.breedSearchText ?? '')
+	const [debouncedBreedSearchText, setDebouncedBreedSearchText] = useState(initialFilters.breedSearchText ?? '')
 	const [shelterSearchText, setShelterSearchText] = useState('')
-	const [selectedGender, setSelectedGender] = useState(null)
-	const [selectedSize, setSelectedSize] = useState(null)
-	const [selectedAgeRange, setSelectedAgeRange] = useState(null)
-	const [advancedAgeSettings, setAdvancedAgeSettings] = useState(false)
-	const [minAgeSelection, setMinAgeSelection] = useState(1)
-	const [minAgeValue, setMinAgeValue] = useState(0)
-	const [minAgeEnabled, isMinAgeEnabled] = useState(false)
-	const [maxAgeEnabled, isMaxAgeEnabled] = useState(false)
-	const [maxAgeSelection, setMaxAgeSelection] = useState(1)
-	const [maxAgeValue, setMaxAgeValue] = useState(0)
+	const [selectedGender, setSelectedGender] = useState(initialFilters.selectedGender ?? null)
+	const [selectedSize, setSelectedSize] = useState(initialFilters.selectedSize ?? null)
+	const [selectedAgeRange, setSelectedAgeRange] = useState(initialFilters.selectedAgeRange ?? null)
+	const [advancedAgeSettings, setAdvancedAgeSettings] = useState(initialFilters.advancedAgeSettings ?? false)
+	const [minAgeSelection, setMinAgeSelection] = useState(initialFilters.minAgeSelection ?? 1)
+	const [minAgeValue, setMinAgeValue] = useState(initialFilters.minAgeValue ?? 0)
+	const [minAgeEnabled, isMinAgeEnabled] = useState(initialFilters.minAgeEnabled ?? false)
+	const [maxAgeEnabled, isMaxAgeEnabled] = useState(initialFilters.maxAgeEnabled ?? false)
+	const [maxAgeSelection, setMaxAgeSelection] = useState(initialFilters.maxAgeSelection ?? 1)
+	const [maxAgeValue, setMaxAgeValue] = useState(initialFilters.maxAgeValue ?? 0)
 
 	const [isLoading, setIsLoading] = useState(true)
 	const [hasLoaded, setHasLoaded] = useState(false)
@@ -251,6 +252,20 @@ export default function AnimalFilter() {
 
 	const genderLabel = selectedGender === 'M' ? 'Male' : selectedGender === 'F' ? 'Female' : null
 	const ageLabel = selectedAgeRange?.label ?? null
+	const persistedFilters = {
+		petType: selectedPetType,
+		breedSearchText,
+		selectedGender,
+		selectedSize,
+		selectedAgeRange,
+		advancedAgeSettings,
+		minAgeSelection,
+		minAgeValue,
+		minAgeEnabled,
+		maxAgeSelection,
+		maxAgeValue,
+		maxAgeEnabled,
+	}
 
 	return (
 		<div className="animalfilter-page">
@@ -490,7 +505,7 @@ export default function AnimalFilter() {
 							<Link
 								key={animal.id}
 								to="/specific-animal"
-								state={{ animal }}
+								state={{ animal, filters: persistedFilters }}
 								className="animal-card-link"
 							>
 								<article className="animal-card">
