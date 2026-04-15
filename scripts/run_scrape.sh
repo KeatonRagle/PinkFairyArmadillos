@@ -77,27 +77,18 @@ echo -e "${GREEN}✔ Login successful${NC}"
 echo -e "Token: ${CYAN}${TOKEN:0:40}...${NC}\n"
 
 # ── Scrape ───────────────────────────────────────────────────
-echo -e "Starting scrape (streaming logs)...\n"
+echo -e "Starting scrape (this may take a while)...\n"
 
-TMP_CODE=$(mktemp)
+RESPONSE=$(curl -s -w "\n%{http_code}" -X GET "${BASE_URL}/webScraper/scrape" \
+  -H "Authorization: Bearer ${TOKEN}")
 
-curl -s -N -X GET "${BASE_URL}/webScraper/scrape" \
-  -H "Authorization: Bearer ${TOKEN}" \
-  -w "%{http_code}" \
-  -o >(
-    while IFS= read -r line; do
-      [[ -z "$line" ]] && continue
-      echo -e "  ${CYAN}${line#data: }${NC}"
-    done
-  ) > "$TMP_CODE"
-
-HTTP_CODE=$(cat "$TMP_CODE")
-rm -f "$TMP_CODE"
+HTTP_CODE=$(echo "$RESPONSE" | tail -1)
+BODY=$(echo "$RESPONSE" | head -1)
 
 echo ""
-if [[ "$HTTP_CODE" == "200" ]] || [[ -z "$HTTP_CODE" ]]; then
-  echo -e "${GREEN}${BOLD}✔ Scrape complete! (HTTP ${HTTP_CODE})${NC}"
+if [[ "$HTTP_CODE" == "200" ]]; then
+  echo -e "${GREEN}${BOLD}✔ ${BODY}${NC}"
 else
-  echo -e "${RED}Scrape failed (HTTP ${HTTP_CODE})${NC}"
+  echo -e "${RED}Scrape failed (HTTP ${HTTP_CODE}): ${BODY}${NC}"
   exit 1
 fi
