@@ -12,10 +12,15 @@ const genderOptions = [
 ]
 const sizeOptions = ['Small', 'Medium', 'Large']
 const ageOptions = [
-	{ key: 'puppy', label: 'Puppy:  < 1 year', endAge: 0 },
-	{ key: 'young', label: 'Young: 1-3 years', startAge: 1, endAge: 3 },
-	{ key: 'adult', label: 'Adult: 3-8 years', startAge: 3, endAge: 8 },
-	{ key: 'senior', label: 'Senior: > 8 years', startAge: 8 },
+	{ key: 'newborn', label: 'Newborn: < 1 year', endAge: (52 * 1) },
+	{ key: 'young', label: 'Young: 1-3 years', startAge: (52 * 1), endAge: (52 * 3) },
+	{ key: 'adult', label: 'Adult: 3-8 years', startAge: (52 * 3), endAge: (52 * 8) },
+	{ key: 'senior', label: 'Senior: > 8 years', startAge: (52 * 8) },
+]
+const advancedAgeOptions = [
+	{ rank: 1, value: 'weeks' },
+	{ rank: 2, value: 'months' },
+	{ rank: 3, value: 'years' },
 ]
 
 function normalize(value) {
@@ -58,6 +63,26 @@ function mapPetToAnimal(pet) {
 	}
 }
 
+function convertToWeeks(rank, val) {
+	let result = val
+	if (rank == 2) 
+		result *= 4
+	else if (rank == 3) 
+		result *= 52
+
+	return result
+}
+
+function convertFromWeeks(rank, val) {
+	let result = val
+	if (rank == 2) 
+		result = Math.ceil(result / 4)
+	else if (rank == 3) 
+		result = Math.ceil(result / 52)
+
+	return result
+}
+
 export default function AnimalFilter() {
 	const filterPanelRef = useRef(null)
 	const location = useLocation()
@@ -70,6 +95,13 @@ export default function AnimalFilter() {
 	const [selectedGender, setSelectedGender] = useState(null)
 	const [selectedSize, setSelectedSize] = useState(null)
 	const [selectedAgeRange, setSelectedAgeRange] = useState(null)
+	const [advancedAgeSettings, setAdvancedAgeSettings] = useState(false)
+	const [minAgeSelection, setMinAgeSelection] = useState(1)
+	const [minAgeValue, setMinAgeValue] = useState(0)
+	const [minAgeEnabled, isMinAgeEnabled] = useState(false)
+	const [maxAgeEnabled, isMaxAgeEnabled] = useState(false)
+	const [maxAgeSelection, setMaxAgeSelection] = useState(1)
+	const [maxAgeValue, setMaxAgeValue] = useState(0)
 
 	const [isLoading, setIsLoading] = useState(true)
 	const [hasLoaded, setHasLoaded] = useState(false)
@@ -125,6 +157,25 @@ export default function AnimalFilter() {
 		)
 		setOpenFilter(null)
 	}
+
+	useEffect(() => {
+		let minAgeType = minAgeSelection
+		let maxAgeType = minAgeSelection > maxAgeSelection ? minAgeSelection : maxAgeSelection
+		let startAge = convertToWeeks(minAgeType, minAgeValue)
+		let currEndAge = convertToWeeks(maxAgeType, maxAgeValue)
+		let endAge = startAge > currEndAge ? startAge : currEndAge
+
+		setSelectedAgeRange(prev => ({
+			...prev,
+			startAge: minAgeEnabled ? startAge : null,
+			endAge: maxAgeEnabled ? endAge : null
+		}))
+
+		setMinAgeValue(convertFromWeeks(minAgeType, startAge))
+		setMaxAgeValue(convertFromWeeks(maxAgeType, endAge))
+		setMinAgeSelection(minAgeType)
+		setMaxAgeSelection(maxAgeType)
+	}, [minAgeValue, minAgeSelection, minAgeEnabled, maxAgeValue, maxAgeSelection, maxAgeEnabled])
 
 	useEffect(() => {
 		document.body.classList.add('animalfilter-body')
@@ -278,7 +329,7 @@ export default function AnimalFilter() {
 						)}
 					</div>
 
-                    {/* <div className={`age-filter-group ${openFilter === 'age' ? 'open' : ''}`}>
+                    <div className={`age-filter-group ${openFilter === 'age' ? 'open' : ''}`}>
 						<button
 							type="button"
 							className="filter-dropdown age-toggle"
@@ -288,21 +339,73 @@ export default function AnimalFilter() {
 						</button>
 						{openFilter === 'age' && (
 							<div className="age-options">
-								{ageOptions.map((option) => (
-									<button
-										key={option.key}
-										type="button"
-										className={`age-option-button ${selectedAgeRange?.key === option.key ? 'is-selected' : ''}`}
-										onClick={() => toggleAgeRange(option)}
-									>
-										{option.label}
-									</button>
-								))}
+								<label className="age-advanced-toggle">
+									<input 
+										type="checkbox" 
+										className="age-advanced-checkbox"
+										checked={advancedAgeSettings} 
+										onChange={(e) => setAdvancedAgeSettings(e.target.checked)} 
+									/>
+									<span>Advanced Age Settings</span>
+								</label>
+								{advancedAgeSettings ? (
+									<div className="advanced-age-inputs">
+										<div className={`age-input-row ${!minAgeEnabled ? 'is-disabled' : ''}`}>
+											<input 
+												type="checkbox" 
+												checked={minAgeEnabled} 
+												onChange={(e) => isMinAgeEnabled(e.target.checked)} 
+												className="age-row-toggle"
+											/>
+											<span>Min:</span>
+											<input type="number" className="age-number-input" value={minAgeValue} 
+												onChange={(e) => setMinAgeValue(e.target.value >= 0 ? e.target.value : 0)}
+											/>
+											<select className="age-unit-select" value={minAgeSelection} 
+												onChange={(e) => setMinAgeSelection(e.target.value)}
+											>
+												<option value={1}>Weeks</option>
+												<option value={2}>Months</option>
+												<option value={3}>Years</option>
+											</select>
+										</div>
+										<div className={`age-input-row ${!maxAgeEnabled ? 'is-disabled' : ''}`}>
+											<input 
+												type="checkbox" 
+												checked={maxAgeEnabled} 
+												onChange={(e) => isMaxAgeEnabled(e.target.checked)} 
+												className="age-row-toggle"
+											/>
+											<span>Max:</span>
+											<input type="number" className="age-number-input" value={maxAgeValue}  
+												onChange={(e) => setMaxAgeValue(e.target.value >= 0 ? e.target.value : 0)}
+											/>
+											<select className="age-unit-select" value={maxAgeSelection} 
+												onChange={(e) => setMaxAgeSelection(e.target.value)}
+											>
+												<option value={1}>Weeks</option>
+												<option value={2}>Months</option>
+												<option value={3}>Years</option>
+											</select>
+										</div>
+									</div>
+								) : (
+									ageOptions.map((option) => (
+										<button
+											key={option.key}
+											type="button"
+											className={`age-option-button ${selectedAgeRange?.key === option.key ? 'is-selected' : ''}`}
+											onClick={() => toggleAgeRange(option)}
+										>
+											{option.label}
+										</button>
+									))
+								)}
 							</div>
 						)}
 					</div>
 
-                    <div className={`compatibility-filter-group ${openFilter === 'compatibility' ? 'open' : ''}`}>
+                    {/*<div className={`compatibility-filter-group ${openFilter === 'compatibility' ? 'open' : ''}`}>
 						<button
 							type="button"
 							className="filter-dropdown compatibility-toggle"

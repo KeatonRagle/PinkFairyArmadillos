@@ -3,7 +3,7 @@ import HomeHeader from '../components/header'
 import HomeFooter from '../components/footer'
 import Popup from '../components/popup.jsx'
 import { useAuth } from '../auth/AuthContext.jsx'
-import { submitPost, getAllPosts, getCommentsByPost, submitComment } from '../fetch/api'
+import { submitPost, getAllPosts, deletePost, getCommentsByPost, submitComment, deleteComment } from '../fetch/api'
 import '../styling/DiscussionBoard.css'
 
 export default function DiscussionBoard() {
@@ -83,6 +83,8 @@ export default function DiscussionBoard() {
 		setError('')
 		setLoading(true)
 		try {
+			console.log(id)
+			console.log(post)
 			const newPost = await submitPost({
 				userID: id,
 				post: post
@@ -112,6 +114,9 @@ export default function DiscussionBoard() {
 		setLoading(true);
 
 		try {
+			console.log(id)
+			console.log(posts[index].postID)
+			console.log(comment)
 			const newComment = await submitComment({
 				userID: id,
 				postID: posts[index].postID,
@@ -133,6 +138,43 @@ export default function DiscussionBoard() {
 		}
 	}
 
+	const handleDeletePost = async (postID) => {
+		setError('')
+		setLoading(true)
+
+		try {
+			await deletePost(postID)
+			setPosts(prevPosts => prevPosts.filter(post => post.postID !== postID))
+		} catch (err) {
+			setError('Failed to delete post: ' + err.message);
+		} finally {
+			setLoading(false);
+		}
+	}
+
+	const handleDeleteComment = async (postID, commentID) => {
+		setError('')
+		setLoading(true)
+
+		try {
+			await deleteComment(commentID)
+			setPosts(prevPosts => prevPosts.map(post => {
+				if (post.postID === postID) {
+					return {
+						...post,
+						comments: post.comments.filter(comment => comment.commentID !== commentID)
+					}
+				}
+
+				return post
+			}))
+		} catch (err) {
+			setError('Failed to delete post: ' + err.message);
+		} finally {
+			setLoading(false);
+		}
+	}
+
 	return (
 		<div className="discussionboard-page">
 			<HomeHeader />
@@ -147,9 +189,17 @@ export default function DiscussionBoard() {
 					</button>
 					{posts.map((post, index) => (
 						<article key={post.postID || index} className="post-card">
-							<div className="post-header">
-								<div className="user-avatar-tiny">{post.username?.charAt(0).toUpperCase()}</div>
-								<span className="username">{post.username}</span>
+							<div className="post-header-grid">
+								<div className="user-info-side">
+									<div className="user-avatar-tiny">{post.username?.charAt(0).toUpperCase()}</div>
+									<span className="username">{post.username}</span>
+								</div>
+
+								{id === post.userID && (
+									<button className="delete-icon-btn" onClick={() => handleDeletePost(post.postID)}>
+										<i className="fa-regular fa-trash-can"></i>
+									</button>
+								)}
 							</div>
 							<p className="post-content">{post.content}</p>
 							
@@ -166,8 +216,19 @@ export default function DiscussionBoard() {
 								<div className="comments-container">
 									{post.comments.map((comment, cIndex) => (
 										<div key={comment.commentID || cIndex} className="comment-item">
-											<div className="comment-header">
-												<span className="username">{comment.username}</span>
+											<div className="comment-header-grid">
+												<div className="user-info-side">
+													<div className="user-avatar-tiny" style={{width: '24px', height: '24px', fontSize: '0.8rem'}}>
+														{comment.username?.charAt(0).toUpperCase()}
+													</div>
+													<span className="username">{comment.username}</span>
+												</div>
+												
+												{id === comment.userID && (
+													<button className="delete-icon-btn" onClick={() => handleDeleteComment(post.postID, comment.commentID)}>
+														<i className="fa-regular fa-trash-can"></i>
+													</button>
+												)}
 											</div>
 											<p className="comment-content">{comment.comment}</p>
 										</div>

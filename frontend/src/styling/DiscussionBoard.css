@@ -63,31 +63,45 @@ body.discussionboard-body {
     hyphens: auto;              
 }
 
-/* Post Meta Info (Top of the Card) */
-.post-header, .comment-header {
-    display: flex;
-    align-items: center;
-    gap: 8px;
-    margin-bottom: 8px;
+/* Unified Header Style for both Posts and Comments */
+.post-header-grid, 
+.comment-header-grid {
+    display: flex !important;
+    justify-content: space-between !important; /* This pins items to the far left and far right */
+    align-items: center !important;
+    width: 100% !important;
+    margin-bottom: 12px;
+}
+
+/* Author info (Avatar + Name) stays grouped on the left */
+.user-info-side {
+    display: flex !important;
+    align-items: center !important;
+    gap: 12px !important;
 }
 
 .user-avatar-tiny {
-    width: 24px;
-    height: 24px;
+    width: 32px;
+    height: 32px;
     background-color: #e5e7eb;
     border-radius: 50%;
     display: flex;
     align-items: center;
     justify-content: center;
-    font-size: 10px;
-    color: #777;
     font-weight: bold;
+    flex-shrink: 0;
 }
 
 .username {
     font-weight: 700;
-    color: #b44b25; /* Your theme color */
+    color: #b44b25;
     font-size: 0.9rem;
+}
+
+.username-wrapper {
+    display: flex;
+    align-items: center;
+    gap: 10px;
 }
 
 .comments-container {
@@ -121,14 +135,6 @@ body.discussionboard-body {
 	inline-size: 100%;
     overflow-wrap: break-word;
     word-break: break-word;
-}
-
-.comment-header {
-    display: flex;
-    align-items: center;
-    gap: 8px;
-    margin-bottom: 4px;
-    justify-content: flex-start;
 }
 
 /* Comments Toggle Button (The Dropdown bar) */
@@ -189,6 +195,32 @@ body.discussionboard-body {
     line-height: 1;
     margin: 0 auto 30px auto; 
     width: fit-content;
+}
+
+.delete-icon-btn {
+    background: none !important;
+    border: none !important;
+    color: #9ca3af;
+    cursor: pointer;
+    
+    /* This is the fix for "Top-Centered" */
+    display: inline-flex !important;
+    align-items: center !important;      /* Vertical center */
+    justify-content: center !important;   /* Horizontal center */
+    
+    padding: 0 8px !important;            /* Remove top/bottom padding that causes offsets */
+    height: 32px !important;              /* Match the avatar height exactly */
+    width: 32px !important;               /* Make it a square hit area */
+    font-size: 1.1rem;
+    line-height: 1 !important;            /* Prevents text-line spacing from pushing the icon */
+    
+    transition: all 0.2s ease;
+    margin: 0 !important;                 /* Clear any inherited margins */
+}
+
+.delete-icon-btn:hover {
+    color: #ef4444;
+    transform: scale(1.1);
 }
 
 /* Sidebar Styles */

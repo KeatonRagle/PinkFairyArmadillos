@@ -146,6 +146,12 @@ export function submitPost(post) {
   });
 }
 
+export function deletePost(id) {
+  return apiFetchAuthenticated(`/api/posts/${id}`, {
+    method: "DELETE",
+  });
+}
+
 export function getAllPosts() {
   return apiFetchAuthenticated("/api/posts/getAll", {
     method: "GET"
@@ -162,6 +168,12 @@ export function submitComment(comment) {
 export function getCommentsByPost(postId) {
   return apiFetchAuthenticated(`/api/comments/getByPost/${postId}`, {
     method: "GET"
+  });
+}
+
+export function deleteComment(id) {
+  return apiFetchAuthenticated(`/api/comments/${id}`, {
+    method: "DELETE",
   });
 }
 
