@@ -11,21 +11,25 @@ import org.springframework.boot.test.context.TestConfiguration;
 import org.springframework.context.annotation.Bean;
 
 import com.pink.pfa.controllers.requests.CommentRequest;
+import com.pink.pfa.controllers.requests.FeaturedPetRequest;
 import com.pink.pfa.controllers.requests.PostRequest;
 import com.pink.pfa.controllers.requests.UserRequest;
 import com.pink.pfa.exceptions.ResourceNotFoundException;
 import com.pink.pfa.exceptions.UserAlreadyExistsException;
 import com.pink.pfa.models.AdoptionSite;
 import com.pink.pfa.models.Comments;
+import com.pink.pfa.models.FeaturedPets;
 import com.pink.pfa.models.Pet;
 import com.pink.pfa.models.Posts;
 import com.pink.pfa.models.User;
 import com.pink.pfa.repos.AdoptionSiteRepository;
 import com.pink.pfa.repos.CommentsRepository;
+import com.pink.pfa.repos.FeaturedPetsRepository;
 import com.pink.pfa.repos.PetRepository;
 import com.pink.pfa.repos.PostsRepository;
 import com.pink.pfa.repos.UserRepository;
 import com.pink.pfa.services.CommentsService;
+import com.pink.pfa.services.FeaturedPetService;
 import com.pink.pfa.services.PostsService;
 import com.pink.pfa.services.UserService;
 
@@ -38,7 +42,8 @@ public class TestDataConfig {
         UserService userService, UserRepository userRepository, 
         AdoptionSiteRepository siteRepo,  PetRepository petRepo,
         PostsRepository postRepo, CommentsRepository commentRepo,
-        PostsService postService, CommentsService commentsService
+        PostsService postService, CommentsService commentsService,
+        FeaturedPetsRepository fPetRepo
     ) {   
         return args -> {
             UserRequest[] users = {
@@ -137,6 +142,11 @@ public class TestDataConfig {
             cat2.setSite(site);
             petRepo.save(cat2);
 
+            FeaturedPets dogF = new FeaturedPets(LocalDate.now(), LocalDate.now().plusDays(1), "Manually added");
+            dogF.setPet(dog);
+
+            FeaturedPets catF = new FeaturedPets(LocalDate.now(), LocalDate.now().plusDays(1), "Manually added");
+            catF.setPet(cat);
 
             try {
                 List<Integer> postIds = new ArrayList<>();
