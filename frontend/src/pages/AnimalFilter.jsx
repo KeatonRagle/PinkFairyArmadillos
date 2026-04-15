@@ -12,10 +12,10 @@ const genderOptions = [
 ]
 const sizeOptions = ['Small', 'Medium', 'Large']
 const ageOptions = [
-	{ key: 'puppy', label: 'Puppy:  < 1 year', endAge: 0 },
-	{ key: 'young', label: 'Young: 1-3 years', startAge: 1, endAge: 3 },
-	{ key: 'adult', label: 'Adult: 3-8 years', startAge: 3, endAge: 8 },
-	{ key: 'senior', label: 'Senior: > 8 years', startAge: 8 },
+	{ key: 'newborn', label: 'Newborn: < 1 year', endAge: (52 * 1) },
+	{ key: 'young', label: 'Young: 1-3 years', startAge: (52 * 1), endAge: (52 * 3) },
+	{ key: 'adult', label: 'Adult: 3-8 years', startAge: (52 * 3), endAge: (52 * 8) },
+	{ key: 'senior', label: 'Senior: > 8 years', startAge: (52 * 8) },
 ]
 
 function normalize(value) {
@@ -70,6 +70,7 @@ export default function AnimalFilter() {
 	const [selectedGender, setSelectedGender] = useState(null)
 	const [selectedSize, setSelectedSize] = useState(null)
 	const [selectedAgeRange, setSelectedAgeRange] = useState(null)
+	const [advancedAgeSettings, setAdvancedAgeSettings] = useState(false);
 
 	const [isLoading, setIsLoading] = useState(true)
 	const [hasLoaded, setHasLoaded] = useState(false)
@@ -278,7 +279,7 @@ export default function AnimalFilter() {
 						)}
 					</div>
 
-                    {/* <div className={`age-filter-group ${openFilter === 'age' ? 'open' : ''}`}>
+                    <div className={`age-filter-group ${openFilter === 'age' ? 'open' : ''}`}>
 						<button
 							type="button"
 							className="filter-dropdown age-toggle"
@@ -298,11 +299,20 @@ export default function AnimalFilter() {
 										{option.label}
 									</button>
 								))}
+								<label className="age-advanced-toggle">
+									<input 
+										type="checkbox" 
+										className="age-advanced-checkbox"
+										checked={advancedAgeSettings} 
+										onChange={(e) => setAdvancedAgeSettings(e.target.checked)} 
+									/>
+									<span>Advanced Age Settings</span>
+								</label>
 							</div>
 						)}
 					</div>
 
-                    <div className={`compatibility-filter-group ${openFilter === 'compatibility' ? 'open' : ''}`}>
+                    {/*<div className={`compatibility-filter-group ${openFilter === 'compatibility' ? 'open' : ''}`}>
 						<button
 							type="button"
 							className="filter-dropdown compatibility-toggle"

@@ -19,6 +19,19 @@ const previewAnimal = {
 export default function SpecificAnimal() {
 	const location = useLocation()
 	const animal = location.state?.animal ?? previewAnimal
+	const animalAge = () => {
+		if (!animal) return null
+
+		const ageComponents = {
+			years: Math.floor(animal.age / 52),
+			months: Math.floor((animal.age % 52) / 4),
+			weeks: animal.age % 52 % 4,
+		}
+
+		ageComponents.text = `${ageComponents.years} years, ${ageComponents.months} months, ${ageComponents.weeks} weeks`
+
+		return ageComponents
+	}
 	const isPreview = !location.state?.animal
 
 	useEffect(() => {
@@ -69,7 +82,7 @@ export default function SpecificAnimal() {
 							</div>
 							<div className="specificanimal-detail-item">
 								<span className="specificanimal-detail-label">Age</span>
-								<span>{animal.age ?? 'Unknown'}</span>
+								<span>{animalAge().text ?? 'Unknown'}</span>
 							</div>
 							<div className="specificanimal-detail-item">
 								<span className="specificanimal-detail-label">Breed</span>
