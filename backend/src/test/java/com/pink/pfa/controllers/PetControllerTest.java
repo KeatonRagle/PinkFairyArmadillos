@@ -88,7 +88,7 @@ public class PetControllerTest extends PfaBase {
 
     /**
      * Verifies that the getPetById endpoint returns a Ok (200) Http code
-     * apon valid Id input
+     * upon valid Id input
      * */
     @Test
     void getPetById_WithValidPetId_ShouldReturn200() {
@@ -100,7 +100,7 @@ public class PetControllerTest extends PfaBase {
     
     /**
      * Verifies that the getPetById endpoint returns a NotFound (404) Http code
-     * apon invalid Id input
+     * upon invalid Id input
      * */
     @Test
     void getPetById_WithInvalidPetId_ShouldReturn404() {

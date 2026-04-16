@@ -34,7 +34,7 @@ public class FeaturedPets {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
 	@Column(name = "pet_id")
-    private Integer petId;
+    private Integer featuredPetId;
 	
 	
 	/** Foreign key identifier for the pet. */
