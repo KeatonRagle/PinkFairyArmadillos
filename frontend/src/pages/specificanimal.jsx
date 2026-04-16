@@ -1,7 +1,8 @@
-import { useEffect } from 'react'
+import { useEffect, useState } from 'react'
 import { useLocation } from 'react-router-dom'
 import HomeHeader from '../components/header'
 import HomeFooter from '../components/footer'
+import ReviewsPopup from '../components/ReviewsPopup'
 import '../styling/specificanimal.css'
 
 const placeholderGallery = [1, 2, 3]
@@ -34,6 +35,7 @@ export default function SpecificAnimal() {
 		return ageComponents
 	}
 	const isPreview = !location.state?.animal
+	const [reviewsOpen, setReviewsOpen] = useState(false)
 
 	useEffect(() => {
 		document.body.classList.add('specificanimal-body')
@@ -74,6 +76,12 @@ export default function SpecificAnimal() {
 								Preview blah blah blah blah.
 							</p>
 						) : null}
+						<button
+							className="specificanimal-reviews-btn"
+							onClick={() => setReviewsOpen(true)}
+						>
+							Reviews
+						</button>
 					</div>
 
 					<div className="specificanimal-about-card">
@@ -105,6 +113,12 @@ export default function SpecificAnimal() {
 			</main>
 
 			<HomeFooter />
+
+			<ReviewsPopup
+				isOpen={reviewsOpen}
+				onClose={() => setReviewsOpen(false)}
+				shelterName={animal.adoptionSite}
+			/>
 		</div>
 	)
 }
