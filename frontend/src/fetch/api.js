@@ -102,6 +102,12 @@ export function getFilteredPets(filters = {}) {
   });
 }
 
+export function getFeaturedPets() {
+  return apiFetchUnauthenicated("/api/featuredPets/getAll", {
+    method: "GET",
+  });
+}
+
 export function submitSite(contribution) {
   return apiFetchAuthenticated("/api/adoptionSite/submitSite", {
     method: "POST",

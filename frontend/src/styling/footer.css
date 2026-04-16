@@ -1,22 +1,23 @@
 .site-footer {
   width: 100%;
-  height: 80px;
+  min-height: 80px;
   background-color: white;
   position: absolute;
   bottom: 0;
   left: 0;
+  z-index: 20;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 12px 40px;
+  box-sizing: border-box;
+}
+
 .footer-button-row {
   display: flex;
   align-items: center;
   justify-content: center;
   gap: 12px;
-}
-  z-index: 20;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  padding: 0 40px;
-  box-sizing: border-box;
 }
 
 .footer-content {
