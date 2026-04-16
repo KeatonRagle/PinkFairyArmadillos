@@ -1,7 +1,10 @@
 package com.pink.pfa.models;
 
 import java.time.LocalDate;
+import java.util.ArrayList;
+import java.util.List;
 
+import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
@@ -10,6 +13,7 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
+import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
 import jakarta.persistence.UniqueConstraint;
 import lombok.Data;
@@ -54,7 +58,10 @@ import lombok.Data;
 	@ManyToOne(fetch = FetchType.LAZY)
 	@JoinColumn(name = "site_id", nullable = false)
 	private AdoptionSite site;
-	
+
+	/** One to many list of linked petImages. */
+	@OneToMany(mappedBy = "pet_image", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+	private List<PetImage> secondaryImages = new ArrayList<>();
 	
 	/** Pet's display name (required). */
     @Column(name = "name", nullable = false)

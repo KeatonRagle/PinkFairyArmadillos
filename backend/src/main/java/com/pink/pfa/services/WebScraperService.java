@@ -297,11 +297,14 @@ public class WebScraperService {
         /** @return Builder instance with size populated */
         PetInfoBuilder AddSize();       
 
-        /** @return Builder instance with price populated */  
-        PetInfoBuilder AddPrice();          
-        
+        /** @return Builder instance with location populated */  
+        PetInfoBuilder AddLocation();      
+
         /** @return Builder instance with image populated */
         PetInfoBuilder AddImage();
+
+        /** @return Builder instance with secondary image populated */
+        PetInfoBuilder AddSecondaryImages();
         
         /**
          * Builds and returns the collected pet information.
@@ -563,7 +566,7 @@ public class WebScraperService {
 
         /** {@inheritDoc} */
         @Override
-        public PetInfoBuilder AddPrice() {
+        public PetInfoBuilder AddLocation() {
             return this;
         }
 
@@ -574,6 +577,12 @@ public class WebScraperService {
                 petInfo.put("Image", petImage.attr("src"));
             }
 
+            return this;
+        }
+
+         /** {@inheritDoc} */
+        @Override
+        public PetInfoBuilder AddSecondaryImages() {
             return this;
         }
     }
@@ -757,7 +766,7 @@ public class WebScraperService {
 
         /** {@inheritDoc} */
         @Override
-        public PetInfoBuilder AddPrice() {
+        public PetInfoBuilder AddLocation() {
             return this;
         }
 
@@ -768,6 +777,12 @@ public class WebScraperService {
                 petInfo.put("Image", petImage.attr("src"));
             }
 
+            return this;
+        }
+        
+        /** {@inheritDoc} */
+        @Override
+        public PetInfoBuilder AddSecondaryImages() {
             return this;
         }
     }
@@ -802,8 +817,9 @@ public class WebScraperService {
                 .AddBreed()
                 .AddGender()
                 .AddSize()
+                .AddLocation()
                 .AddImage()
-                .AddPrice()
+                .AddSecondaryImages()
                 .Build();
 
             // Ensures that at least some distinguishable data is present before returning it
