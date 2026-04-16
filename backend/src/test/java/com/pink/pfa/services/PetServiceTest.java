@@ -259,4 +259,16 @@ class PetServiceTest extends PfaBase {
         // We had two seeded pets not in our scrape, so they should be deactivated for now
         assertEquals(inactives.size(), 4);
     }
+
+    @Test
+    void findByActive_ShouldReturnMoreThanOne() {
+        List<PetDTO> activePets = petService.findAllActive();
+        assertTrue(!activePets.isEmpty(), "Expected at least 1 seeded pets, got: " + activePets.size());
+    }
+
+    @Test
+    void findRandomActive_ShouldReturnMoreThanOne() {
+        PetDTO randPet = petService.findRandomActivePetByType("Dog");
+        assertTrue(randPet != null, "Expected a random seeded dog, got " + randPet.name());
+    }
 }
