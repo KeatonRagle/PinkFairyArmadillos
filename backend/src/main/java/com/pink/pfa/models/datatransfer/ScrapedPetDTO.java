@@ -1,11 +1,14 @@
 package com.pink.pfa.models.datatransfer;
 
 import java.time.LocalDate;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Map;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.pink.pfa.models.Pet;
+import com.pink.pfa.models.PetImage;
 
 
 /**
@@ -26,7 +29,8 @@ public record ScrapedPetDTO(
     @JsonProperty("Name")    String name,
     @JsonProperty("Size")    String size,
     @JsonProperty("Age")     Integer age,
-    @JsonProperty("Price")   Double price
+    @JsonProperty("Location")        String location,
+    @JsonProperty("SecondaryImages") List<String> imageUrls
 ) {
     private static final ObjectMapper mapper = new ObjectMapper();
 
@@ -45,6 +49,7 @@ public record ScrapedPetDTO(
     /**
      * Maps this DTO to a {@link Pet} entity for persistence.
      * Null or empty fields fall back to safe defaults ({@code "Unknown"}, {@code 0}, etc.).
+     * Also creates a series of {@link PetImage} entities for the images that are returned in the SecondaryImages field by the scrape
      *
      * @return a {@link Pet} entity populated with the scraped data
      */
@@ -56,11 +61,22 @@ public record ScrapedPetDTO(
         pet.setGender(gender != null && !gender.isEmpty() ? gender.charAt(0) : 'U');
         pet.setImgUrl(image != null ? image : "");
         pet.setAge(age != null ? age : 0);
-        pet.setPrice(price != null ? price : 0.0);
-        pet.setLocation("Unknown");
+        pet.setPrice(0.0);
+        pet.setLocation(location != null ? location : "Unknown");
         pet.setPetStatus("Available");
         pet.setSize(size != null ? size : "Unknown");
         pet.setCreatedAt(LocalDate.now());
+
+        List<PetImage> secondaryImages = new ArrayList<>();
+        for (String imageUrl : imageUrls) {
+            PetImage petImage = new PetImage();
+            petImage.setPet(pet);
+            petImage.setImageUrl(imageUrl);
+            secondaryImages.add(petImage);
+        }
+
+        pet.setSecondaryImages(secondaryImages);
+
         return pet;
     }
 }

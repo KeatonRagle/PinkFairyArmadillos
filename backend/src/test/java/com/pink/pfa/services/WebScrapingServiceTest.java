@@ -161,8 +161,9 @@ class WebScrapingServiceTest {
                     @Override public PetInfoBuilder AddGender() { return this; }
                     @Override public PetInfoBuilder AddAge() { return this; }
                     @Override public PetInfoBuilder AddSize() { return this; }
-                    @Override public PetInfoBuilder AddPrice() { return this; }
+                    @Override public PetInfoBuilder AddLocation() { return this; }
                     @Override public PetInfoBuilder AddImage() { return this; }
+                    @Override public PetInfoBuilder AddSecondaryImages() { return this; }
                 };
 
         Map<String, Object> firstBuild = builder.AddName().Build();
@@ -189,8 +190,9 @@ class WebScrapingServiceTest {
                     @Override public PetInfoBuilder AddGender() { return this; }
                     @Override public PetInfoBuilder AddAge() { return this; }
                     @Override public PetInfoBuilder AddSize() { return this; }
-                    @Override public PetInfoBuilder AddPrice() { return this; }
+                    @Override public PetInfoBuilder AddLocation() { return this; }
                     @Override public PetInfoBuilder AddImage() { return this; }
+                    @Override public PetInfoBuilder AddSecondaryImages() { return this; }
                 };
 
         Map<String, Object> result = builder.AddName().Build();
@@ -295,6 +297,56 @@ class WebScrapingServiceTest {
     }
 
     @Test
+    void testShelterLuvBuilder_LocationExtraction() throws IOException {
+        // ShelterLuv logic: finds a div containing "Location" label and extracts its sibling
+        String html = """
+            <div data-cy='name'>
+                <h1>Buddy</h1>
+                <div>
+                    <div>Location</div>
+                    <div>Foster Home: Dallas, TX</div>
+                </div>
+            </div>
+            """;
+        
+        when(driver.getPageSource()).thenReturn(html);
+        when(driver.findElement(By.tagName("img"))).thenReturn(mock(WebElement.class));
+
+        WebScraperService.ShelterLuvBuilder builder = 
+            webScraperService.new ShelterLuvBuilder("site", "url", driver);
+        
+        assertEquals("Foster Home: Dallas, TX", builder.AddLocation().Build().get("Location"));
+    }
+
+    @Test
+    void testShelterLuvBuilder_SecondaryImages_ShouldExcludeMainImage() throws IOException {
+        String mainImg = "https://shelterluv.com/profile-pictures/main.jpg";
+        String secImg = "https://shelterluv.com/profile-pictures/extra.jpg";
+        
+        String html = String.format("""
+            <html>
+                <img src='%s'>
+                <img src='%s'>
+            </html>
+            """, mainImg, secImg);
+        
+        when(driver.getPageSource()).thenReturn(html);
+        when(driver.findElement(By.tagName("img"))).thenReturn(mock(WebElement.class));
+
+        WebScraperService.ShelterLuvBuilder builder = 
+            webScraperService.new ShelterLuvBuilder("site", "url", driver);
+        
+        builder.AddImage(); // Set internal petImage state
+        
+        Map<String, Object> result = builder.AddSecondaryImages().Build();
+        @SuppressWarnings("unchecked")
+        List<String> secondaryImages = (List<String>) result.get("SecondaryImages");
+
+        assertEquals(1, secondaryImages.size());
+        assertFalse(secondaryImages.contains(mainImg), "Secondary images must exclude the main profile photo");
+    }
+
+    @Test
     void testPetFinderBuilder_NameSanitization() throws IOException {
         // Tests the .replace("About ", "") logic
         String html = "<section id='pet-details-about-section'><h2 id='Detail_Main'>About Buddy</h2></section>";
@@ -392,5 +444,64 @@ class WebScrapingServiceTest {
             webScraperService.new PetFinderBuilder("site", "https://petfinder.com/dog/1", driver);
         
         assertEquals("Large", builder.AddSize().Build().get("Size"));
+    }
+
+    @Test
+    void testPetFinderBuilder_LocationExtraction() throws IOException {
+        // PetFinder logic: h2#Detail_Main + * > :nth-child(2)
+        String html = """
+            <section id='pet-details-about-section'>
+                <h2 id='Detail_Main'>About Luna</h2>
+                <div>
+                    <span>Some Other Info</span>
+                    <span>Austin, TX</span>
+                </div>
+            </section>
+            """;
+        setupPetFinderMocks(html);
+
+        WebScraperService.PetFinderBuilder builder = 
+            webScraperService.new PetFinderBuilder("site", "https://petfinder.com/cat/1", driver);
+        
+        assertEquals("Austin, TX", builder.AddLocation().Build().get("Location"));
+    }
+
+    @Test
+    void testPetFinderBuilder_SecondaryImages_ShouldExcludeMainImage() throws IOException {
+        String mainImg = "https://cloudfront.net/animal/main.jpg";
+        String extraImg = "https://cloudfront.net/animal/extra.jpg";
+        
+        // Mock HTML where the main image is also present in the secondary photo section
+        String html = String.format("""
+            <section id='pet-details-photos-section'>
+                <div>
+                    <div></div>
+                    <div>
+                        <img src='%s'> 
+                        <img src='%s'>
+                    </div>
+                </div>
+            </section>
+            <div class='swiper-slide-active'>
+                <img src='%s'>
+            </div>
+            <section id='pet-details-about-section'><h2 id='Detail_Main'>About Max</h2></section>
+            """, mainImg, extraImg, mainImg);
+        
+        setupPetFinderMocks(html);
+
+        WebScraperService.PetFinderBuilder builder = 
+            webScraperService.new PetFinderBuilder("site", "https://petfinder.com/dog/1", driver);
+        
+        // Capture the main image first
+        builder.AddImage();
+        
+        Map<String, Object> result = builder.AddSecondaryImages().Build();
+        @SuppressWarnings("unchecked")
+        List<String> secondaryImages = (List<String>) result.get("SecondaryImages");
+
+        assertEquals(1, secondaryImages.size(), "Should only have 1 image after filtering out the main image");
+        assertTrue(secondaryImages.contains(extraImg));
+        assertFalse(secondaryImages.contains(mainImg), "Secondary images must not contain the primary profile photo");
     }
 }

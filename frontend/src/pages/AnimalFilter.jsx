@@ -60,6 +60,7 @@ function mapPetToAnimal(pet) {
 		misc: pet.pet_status || pet.pet_type || 'More details coming soon.',
 		adoptionSite: 'Adoption site information coming soon.',
 		image: pet.img_url || '/images/waveShort.png',
+		secondaryImages: pet.secondary_images || []
 	}
 }
 
