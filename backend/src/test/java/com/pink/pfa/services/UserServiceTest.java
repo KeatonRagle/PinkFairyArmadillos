@@ -281,16 +281,13 @@ class UserServiceTest extends PfaBase {
         SeededUser user = getRandUserAndPassByRole(User.Role.ROLE_USER);
         mockSecurityContext(user.user());
         
-        assertFalse(user.user().getRequestedContributor());
-        userService.requestContributor();
-
-        User updated = userRepository.findById(user.user().getUserId()).orElseThrow();
-        assertTrue(updated.getRequestedContributor());
-
-        updated.setRequestedContributor(false);
-        userRepository.save(updated);
-
-        SecurityContextHolder.clearContext();
+        assertNull(user.user().getRequestedContributor());
+		userService.requestContributor();
+		User updated = userRepository.findById(user.user().getUserId()).orElseThrow();
+		assertEquals('P', updated.getRequestedContributor());
+		updated.setRequestedContributor('N');
+		userRepository.save(updated);
+		SecurityContextHolder.clearContext();
     }
 
 
@@ -299,17 +296,15 @@ class UserServiceTest extends PfaBase {
         SeededUser user = getRandUserAndPassByRole(User.Role.ROLE_USER);
         mockSecurityContext(user.user());
 
-        user.user().setRequestedContributor(true);
-        userRepository.save(user.user());
-        User updated = userRepository.findById(user.user().getUserId()).orElseThrow();
-        assertTrue(user.user().getRequestedContributor());
-
-        assertThrows(Exception.class, () -> userService.requestContributor());
-        assertTrue(updated.getRequestedContributor());
-
-        updated.setRequestedContributor(false);
-        userRepository.save(updated);
-        SecurityContextHolder.clearContext();
+        user.user().setRequestedContributor('P');
+		userRepository.save(user.user());
+		User updated = userRepository.findById(user.user().getUserId()).orElseThrow();
+		assertEquals('P', user.user().getRequestedContributor());
+		assertThrows(Exception.class, () -> userService.requestContributor());
+		assertEquals('P', updated.getRequestedContributor());
+		updated.setRequestedContributor('N');
+		userRepository.save(updated);
+		SecurityContextHolder.clearContext();
     }
 
     @Test
