@@ -1,6 +1,7 @@
 package com.pink.pfa.repos;
 
 import java.util.List;
+import java.util.Optional;
 
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
@@ -31,13 +32,13 @@ public interface UserPreferencesRepository extends JpaRepository<UserPreferences
 	
 	
 	/** Finds all user preferences by user. */
-	List<UserPreference> findByUser_UserId(Integer userId);
+	List<UserPreferences> findByUser_UserId(Integer userId);
     
 	/** Finds all users that prefer a certain trait. */
-	Optional<UserPreference> findByUser_UserIdAndPrefTrait(Integer userId, String prefTrait);
+	Optional<UserPreferences> findByUser_UserIdAndPrefTrait(Integer userId, String prefTrait);
     
 	/** Finds all users that prefer a certain value. */
-	List<UserPreference> findByUser_UserIdAndPrefValue(Integer userId, String prefValue);
+	List<UserPreferences> findByUser_UserIdAndPrefValue(Integer userId, String prefValue);
     
 	/** Here to prevent duplicate columns. */
 	void deleteByUserAndPrefTrait(Integer userId, String prefTrait);
