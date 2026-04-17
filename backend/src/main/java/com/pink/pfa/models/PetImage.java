@@ -9,6 +9,8 @@ import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import lombok.Data;
+import lombok.EqualsAndHashCode;
+import lombok.ToString;
 
 
 /**
@@ -37,6 +39,8 @@ import lombok.Data;
 	
 	
 	/** Foreign key identifier for the pet. */
+	@ToString.Exclude
+    @EqualsAndHashCode.Exclude
 	@ManyToOne(fetch = FetchType.LAZY)
 	@JoinColumn(name = "pet_id", nullable = false)
 	private Pet pet;

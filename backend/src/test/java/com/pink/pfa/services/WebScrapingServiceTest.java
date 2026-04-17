@@ -161,8 +161,9 @@ class WebScrapingServiceTest {
                     @Override public PetInfoBuilder AddGender() { return this; }
                     @Override public PetInfoBuilder AddAge() { return this; }
                     @Override public PetInfoBuilder AddSize() { return this; }
-                    @Override public PetInfoBuilder AddPrice() { return this; }
+                    @Override public PetInfoBuilder AddLocation() { return this; }
                     @Override public PetInfoBuilder AddImage() { return this; }
+                    @Override public PetInfoBuilder AddSecondaryImages() { return this; }
                 };
 
         Map<String, Object> firstBuild = builder.AddName().Build();
@@ -189,8 +190,9 @@ class WebScrapingServiceTest {
                     @Override public PetInfoBuilder AddGender() { return this; }
                     @Override public PetInfoBuilder AddAge() { return this; }
                     @Override public PetInfoBuilder AddSize() { return this; }
-                    @Override public PetInfoBuilder AddPrice() { return this; }
+                    @Override public PetInfoBuilder AddLocation() { return this; }
                     @Override public PetInfoBuilder AddImage() { return this; }
+                    @Override public PetInfoBuilder AddSecondaryImages() { return this; }
                 };
 
         Map<String, Object> result = builder.AddName().Build();

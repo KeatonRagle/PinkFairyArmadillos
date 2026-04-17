@@ -567,6 +567,25 @@ public class WebScraperService {
         /** {@inheritDoc} */
         @Override
         public PetInfoBuilder AddLocation() {
+            if (mainInfoDiv != null) {
+                Element locationContainer = mainInfoDiv.children().stream()
+                    .filter(element -> element.text().contains("Location"))
+                    .collect(Collectors.toCollection(Elements::new))
+                    .first();
+                if (locationContainer == null) return this;
+
+                Element locationLabel = locationContainer.children().stream()
+                        .filter(element -> element.text().contains("Location"))
+                        .collect(Collectors.toCollection(Elements::new))
+                        .first();
+                if (locationLabel == null) return this;
+
+                Element location = locationLabel.siblingElements().first();
+                if (location != null) {
+                    petInfo.put("Location", location.text());
+                }
+            }
+
             return this;
         }
 
@@ -583,6 +602,22 @@ public class WebScraperService {
          /** {@inheritDoc} */
         @Override
         public PetInfoBuilder AddSecondaryImages() {
+            Document doc = Jsoup.parse(driver.getPageSource());
+            Elements petImages = doc.select("img").stream()
+                .filter(element -> element.attr("src").contains("shelterluv.com") 
+                                && element.attr("src").contains("profile-pictures") 
+                                && !element.attr("src").equals(petImage.attr("src")))
+                .collect(Collectors.toCollection(Elements::new));
+
+            if (petImages != null) {
+                List<String> imageUrls = new ArrayList<>();
+                for (Element image : petImages) {
+                    imageUrls.add(image.attr("src"));
+                }
+
+                petInfo.put("SecondaryImages", imageUrls);
+            }
+
             return this;
         }
     }
@@ -662,10 +697,7 @@ public class WebScraperService {
         @Override
         public PetInfoBuilder AddName() {
             if (mainInfoDiv != null) {
-                Element name = mainInfoDiv.select("h2").stream()
-                    .filter(element -> element.attr("id").equals("Detail_Main"))
-                    .collect(Collectors.toCollection(Elements::new))
-                    .first();
+                Element name = mainInfoDiv.selectFirst("h2#Detail_Main");
 
                 if (name != null) {
                     petInfo.put("Name", name.text().replace("About ", ""));
@@ -691,11 +723,7 @@ public class WebScraperService {
         @Override
         public PetInfoBuilder AddBreed() {
             if (mainInfoDiv != null) {
-                Element breed = mainInfoDiv.select("h3").stream()
-                    .filter(element -> element.text().equals("Breed"))
-                    .collect(Collectors.toCollection(Elements::new))
-                    .first().parent().siblingElements()
-                    .first().select("span").first();
+                Element breed = mainInfoDiv.selectFirst("div:has(h3:contains(Breed)) + * span");
 
                 if (breed != null) {
                     petInfo.put("Breed", breed.text());
@@ -709,15 +737,10 @@ public class WebScraperService {
         @Override
         public PetInfoBuilder AddGender() {
             if (mainInfoDiv != null) {
-                Element genderElement = mainInfoDiv.select("h3").stream()
-                    .filter(element -> element.text().equals("Physical Traits"))
-                    .collect(Collectors.toCollection(Elements::new))
-                    .first().siblingElements().first().child(0).child(1);
-
-                String gender = genderElement.child(1).text();
+                Element gender = mainInfoDiv.selectFirst("h3:contains(Physical Traits) + * > :nth-child(1) > :nth-child(2) > :nth-child(2)");
 
                 if (gender != null) {
-                    petInfo.put("Gender", gender.substring(0, 1));
+                    petInfo.put("Gender", gender.text().substring(0, 1));
                 }
             }
 
@@ -727,17 +750,17 @@ public class WebScraperService {
         @Override
         public PetInfoBuilder AddAge() {
             if (mainInfoDiv != null) {
-                Element ageElement = mainInfoDiv.select("h3").stream()
-                    .filter(element -> element.text().equals("Physical Traits"))
-                    .collect(Collectors.toCollection(Elements::new))
-                    .first().siblingElements().first().child(0).child(0);
-
-                String age = ageElement.child(2).text();
+                Element age = mainInfoDiv.selectFirst("h3:contains(Physical Traits) + * > :nth-child(1) > :nth-child(1) > :nth-child(3)");
 
                 if (age != null) {
-                    String formattedAge = age.replace("(", "").replace(" years)", "");
+                    String formattedAge = age.text()
+                        .replace("(", "")
+                        .replace("+ years)", "")
+                        .replace(" years)", "")
+                        .replace("less than ", "")
+                        .replace(" year)", "");
                     String[] ageComponents = formattedAge.split("-");
-                    int ageVal = (Integer.parseInt(ageComponents[1]) - Integer.parseInt(ageComponents[0])) / 2 * 52;
+                    int ageVal = ageComponents.length == 2 ? (Integer.parseInt(ageComponents[1]) - Integer.parseInt(ageComponents[0])) / 2 * 52 : Integer.parseInt(ageComponents[0]) * 52;
                     petInfo.put("Age", ageVal);
                 }
             }
@@ -749,15 +772,10 @@ public class WebScraperService {
         @Override
         public PetInfoBuilder AddSize() {
             if (mainInfoDiv != null) {
-                Element sizeElement = mainInfoDiv.select("h3").stream()
-                    .filter(element -> element.text().equals("Physical Traits"))
-                    .collect(Collectors.toCollection(Elements::new))
-                    .first().siblingElements().first().child(0).child(2);
-
-                String size = sizeElement.child(1).text();
+                Element size = mainInfoDiv.selectFirst("h3:contains(Physical Traits) + * > :nth-child(1) > :nth-child(3) > :nth-child(2)");
 
                 if (size != null) {
-                    petInfo.put("Size", size);
+                    petInfo.put("Size", size.text());
                 }
             }
 
@@ -767,6 +785,14 @@ public class WebScraperService {
         /** {@inheritDoc} */
         @Override
         public PetInfoBuilder AddLocation() {
+            if (mainInfoDiv != null) {
+                Element location = mainInfoDiv.selectFirst("h2#Detail_Main + * > :nth-child(2)");
+
+                if (location != null) {
+                    petInfo.put("Location", location.text());
+                }
+            }
+
             return this;
         }
 
@@ -783,6 +809,18 @@ public class WebScraperService {
         /** {@inheritDoc} */
         @Override
         public PetInfoBuilder AddSecondaryImages() {
+            Document doc = Jsoup.parse(driver.getPageSource());
+            Elements petImages = doc.select("section#pet-details-photos-section > :nth-child(1) > :nth-child(2) img[src*=cloudfront.net/animal]");
+            
+            if (petImages != null) {
+                List<String> imageUrls = new ArrayList<>();
+                for (Element image : petImages) {
+                    imageUrls.add(image.attr("src"));
+                }
+
+                petInfo.put("SecondaryImages", imageUrls);
+            }
+
             return this;
         }
     }
@@ -934,7 +972,10 @@ public class WebScraperService {
             }
 
             // Iterates through all of the terminating urls and attempts to scrape data off of them
-            while (!terminatingUrlQueue.isEmpty()) {
+            int max = 10;
+            int count = 0;
+            while (!terminatingUrlQueue.isEmpty() && count < max) {
+                count++;
                 List<String> terminatingUrlList = terminatingUrlQueue.remove();
                 String parentUrl = terminatingUrlList.get(0);
                 String childUrl = terminatingUrlList.get(1);

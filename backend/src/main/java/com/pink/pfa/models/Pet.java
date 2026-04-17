@@ -17,6 +17,8 @@ import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
 import jakarta.persistence.UniqueConstraint;
 import lombok.Data;
+import lombok.EqualsAndHashCode;
+import lombok.ToString;
 
 
 /**
@@ -60,7 +62,9 @@ import lombok.Data;
 	private AdoptionSite site;
 
 	/** One to many list of linked petImages. */
-	@OneToMany(mappedBy = "pet_image", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+	@ToString.Exclude
+    @EqualsAndHashCode.Exclude
+	@OneToMany(mappedBy = "pet", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
 	private List<PetImage> secondaryImages = new ArrayList<>();
 	
 	/** Pet's display name (required). */

@@ -29,7 +29,7 @@ public record ScrapedPetDTO(
     @JsonProperty("Name")    String name,
     @JsonProperty("Size")    String size,
     @JsonProperty("Age")     Integer age,
-    @JsonProperty("Price")   Double price,
+    @JsonProperty("Location")        String location,
     @JsonProperty("SecondaryImages") List<String> imageUrls
 ) {
     private static final ObjectMapper mapper = new ObjectMapper();
@@ -61,8 +61,8 @@ public record ScrapedPetDTO(
         pet.setGender(gender != null && !gender.isEmpty() ? gender.charAt(0) : 'U');
         pet.setImgUrl(image != null ? image : "");
         pet.setAge(age != null ? age : 0);
-        pet.setPrice(price != null ? price : 0.0);
-        pet.setLocation("Unknown");
+        pet.setPrice(0.0);
+        pet.setLocation(location != null ? location : "Unknown");
         pet.setPetStatus("Available");
         pet.setSize(size != null ? size : "Unknown");
         pet.setCreatedAt(LocalDate.now());

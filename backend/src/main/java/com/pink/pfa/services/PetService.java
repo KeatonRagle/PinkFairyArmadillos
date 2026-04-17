@@ -172,7 +172,10 @@ public class PetService {
         // between entries in the scrape and existing elements in the DB
         Map<String, Pet> scrapedMap = scrapedPets
             .stream()
-            .collect(Collectors.toMap(this::buildKey, p -> p));
+            .collect(Collectors.toMap(this::buildKey, p -> p, (existing, replacement) -> {
+                System.out.println("Duplicate found for key: " + buildKey(existing));
+                return existing;
+            }));
 
         Map<String, Pet> dbMap = petRepository.findAll()
             .stream()
