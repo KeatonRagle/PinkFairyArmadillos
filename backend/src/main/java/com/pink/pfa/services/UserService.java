@@ -239,7 +239,7 @@ public class UserService {
         User user = userRepository.findById(id)
             .orElseThrow(() -> new ResourceNotFoundException("User", id));
         
-        user.setRequestedContributor(false);
+        user.setRequestedContributor('A');
         user.setRole(User.Role.ROLE_CONTRIBUTOR);
     }
 
@@ -282,7 +282,8 @@ public class UserService {
         String email = ((UserPrincipal) auth.getPrincipal()).getUsername();
         User user = userRepository.findByEmail(email)
                 .orElseThrow(() -> new ResourceNotFoundException("User", email));
-        if (user.getRequestedContributor()) throw new UserAlreadyRequestedContributor(email);
-        else user.setRequestedContributor(true);
+        if (user.getRequestedContributor() == 'A' || user.getRequestedContributor() == 'P')
+			throw new UserAlreadyRequestedContributor(email);
+        else user.setRequestedContributor('P');
     }
 }
