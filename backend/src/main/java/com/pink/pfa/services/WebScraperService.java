@@ -815,7 +815,8 @@ public class WebScraperService {
             if (petImages != null) {
                 List<String> imageUrls = new ArrayList<>();
                 for (Element image : petImages) {
-                    imageUrls.add(image.attr("src"));
+                    if (!image.attr("src").equals(petImage.attr("src")))
+                        imageUrls.add(image.attr("src"));
                 }
 
                 petInfo.put("SecondaryImages", imageUrls);
