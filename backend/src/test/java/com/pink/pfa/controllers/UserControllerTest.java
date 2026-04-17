@@ -631,6 +631,20 @@ class UserControllerTest extends PfaBase {
         userRepository.save(user.user());
     }
 
+	@Test
+	void requestContributor_WithUserToken_WithApprovedStatus_ShouldReturn409() {
+		SeededUser user = getRandUserAndPassByRole(User.Role.ROLE_USER);
+		user.user().setRequestedContributor('A');
+		userRepository.save(user.user());
+		String token = loginAndGetToken(user.user().getEmail(), user.password());
+		webTestClient.patch().uri("/api/users/requestContributor")
+				.header("Authorization", "Bearer " + token)
+				.exchange()
+				.expectStatus().isEqualTo(HttpStatus.SC_CONFLICT);
+		user.user().setRequestedContributor(null);
+		userRepository.save(user.user());
+	}
+
     @Test
     void requestContributor_WithContributorToken_ShouldReturn_403() {
         SeededUser contributor = getRandUserAndPassByRole(User.Role.ROLE_CONTRIBUTOR);
