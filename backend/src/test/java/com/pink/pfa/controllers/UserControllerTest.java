@@ -611,14 +611,14 @@ class UserControllerTest extends PfaBase {
                 .exchange()
                 .expectStatus().isNoContent();
 
-        user.user().setRequestedContributor(false);
-        userRepository.save(user.user());
+        user.user().setRequestedContributor('N');
+		userRepository.save(user.user());
     }
 
     @Test
     void requestContributor_WithUserToken_WithReqestedStatus_ShouldReturn409() {
         SeededUser user = getRandUserAndPassByRole(User.Role.ROLE_USER);
-        user.user().setRequestedContributor(true);
+        user.user().setRequestedContributor('P');
         userRepository.save(user.user());
         String token = loginAndGetToken(user.user().getEmail(), user.password());
 
@@ -627,7 +627,7 @@ class UserControllerTest extends PfaBase {
                 .exchange()
                 .expectStatus().isEqualTo(HttpStatus.SC_CONFLICT);
 
-        user.user().setRequestedContributor(false);
+        user.user().setRequestedContributor('N');
         userRepository.save(user.user());
     }
 
@@ -641,7 +641,7 @@ class UserControllerTest extends PfaBase {
                 .exchange()
                 .expectStatus().isForbidden();
 
-        contributor.user().setRequestedContributor(false);
+        contributor.user().setRequestedContributor('N');
         userRepository.save(contributor.user());
     }
     
@@ -655,7 +655,7 @@ class UserControllerTest extends PfaBase {
                 .exchange()
                 .expectStatus().isForbidden();
 
-        admin.user().setRequestedContributor(false);
+        admin.user().setRequestedContributor('N');
         userRepository.save(admin.user());
     }
 
