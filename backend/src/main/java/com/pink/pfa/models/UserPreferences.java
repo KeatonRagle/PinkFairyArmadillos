@@ -54,7 +54,7 @@ public class UserPreferences {
 	
 	
 	/** Default constructor required by JPA. */
-	public Reviews() {}
+	public UserPreferences() {}
 	
 	
 	/**
