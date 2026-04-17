@@ -141,7 +141,7 @@ public class User {
 		return isBanned;
 	}
 	
-	public boolean getRequestedContributor() {
+	public char getRequestedContributor() {
 		return requestedContributor;
 	}
 
