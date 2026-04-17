@@ -281,7 +281,7 @@ class UserServiceTest extends PfaBase {
         SeededUser user = getRandUserAndPassByRole(User.Role.ROLE_USER);
         mockSecurityContext(user.user());
         
-        assertNull(user.user().getRequestedContributor());
+        assertEquals('N', user.user().getRequestedContributor());
 		userService.requestContributor();
 		User updated = userRepository.findById(user.user().getUserId()).orElseThrow();
 		assertEquals('P', updated.getRequestedContributor());
