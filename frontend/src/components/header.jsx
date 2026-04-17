@@ -4,7 +4,7 @@ import { Link, useNavigate } from 'react-router-dom'
 import { useEffect, useRef, useState } from 'react'
 import { useAuth } from '../auth/AuthContext.jsx'
 
-export default function HomeHeader() {
+export default function HomeHeader({ backLink = null }) {
   const navigate = useNavigate()
   const menuRef = useRef(null)
   const { username, role, clearAuth } = useAuth()
@@ -58,6 +58,11 @@ export default function HomeHeader() {
 
       <nav className="header-nav">
         <div className="header-nav-links">
+          {backLink ? (
+            <Link to={backLink.to} state={backLink.state} className="header-link">
+              {backLink.label}
+            </Link>
+          ) : null}
           <Link to="/home" className="header-link">HOME</Link>
           <Link to="/help" className="header-link">HELP</Link>
           <Link to="/discussion-board" className="header-link">DISCUSSION BOARD</Link>
