@@ -31,14 +31,14 @@ public interface UserPreferencesRepository extends JpaRepository<UserPreferences
 	
 	
 	/** Finds all user preferences by user. */
-	List<UserPreference> findByUser(User user);
+	List<UserPreference> findByUser_UserId(Integer userId);
     
 	/** Finds all users that prefer a certain trait. */
-	Optional<UserPreference> findByUserAndPrefTrait(User user, String prefTrait);
+	Optional<UserPreference> findByUser_UserIdAndPrefTrait(Integer userId, String prefTrait);
     
 	/** Finds all users that prefer a certain value. */
-	List<UserPreference> findByUserAndPrefValue(User user, String prefValue);
+	List<UserPreference> findByUser_UserIdAndPrefValue(Integer userId, String prefValue);
     
 	/** Here to prevent duplicate columns. */
-	void deleteByUserAndPrefTrait(User user, String prefTrait);
+	void deleteByUserAndPrefTrait(Integer userId, String prefTrait);
 }
