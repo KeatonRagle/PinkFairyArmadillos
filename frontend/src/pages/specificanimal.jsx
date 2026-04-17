@@ -5,7 +5,6 @@ import HomeFooter from '../components/footer'
 import ReviewsPopup from '../components/ReviewsPopup'
 import '../styling/specificanimal.css'
 
-const placeholderGallery = [1, 2, 3]
 const previewAnimal = {
 	name: 'dog',
 	image: '/images/dogs.jpg',
@@ -59,9 +58,9 @@ export default function SpecificAnimal() {
 					</div>
 
 					<div className="specificanimal-gallery-row" aria-label="Additional photos">
-						{placeholderGallery.map((item) => (
-							<div key={item} className="specificanimal-gallery-placeholder">
-								<span>Photo</span>
+						{animal.secondaryImages.map((item, index) => (
+							<div key={animal.name + index} className="specificanimal-main-image-wrap">
+								<img src={item} alt={animal.name} className="specificanimal-main-image" />
 							</div>
 						))}
 					</div>

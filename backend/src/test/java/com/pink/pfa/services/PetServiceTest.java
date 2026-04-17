@@ -13,6 +13,7 @@ import org.mockito.Mock;
 import static org.mockito.Mockito.when;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.transaction.annotation.Transactional;
 
 import com.pink.pfa.config.TestDataConfig;
 import com.pink.pfa.context.PfaBase;
@@ -61,6 +62,7 @@ class PetServiceTest extends PfaBase {
      * Verifies that findAll returns all five pets seeded by TestDataConfig.
      */
     @Test
+    @Transactional
     void findAll_ShouldReturnAllSeededPets() {
         List<PetDTO> pets = petService.findAll();
         assertTrue(pets.size() >= 5, "Expected at least 5 seeded pets, got: " + pets.size());
@@ -71,6 +73,7 @@ class PetServiceTest extends PfaBase {
      * confirming that entity-to-DTO mapping is working correctly.
      */
     @Test
+    @Transactional
     void findAll_ShouldReturnPopulatedDTOs() {
         List<PetDTO> pets = petService.findAll();
 
@@ -87,6 +90,7 @@ class PetServiceTest extends PfaBase {
      * TestDataConfig seeds Buddy and Luna as "available" and Max as "pending".
      */
     @Test
+    @Transactional
     void findAll_ShouldIncludePetsOfDifferentStatuses() {
         List<PetDTO> pets = petService.findAll();
 
@@ -106,6 +110,7 @@ class PetServiceTest extends PfaBase {
      * the expected name.
      */
     @Test
+    @Transactional
     void findById_WithValidId_ShouldReturnCorrectPet() {
         // Fetch Buddy's ID from the repo since IDs are auto-generated
         Integer buddyId = petRepository.findAll()
@@ -125,6 +130,7 @@ class PetServiceTest extends PfaBase {
      * Verifies that fetching a pet with a nonexistent ID throws an exception.
      */
     @Test
+    @Transactional
     void findById_WithInvalidId_ShouldThrowException() {
         assertThrows(Exception.class, () -> petService.findById(999999));
     }
@@ -137,6 +143,7 @@ class PetServiceTest extends PfaBase {
      * Verifies that findByFilter returns all three dogs and all two cats seeded by TestDataConfig.
      */
     @Test
+    @Transactional
     void findByFilter_ShouldReturnPetsByPetType() {
         List<PetDTO> dogs = petService.findByFilter("Dog", null, null, null, null, null);
         assertTrue(dogs.size() >= 3, "Expected at least 3 seeded pets, got: " + dogs.size());
@@ -149,6 +156,7 @@ class PetServiceTest extends PfaBase {
      * Verifies that findByFilter returns all three male pets and all two female pets seeded by TestDataConfig.
      */
     @Test
+    @Transactional
     void findByFilter_ShouldReturnPetsByGender() {
         List<PetDTO> malePets = petService.findByFilter(null, "M", null, null, null, null);
         assertTrue(malePets.size() >= 3, "Expected at least 3 seeded pets, got: " + malePets.size());
@@ -161,6 +169,7 @@ class PetServiceTest extends PfaBase {
      * Verifies that findByFilter returns pets within correct age ranges by TestDataConfig.
      */
     @Test
+    @Transactional
     void findByFilter_ShouldReturnPetsByAge() {
         List<PetDTO> youngPets = petService.findByFilter(null, null, null, 40, null, null);
         assertTrue(youngPets.size() >= 3, "Expected at least 3 seeded pets, got: " + youngPets.size());
@@ -176,6 +185,7 @@ class PetServiceTest extends PfaBase {
      * Verifies that findByFilter returns all one golden retrievers and all two domestic shorthairs seeded by TestDataConfig.
      */
     @Test
+    @Transactional
     void findByFilter_ShouldReturnPetsByBreed() {
         List<PetDTO> goldenRetrievers = petService.findByFilter(null, null, null, null, "Golden Retriever", null);
         assertTrue(goldenRetrievers.size() >= 1, "Expected at least 1 seeded pets, got: " + goldenRetrievers.size());
@@ -188,6 +198,7 @@ class PetServiceTest extends PfaBase {
      * Verifies that findByFilter returns all two medium sized pets and all two large sized pets seeded by TestDataConfig.
      */
     @Test
+    @Transactional
     void findByFilter_ShouldReturnPetsBySize() {
         List<PetDTO> mediumPets = petService.findByFilter(null, null, null, null, null, "Medium");
         assertTrue(mediumPets.size() >= 2, "Expected at least 2 seeded pets, got: " + mediumPets.size());
@@ -200,6 +211,7 @@ class PetServiceTest extends PfaBase {
      * Verifies that findByFilter returns correct number of pets under certain mixed filter conditions TestDataConfig.
      */
     @Test
+    @Transactional
     void findByFilter_ShouldReturnPetsByMixedFilters() {
         List<PetDTO> youngCats = petService.findByFilter("Cat", null, null, 20, null, null);
         assertTrue(youngCats.size() >= 1, "Expected at least 1 seeded pets, got: " + youngCats.size());
@@ -218,6 +230,7 @@ class PetServiceTest extends PfaBase {
     *///-------------------------------\\\*
 
     @Test
+    @Transactional
     void trySync_threePets_oneDupe() {
         List<AdoptionSite> sites = List.of(new AdoptionSite("Dallas County", "", "", 0, "https://hsdallascounty.org", 'A', LocalDate.now()));
 
@@ -261,12 +274,14 @@ class PetServiceTest extends PfaBase {
     }
 
     @Test
+    @Transactional
     void findByActive_ShouldReturnMoreThanOne() {
         List<PetDTO> activePets = petService.findAllActive();
         assertTrue(!activePets.isEmpty(), "Expected at least 1 seeded pets, got: " + activePets.size());
     }
 
     @Test
+    @Transactional
     void findRandomActive_ShouldReturnMoreThanOne() {
         PetDTO randPet = petService.findRandomActivePetByType("Dog");
         assertTrue(randPet != null, "Expected a random seeded dog, got " + randPet.name());

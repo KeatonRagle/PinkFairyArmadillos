@@ -1,5 +1,7 @@
 package com.pink.pfa.models.datatransfer;
 
+import java.util.List;
+
 import com.pink.pfa.models.Pet;
 
 
@@ -20,7 +22,8 @@ public record PetDTO(
         double price,
         String pet_status,
         int compatibility_score,
-        String img_url
+        String img_url,
+        List<String> secondary_images
 ) {
     /**
      * Maps a {@link Pet} entity to a {@link PetDTO}.
@@ -30,17 +33,20 @@ public record PetDTO(
      */
     public static PetDTO fromEntity(Pet pet) {
         return new PetDTO(
-                pet.getPetId(),
-                pet.getName(),
-                pet.getBreed(), 
-                pet.getAge(), 
-                pet.getGender(), 
-                pet.getPetType(), 
-                pet.getLocation(), 
-                pet.getPrice(), 
-                pet.getPetStatus(), 
-                pet.getCompatibilityScore(),
-                pet.getImgUrl()
-                );
+            pet.getPetId(),
+            pet.getName(),
+            pet.getBreed(), 
+            pet.getAge(), 
+            pet.getGender(), 
+            pet.getPetType(), 
+            pet.getLocation(), 
+            pet.getPrice(), 
+            pet.getPetStatus(), 
+            pet.getCompatibilityScore(),
+            pet.getImgUrl(),
+            pet.getSecondaryImages()
+                .stream().map(image -> image.getImageUrl())
+                .toList()
+        );
     }
 }
