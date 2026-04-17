@@ -7,19 +7,26 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody; import org.springframework.web.bind.annotation.RequestMapping; import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.RequestBody;
+ import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+ import org.springframework.web.bind.annotation.RestController;
 
 import com.pink.pfa.controllers.requests.UpdateUserNameRequest;
+import com.pink.pfa.controllers.requests.UserPrefRequest;
 import com.pink.pfa.controllers.requests.UserRequest;
 import com.pink.pfa.exceptions.ActionNotAllowedException;
 import com.pink.pfa.exceptions.ResourceNotFoundException;
 import com.pink.pfa.exceptions.UserAlreadyExistsException;
 import com.pink.pfa.exceptions.UserAlreadyRequestedContributor;
+import com.pink.pfa.models.UserPref;
 import com.pink.pfa.models.datatransfer.UserDTO;
+import com.pink.pfa.services.UserPrefService;
 import com.pink.pfa.services.UserService;
 
 import jakarta.servlet.http.HttpServletRequest;
@@ -53,12 +60,13 @@ import jakarta.validation.Valid;
 public class UserController {
 
     private final UserService userService;
+    private final UserPrefService userPrefService;
 
-    public UserController (UserService userService) {
+    public UserController (UserService userService, UserPrefService userPrefService) {
         this.userService = userService;
+        this.userPrefService = userPrefService;
     }
  
-
     /**
      * Retrieves a specific user by their unique ID.
      * <p>
@@ -115,6 +123,32 @@ public class UserController {
         }
     }
 
+    /**
+     * Retrieves a specific user's preferences by their unique ID.
+     * <p>
+     * Returns HTTP 200 (OK) with the corresponding list of {@link UserPref} on success,
+     * HTTP 404 (Not Found) if no user exists with the given ID,
+     * or HTTP 500 (Internal Server Error) if an unexpected failure occurs.
+     * </p>
+     *
+     * @param id the unique identifier of the user to retrieve
+     * @return {@link ResponseEntity} containing the list of {@link UserPref},
+     *         an empty 404 if the user does not exist,
+     *         or an empty 500 on unexpected error
+     */
+    @PreAuthorize("hasRole('ADMIN')")
+    @GetMapping("/{id}/getPrefs")
+    public ResponseEntity<List<UserPref>> getAllPrefsFromUser(
+        @PathVariable Integer id
+    ) {
+        try {
+            return ResponseEntity.ok().body(userPrefService.findAllByUserId(id));
+        } catch (ResourceNotFoundException e) {
+            return ResponseEntity.notFound().build();
+        } catch (Exception e) {
+            return ResponseEntity.internalServerError().build();
+        }
+    }
 
     @PatchMapping("/me/name")
     public ResponseEntity<UserDTO> updateMyName(
@@ -123,6 +157,86 @@ public class UserController {
     ) {
         try {
             return ResponseEntity.ok().body(userService.updateNameByJWT(request, updateRequest));
+        } catch (ResourceNotFoundException e) {
+            return ResponseEntity.notFound().build();
+        } catch (Exception e) {
+            return ResponseEntity.internalServerError().build();
+        }
+    }
+
+    /**
+     * Retrieves the currently authenticated user's preferences (if such authentication has occurred).
+     * <p>
+     * Returns HTTP 200 (OK) with the corresponding list of {@link UserPref} on success,
+     * HTTP 404 (Not Found) if no user exists with the given ID,
+     * or HTTP 500 (Internal Server Error) if an unexpected failure occurs.
+     * </p>
+     *
+     * @param id the unique identifier of the user to retrieve
+     * @return {@link ResponseEntity} containing the list of {@link UserPref},
+     *         an empty 404 if the user does not exist,
+     *         or an empty 500 on unexpected error
+     */
+    @GetMapping("/me/prefs")
+    public ResponseEntity<List<UserPref>> getMyPrefs() {
+        try {
+            UserDTO authUserDTO = userService.findByJWT();
+            return ResponseEntity.ok().body(userPrefService.findAllByUserId(authUserDTO.id()));
+        } catch (ResourceNotFoundException e) {
+            return ResponseEntity.notFound().build();
+        } catch (Exception e) {
+            return ResponseEntity.internalServerError().build();
+        }
+    }
+
+    /**
+     * Creates a new preference tied to the currently authenticated user's preferences 
+     * (if such authentication has occurred).
+     * <p>
+     * Returns HTTP 200 (OK) with the corresponding {@link UserPref} on success,
+     * HTTP 404 (Not Found) if no user exists with the given ID,
+     * or HTTP 500 (Internal Server Error) if an unexpected failure occurs.
+     * </p>
+     *
+     * @param id the unique identifier of the user to retrieve
+     * @return {@link ResponseEntity} containing the {@link UserPref},
+     *         an empty 404 if the user does not exist,
+     *         or an empty 500 on unexpected error
+     */
+    @PostMapping("/me/addPref")
+    public ResponseEntity<UserPref> addPref(
+        @Valid @RequestBody UserPrefRequest prefReq
+    ) {
+        try {
+            return ResponseEntity.ok().body(userPrefService.createNewPref(prefReq));
+        } catch (ResourceNotFoundException e) {
+            return ResponseEntity.notFound().build();
+        } catch (Exception e) {
+            return ResponseEntity.internalServerError().build();
+        }
+    }
+
+    /**
+     * Deletes a preference by id tied to the currently authenticated user's preferences 
+     * (if such authentication has occurred).
+     * <p>
+     * Returns HTTP 200 (OK) with the corresponding {@link UserPref} on success,
+     * HTTP 404 (Not Found) if no user exists with the given ID,
+     * or HTTP 500 (Internal Server Error) if an unexpected failure occurs.
+     * </p>
+     *
+     * @param id the unique identifier of the user to retrieve
+     * @return {@link ResponseEntity} containing the {@link UserPref},
+     *         an empty 404 if the user does not exist,
+     *         or an empty 500 on unexpected error
+     */
+    @DeleteMapping("/me/deletePref")
+    public ResponseEntity<Void> deletePref(
+        @RequestParam Integer prefId
+    ) {
+        try {
+            userPrefService.deleteUserPref(prefId);
+            return ResponseEntity.ok().build();
         } catch (ResourceNotFoundException e) {
             return ResponseEntity.notFound().build();
         } catch (Exception e) {
