@@ -5,11 +5,11 @@ import java.util.List;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
-import com.pink.pfa.models.Reviews;
+import com.pink.pfa.models.UserPreferences;
 
 
 /**
- * Data access layer for {@link Reviews} entities.
+ * Data access layer for {@link User Preferences} entities.
  * <p>
  * This interface extends {@link JpaRepository}, which provides built-in
  * CRUD operations such as:
@@ -27,15 +27,18 @@ import com.pink.pfa.models.Reviews;
  * conventions, allowing query logic to be derived directly from method names.
  */
 @Repository
-public interface ReviewsRepository extends JpaRepository<Reviews, Integer> {
+public interface UserPreferencesRepository extends JpaRepository<UserPreferences, Integer> {
 	
 	
-	/** Finds all reviews for a specific adoption site */
-    List<Reviews> findBySite_SiteId(Integer siteId);
+	/** Finds all user preferences by user. */
+	List<UserPreference> findByUser(User user);
     
-	/** Finds all reviews written by a specific user */
-	List<Reviews> findByUser_UserId(Integer userId);
-	
-	/** Finds all reviews at or above a minimum rating threshold */
-	List<Reviews> findByRatingGreaterThanEqual(Double rating);
+	/** Finds all users that prefer a certain trait. */
+	Optional<UserPreference> findByUserAndPrefTrait(User user, String prefTrait);
+    
+	/** Finds all users that prefer a certain value. */
+	List<UserPreference> findByUserAndPrefValue(User user, String prefValue);
+    
+	/** Here to prevent duplicate columns. */
+	void deleteByUserAndPrefTrait(User user, String prefTrait);
 }

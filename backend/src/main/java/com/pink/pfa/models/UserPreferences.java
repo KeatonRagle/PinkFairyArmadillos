@@ -14,7 +14,7 @@ import lombok.Data;
 
 
 /**
- * JPA entity representing a review record in the database.
+ * JPA entity representing a user preferences record in the database.
  * <p>
  * This class maps directly to the underlying reviews table and defines
  * the schema used for persistence. It is used by Spring Data JPA
@@ -22,19 +22,19 @@ import lombok.Data;
  *
  * Responsibilities:
  * <ul>
- *   <li>Store review information (rating, review comment, review date).</li>
+ *   <li>Store user preferences (trait preferred, value of preference).</li>
  * </ul>
  */
 @Data
 @Entity
-public class Reviews {
+public class UserPreferences {
 	
 	
 	/** Primary key identifier for the review (auto-generated). */
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
-	@Column(name = "review_id")
-	private Integer review_id;
+	@Column(name = "pref_id")
+	private Integer pref_id;
 	
 	
 	/** Foreign key identifier for the user. */
@@ -43,25 +43,14 @@ public class Reviews {
 	private User user;
 	
 	
-	/** Foreign key identifier for the adoptionSite. */
-	@ManyToOne
-	@JoinColumn(name = "site_id", nullable = false)
-	private AdoptionSite site;
+	/** Trait user prefers. */
+	@Column(name = "pref_trait", nullable = false)
+	private String prefTrait;
 	
 	
-	/** Review's listed rating. */
-	@Column(name = "rating", nullable = false)
-	private double rating;
-	
-	
-	/** Listed review comment. */
-	@Column(name = "rw_comment", nullable = false)
-	private String rwComment;
-	
-	
-	/** Listed review date. */
-	@Column(name = "rw_date", nullable = false)
-	private LocalDate rwDate;
+	/** Value of trait user prefers. */
+	@Column(name = "pref_value", nullable = false)
+	private String prefValue;
 	
 	
 	/** Default constructor required by JPA. */
@@ -69,15 +58,13 @@ public class Reviews {
 	
 	
 	/**
-     * Constructs a fully initialized Review entity.
+     * Constructs a fully initialized UserPreferences entity.
      *
-     * @param rating center's user-determiend rating
-     * @param rwComment user review comment
-	 * @param rwDate review date
+     * @param prefTrait trait user prefers
+	 * @param prefValue value of trait user prefers
      */
-	public Reviews(double rating, String rwComment, LocalDate rwDate) {
-		this.rating = rating;
-		this.rwComment = rwComment;
-		this.rwDate = rwDate;
+	public UserPreferences(String prefTrait, String prefValue) {
+		this.prefTrait = prefTrait;
+		this.prefValue = prefValue;
 	}
 }
