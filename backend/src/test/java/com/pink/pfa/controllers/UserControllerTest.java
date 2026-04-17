@@ -641,7 +641,7 @@ class UserControllerTest extends PfaBase {
 				.header("Authorization", "Bearer " + token)
 				.exchange()
 				.expectStatus().isEqualTo(HttpStatus.SC_CONFLICT);
-		user.user().setRequestedContributor(null);
+		user.user().setRequestedContributor('N');
 		userRepository.save(user.user());
 	}
 
