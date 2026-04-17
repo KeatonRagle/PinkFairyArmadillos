@@ -1,5 +1,6 @@
 package com.pink.pfa.controllers;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import org.springframework.http.HttpStatus;
@@ -12,11 +13,14 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.pink.pfa.controllers.requests.PetRequest;
+import com.pink.pfa.controllers.requests.FeaturedPetRequest;
 import com.pink.pfa.exceptions.ResourceNotFoundException;
 import com.pink.pfa.exceptions.SiteAlreadyExistsException;
-import com.pink.pfa.models.datatransfer.PetDTO;
+import com.pink.pfa.models.datatransfer.FeaturedPetDTO;
+import com.pink.pfa.services.FeaturedPetService;
 import com.pink.pfa.services.PetService;
+
+import jakarta.transaction.Transactional;
 
 /**
  * REST controller exposing the {@code /api/pets} API surface for the Pets for All platform.
@@ -37,13 +41,13 @@ import com.pink.pfa.services.PetService;
  * responsible only for request mapping, response shaping, and timestamp injection.
  */
 @RestController
-@RequestMapping("/api/pets")
-public class PetController {
+@RequestMapping("/api/featuredPets")
+public class FeaturePetController {
 
-    private final PetService petService;
+    private final FeaturedPetService featuredPetService;
 
-    public PetController (PetService petService) {
-        this.petService = petService;
+    public FeaturePetController (FeaturedPetService featuredPetService) {
+        this.featuredPetService = featuredPetService;
     }
 
     /**
@@ -52,48 +56,13 @@ public class PetController {
      * @return a map containing a {@code Pets} list and a {@code Timestamp} string
      */
     @GetMapping("/getAll")
-    public ResponseEntity<List<PetDTO>> getAllPets() {
+    public ResponseEntity<List<FeaturedPetDTO>> getAllFeaturedPets() {
         try {
-            return ResponseEntity.ok().body(petService.findAll());
+            return ResponseEntity.ok().body(featuredPetService.findAll());
         } catch (Exception e) {
             return ResponseEntity.internalServerError().build();
         }
     }
-
-    @GetMapping("/getFiltered")
-    public ResponseEntity<List<PetDTO>> getFilteredPets(
-        @RequestParam(required = false) String petType,
-        @RequestParam(required = false) String gender,
-        @RequestParam(required = false) Integer startAge,
-        @RequestParam(required = false) Integer endAge,
-        @RequestParam(required = false) String breed,
-        @RequestParam(required = false) String size
-    ) {
-        try {
-            return ResponseEntity.ok().body(petService.findByFilter(petType, gender, startAge, endAge, breed, size));
-        } catch (ResourceNotFoundException e) {
-            return ResponseEntity.notFound().build();
-        } catch (Exception e) {
-            return ResponseEntity.internalServerError().build();
-        }
-    }
-
-    /**
-     * Returns a list of active pets, along with a UTC timestamp.
-     *
-     * @return a map containing the matched list of {@code Pets} and a {@code Timestamp} string
-     */
-    @GetMapping("/getActive")
-    public ResponseEntity<List<PetDTO>> getActivePets() {
-        try {
-            return ResponseEntity.ok().body(petService.findAllActive());
-        } catch (ResourceNotFoundException e) {
-            return ResponseEntity.notFound().build();
-        } catch (Exception e) {
-            return ResponseEntity.internalServerError().build();
-        }
-    }
-
  
     /**
      * Returns a single pet by its ID, along with a UTC timestamp.
@@ -102,11 +71,38 @@ public class PetController {
      * @return a map containing the matched {@code Pet} and a {@code Timestamp} string
      */
     @GetMapping("/{id}")
-    public ResponseEntity<PetDTO> getPetById(
+    public ResponseEntity<FeaturedPetDTO> getFeaturedPetById(
         @PathVariable Integer id
     ) {
         try {
-            return ResponseEntity.ok().body(petService.findById(id));
+            return ResponseEntity.ok().body(featuredPetService.findById(id));
+        } catch (ResourceNotFoundException e) {
+            return ResponseEntity.notFound().build();
+        } catch (Exception e) {
+            return ResponseEntity.internalServerError().build();
+        }
+    }
+
+    // Annotated as such to rollback on failure
+    @Transactional
+    @GetMapping("/setupNextFeatureds")
+    public ResponseEntity<List<FeaturedPetDTO>> setupNextFeatureds(
+        @RequestParam Integer dogCount,
+        @RequestParam Integer catCount
+    ) {
+        featuredPetService.findAll()
+            .forEach(fPet -> featuredPetService.deleteByPetId(fPet.petId()));
+
+        List<FeaturedPetDTO> newlyAdded = new ArrayList<>();
+
+        try {
+            for (int i = 0; i < dogCount; i++) {
+                newlyAdded.add(featuredPetService.addFRandomPetByType("Dog", "Chosen randomly"));
+            }
+            for (int i = 0; i < catCount; i++) {
+                newlyAdded.add(featuredPetService.addFRandomPetByType("Cat", "Chosen randomly"));
+            }
+            return ResponseEntity.ok().body(newlyAdded);
         } catch (ResourceNotFoundException e) {
             return ResponseEntity.notFound().build();
         } catch (Exception e) {
@@ -115,11 +111,11 @@ public class PetController {
     }
 
     @PostMapping("/addPet")
-    public ResponseEntity<PetDTO> addPet(
-        @RequestBody PetRequest petReq
+    public ResponseEntity<FeaturedPetDTO> addFeaturedPet(
+        @RequestBody FeaturedPetRequest petReq
     ) {
         try { 
-            return ResponseEntity.ok().body(petService.addPet(petReq));
+            return ResponseEntity.ok().body(featuredPetService.addFPet(petReq));
         } catch (SiteAlreadyExistsException e){
             return ResponseEntity.status(HttpStatus.CONFLICT).build();
         } catch (Exception e) {
