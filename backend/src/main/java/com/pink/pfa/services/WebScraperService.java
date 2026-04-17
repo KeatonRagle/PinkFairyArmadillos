@@ -973,10 +973,7 @@ public class WebScraperService {
             }
 
             // Iterates through all of the terminating urls and attempts to scrape data off of them
-            int max = 10;
-            int count = 0;
-            while (!terminatingUrlQueue.isEmpty() && count < max) {
-                count++;
+            while (!terminatingUrlQueue.isEmpty()) {
                 List<String> terminatingUrlList = terminatingUrlQueue.remove();
                 String parentUrl = terminatingUrlList.get(0);
                 String childUrl = terminatingUrlList.get(1);
