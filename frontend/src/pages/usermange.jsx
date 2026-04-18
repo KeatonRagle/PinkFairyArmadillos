@@ -1,11 +1,20 @@
-import { useEffect, useMemo, useState } from 'react'
+import { useEffect, useMemo, useState, useCallback } from 'react'
 import { useNavigate } from 'react-router-dom'
 import HomeHeader from '../components/header'
 import { useAuth } from '../auth/AuthContext'
+import {
+	getBannedUsers,
+	getUnbannedUsers,
+	getRequestedContributor,
+	getDeniedContributor,
+	banUser,
+	unbanUser,
+	promoteToContributor,
+	denyContributor,
+    promoteToAdmin,
+    demoteToUser,
+} from '../fetch/api'
 import '../styling/usermanage.css'
-
-const USER_RECORDS_KEY = 'pfa_user_records'
-const CONTRIBUTOR_APPLICATIONS_KEY = 'pfa_contributor_applications'
 
 const FILTER_OPTIONS = [
 	{ key: 'WHITELISTED', label: 'Whitelisted Users' },
@@ -20,71 +29,20 @@ const ROLE_OPTIONS = [
 	{ value: 'ROLE_ADMIN', label: 'Admin' },
 ]
 
-function readStorageObject(key) {
-	try {
-		const rawValue = localStorage.getItem(key)
-		const parsedValue = rawValue ? JSON.parse(rawValue) : {}
-		return parsedValue && typeof parsedValue === 'object' ? parsedValue : {}
-	} catch {
-		return {}
-	}
-}
-
-function writeStorageObject(key, value) {
-	localStorage.setItem(key, JSON.stringify(value))
-}
-
-function createUserRecord(username, role = 'ROLE_USER') {
-	return {
-		username,
-		role,
-		listStatus: 'WHITELISTED',
-	}
-}
-
-function ensureUserRecords(existingRecords, currentUsername, currentRole, applications) {
-	const nextRecords = { ...existingRecords }
-
-	if (currentUsername) {
-		nextRecords[currentUsername] = {
-			...createUserRecord(currentUsername, currentRole || 'ROLE_USER'),
-			...(nextRecords[currentUsername] || {}),
-			username: currentUsername,
-			role: nextRecords[currentUsername]?.role || currentRole || 'ROLE_USER',
-		}
-	}
-
-	Object.keys(applications).forEach((applicantUsername) => {
-		nextRecords[applicantUsername] = {
-			...createUserRecord(applicantUsername),
-			...(nextRecords[applicantUsername] || {}),
-			username: applicantUsername,
-		}
-	})
-
-	return nextRecords
-}
-
 function roleLabel(role) {
-	return ROLE_OPTIONS.find((option) => option.value === role)?.label || role
-}
-
-function loadAdminData(currentUsername, currentRole, setApplications, setUserRecords) {
-	const storedApplications = readStorageObject(CONTRIBUTOR_APPLICATIONS_KEY)
-	const storedUsers = readStorageObject(USER_RECORDS_KEY)
-	const normalizedUsers = ensureUserRecords(storedUsers, currentUsername, currentRole, storedApplications)
-
-	writeStorageObject(USER_RECORDS_KEY, normalizedUsers)
-	setApplications(storedApplications)
-	setUserRecords(normalizedUsers)
+	return ROLE_OPTIONS.find((o) => o.value === role)?.label || role
 }
 
 export default function UserManage() {
 	const navigate = useNavigate()
-	const { token, username, role, setAuth } = useAuth()
+	const { username, role } = useAuth()
 	const [activeFilter, setActiveFilter] = useState('WHITELISTED')
-	const [userRecords, setUserRecords] = useState({})
-	const [applications, setApplications] = useState({})
+	const [whitelistedUsers, setWhitelistedUsers] = useState([])
+	const [blacklistedUsers, setBlacklistedUsers] = useState([])
+	const [pendingApplications, setPendingApplications] = useState([])
+	const [deniedApplications, setDeniedApplications] = useState([])
+	const [loading, setLoading] = useState(true)
+	const [error, setError] = useState(null)
 
 	useEffect(() => {
 		document.body.classList.add('usermanage-body')
@@ -96,142 +54,110 @@ export default function UserManage() {
 			navigate('/login')
 			return
 		}
-
 		if (role !== 'ROLE_ADMIN') {
 			navigate('/profile')
-			return
 		}
-
-		loadAdminData(username, role, setApplications, setUserRecords)
 	}, [navigate, role, username])
 
+	const loadData = useCallback(async () => {
+		if (role !== 'ROLE_ADMIN') return
+		setLoading(true)
+		setError(null)
+		try {
+			const [unbanned, banned, pending, denied] = await Promise.all([
+				getUnbannedUsers(),
+				getBannedUsers(),
+				getRequestedContributor(),
+				getDeniedContributor(),
+			])
+			setWhitelistedUsers(unbanned || [])
+			setBlacklistedUsers(banned || [])
+			setPendingApplications(pending || [])
+			setDeniedApplications(denied || [])
+		} catch {
+			setError('Failed to load user data. Please try again.')
+		} finally {
+			setLoading(false)
+		}
+	}, [role])
+
 	useEffect(() => {
-		if (role !== 'ROLE_ADMIN' || !username) {
-			return undefined
-		}
-
-		const handleStorageChange = (event) => {
-			if (
-				event.key &&
-				event.key !== CONTRIBUTOR_APPLICATIONS_KEY &&
-				event.key !== USER_RECORDS_KEY
-			) {
-				return
-			}
-
-			loadAdminData(username, role, setApplications, setUserRecords)
-		}
-
-		window.addEventListener('storage', handleStorageChange)
-		window.addEventListener('focus', handleStorageChange)
-
-		return () => {
-			window.removeEventListener('storage', handleStorageChange)
-			window.removeEventListener('focus', handleStorageChange)
-		}
-	}, [role, username])
-
-	const userEntries = useMemo(
-		() => Object.values(userRecords).sort((left, right) => left.username.localeCompare(right.username)),
-		[userRecords],
-	)
-
-	const applicationEntries = useMemo(
-		() => Object.entries(applications)
-			.map(([applicantUsername, application]) => ({
-				username: applicantUsername,
-				...application,
-				role: userRecords[applicantUsername]?.role || 'ROLE_USER',
-				listStatus: userRecords[applicantUsername]?.listStatus || 'WHITELISTED',
-			}))
-			.sort((left, right) => left.username.localeCompare(right.username)),
-		[applications, userRecords],
-	)
+		loadData()
+	}, [loadData])
 
 	const counts = useMemo(
 		() => ({
-			WHITELISTED: userEntries.filter((entry) => entry.listStatus === 'WHITELISTED').length,
-			BLACKLISTED: userEntries.filter((entry) => entry.listStatus === 'BLACKLISTED').length,
-			PENDING: applicationEntries.filter((entry) => entry.status === 'PENDING').length,
-			DENIED: applicationEntries.filter((entry) => entry.status === 'DENIED').length,
+			WHITELISTED: whitelistedUsers.length,
+			BLACKLISTED: blacklistedUsers.length,
+			PENDING: pendingApplications.length,
+			DENIED: deniedApplications.length,
 		}),
-		[applicationEntries, userEntries],
+		[whitelistedUsers, blacklistedUsers, pendingApplications, deniedApplications],
 	)
 
 	const visibleEntries = useMemo(() => {
-		if (activeFilter === 'WHITELISTED' || activeFilter === 'BLACKLISTED') {
-			return userEntries
-				.filter((entry) => entry.listStatus === activeFilter)
-				.map((entry) => ({ type: 'user', ...entry }))
-		}
+		if (activeFilter === 'WHITELISTED')
+			return whitelistedUsers.map((u) => ({ ...u, type: 'user', listStatus: 'WHITELISTED' }))
+		if (activeFilter === 'BLACKLISTED')
+			return blacklistedUsers.map((u) => ({ ...u, type: 'user', listStatus: 'BLACKLISTED' }))
+		if (activeFilter === 'PENDING')
+			return pendingApplications.map((u) => ({ ...u, type: 'application', status: 'PENDING', listStatus: 'WHITELISTED' }))
+		return deniedApplications.map((u) => ({ ...u, type: 'application', status: 'DENIED', listStatus: 'WHITELISTED' }))
+	}, [activeFilter, whitelistedUsers, blacklistedUsers, pendingApplications, deniedApplications])
 
-		return applicationEntries
-			.filter((entry) => entry.status === activeFilter)
-			.map((entry) => ({ type: 'application', ...entry }))
-	}, [activeFilter, applicationEntries, userEntries])
-
-	const persistUsers = (nextUsers) => {
-		writeStorageObject(USER_RECORDS_KEY, nextUsers)
-		setUserRecords(nextUsers)
-	}
-
-	const persistApplications = (nextApplications) => {
-		writeStorageObject(CONTRIBUTOR_APPLICATIONS_KEY, nextApplications)
-		setApplications(nextApplications)
-	}
-
-	const handleListToggle = (targetUsername) => {
-		const currentRecord = userRecords[targetUsername]
-		if (!currentRecord) {
-			return
-		}
-
-		const nextUsers = {
-			...userRecords,
-			[targetUsername]: {
-				...currentRecord,
-				listStatus: currentRecord.listStatus === 'BLACKLISTED' ? 'WHITELISTED' : 'BLACKLISTED',
-			},
-		}
-
-		persistUsers(nextUsers)
-	}
-
-	const updateRole = (targetUsername, nextRole) => {
-		const existingRecord = userRecords[targetUsername] || createUserRecord(targetUsername)
-		const nextUsers = {
-			...userRecords,
-			[targetUsername]: {
-				...existingRecord,
-				username: targetUsername,
-				role: nextRole,
-			},
-		}
-
-		persistUsers(nextUsers)
-
-		if (targetUsername === username) {
-			setAuth(token, username, nextRole)
+	const handleListToggle = async (entry) => {
+		try {
+			if (entry.listStatus === 'BLACKLISTED') {
+				await unbanUser(entry.id)
+			} else {
+				await banUser(entry.id)
+			}
+			await loadData()
+		} catch {
+			setError('Failed to update user status.')
 		}
 	}
 
-	const handleApplicationDecision = (targetUsername, nextStatus) => {
-		const currentApplication = applications[targetUsername]
-		if (!currentApplication) {
-			return
-		}
+	// NOTE: Only ROLE_CONTRIBUTOR promotion is supported by the current API.
+	// Promoting to ROLE_ADMIN or demoting to ROLE_USER requires additional backend endpoints.
+	const handleRoleChange = async (entry, nextRole) => {
+		if (nextRole === entry.role) return
+		if (nextRole === 'ROLE_CONTRIBUTOR') {
+			try {
+				await promoteToContributor(entry.id)
+				await loadData()
+			} catch {
+				setError('Failed to update role.')
+			}
+		} else if (nextRole === 'ROLE_ADMIN') {
+			try {
+				await promoteToAdmin(entry.id)
+				await loadData()
+			} catch {
+				setError('Failed to update role.')
+			}
+        } else if (nextRole === 'ROLE_USER'){
+			try {
+				await demoteToUser(entry.id)
+				await loadData()
+			} catch {
+				setError('Failed to update role.')
+			}
+		} else {
+            setError('Something went wrong')
+        }
+	}
 
-		const nextApplications = {
-			...applications,
-			[targetUsername]: {
-				...currentApplication,
-				status: nextStatus,
-			},
-		}
-		persistApplications(nextApplications)
-
-		if (nextStatus === 'APPROVED') {
-			updateRole(targetUsername, 'ROLE_CONTRIBUTOR')
+	const handleApplicationDecision = async (entry, decision) => {
+		try {
+			if (decision === 'APPROVED') {
+				await promoteToContributor(entry.id)
+			} else {
+				await denyContributor(entry.id)
+			}
+			await loadData()
+		} catch {
+			setError(`Failed to ${decision === 'APPROVED' ? 'approve' : 'deny'} application.`)
 		}
 	}
 
@@ -263,29 +189,50 @@ export default function UserManage() {
 								onClick={() => setActiveFilter(option.key)}
 							>
 								<span>{option.label}</span>
+								{counts[option.key] > 0 && (
+									<span className="usermanage-filter-count">{counts[option.key]}</span>
+								)}
 							</button>
 						))}
 					</div>
 
+					{error && (
+						<p className="usermanage-error" role="alert">
+							{error}
+						</p>
+					)}
+
 					<section className="usermanage-list-section">
-						{visibleEntries.length === 0 ? (
+						{loading ? (
+							<p className="usermanage-empty">Loading...</p>
+						) : visibleEntries.length === 0 ? (
 							<p className="usermanage-empty">{emptyMessage}</p>
 						) : (
 							<div className="usermanage-list">
 								{visibleEntries.map((entry) => (
-									<article key={`${entry.type}-${entry.username}`} className="usermanage-entry">
+									<article key={`${entry.type}-${entry.id}`} className="usermanage-entry">
 										<div className="usermanage-entry-header">
 											<div>
-												<h2>{entry.username}</h2>
+												<h2>{entry.name}</h2>
 												{entry.type === 'application' ? <p>Contributor application</p> : null}
 											</div>
 											<div className="usermanage-badges">
-												<span className={`usermanage-badge ${entry.listStatus === 'BLACKLISTED' ? 'is-blacklisted' : 'is-whitelisted'}`}>
+												<span
+													className={`usermanage-badge ${entry.listStatus === 'BLACKLISTED' ? 'is-blacklisted' : 'is-whitelisted'}`}
+												>
 													{entry.listStatus === 'BLACKLISTED' ? 'Blacklisted' : 'Whitelisted'}
 												</span>
 												<span className="usermanage-badge is-role">{roleLabel(entry.role)}</span>
 												{entry.type === 'application' ? (
-													<span className={`usermanage-badge ${entry.status === 'DENIED' ? 'is-denied' : entry.status === 'APPROVED' ? 'is-approved' : 'is-pending'}`}>
+													<span
+														className={`usermanage-badge ${
+															entry.status === 'DENIED'
+																? 'is-denied'
+																: entry.status === 'APPROVED'
+																	? 'is-approved'
+																	: 'is-pending'
+														}`}
+													>
 														{entry.status}
 													</span>
 												) : null}
@@ -295,25 +242,42 @@ export default function UserManage() {
 										<div className="usermanage-controls">
 											<div className="usermanage-role-stack">
 												<label className="usermanage-control">
-												<span>Role</span>
-												<select value={entry.role} onChange={(event) => updateRole(entry.username, event.target.value)}>
-													{ROLE_OPTIONS.map((option) => (
-														<option key={option.value} value={option.value}>{option.label}</option>
-													))}
-												</select>
+													<span>Role</span>
+													<select
+														value={entry.role}
+														onChange={(e) => handleRoleChange(entry, e.target.value)}
+													>
+														{ROLE_OPTIONS.map((option) => (
+															<option key={option.value} value={option.value}>
+																{option.label}
+															</option>
+														))}
+													</select>
 												</label>
 
-												<button type="button" className="usermanage-button usermanage-list-button" onClick={() => handleListToggle(entry.username)}>
+												<button
+													type="button"
+													className="usermanage-button usermanage-list-button"
+													onClick={() => handleListToggle(entry)}
+												>
 													Move to {entry.listStatus === 'BLACKLISTED' ? 'Whitelist' : 'Blacklist'}
 												</button>
 											</div>
 
 											{entry.type === 'application' ? (
 												<div className="usermanage-application-actions">
-													<button type="button" className="usermanage-button" onClick={() => handleApplicationDecision(entry.username, 'APPROVED')}>
+													<button
+														type="button"
+														className="usermanage-button"
+														onClick={() => handleApplicationDecision(entry, 'APPROVED')}
+													>
 														Approve Application
 													</button>
-													<button type="button" className="usermanage-button is-secondary" onClick={() => handleApplicationDecision(entry.username, 'DENIED')}>
+													<button
+														type="button"
+														className="usermanage-button is-secondary"
+														onClick={() => handleApplicationDecision(entry, 'DENIED')}
+													>
 														Deny Application
 													</button>
 												</div>

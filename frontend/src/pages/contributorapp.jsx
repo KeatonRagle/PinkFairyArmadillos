@@ -23,7 +23,7 @@ export default function ContributorApp() {
 
 		getCurrentUser()
 			.then((user) => {
-				if (user.requestedContributor) setSubmitted(true)
+				if (user.requestedContributor == 'P') setSubmitted(true)
 			})
 			.catch(() => setError('Failed to load user data.'))
 			.finally(() => setLoading(false))
