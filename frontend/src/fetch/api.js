@@ -236,3 +236,15 @@ export function getDeniedContributor() {
     method: "GET"
   })
 }
+
+export function promoteToAdmin(id) {
+  return apiFetchAuthenticated(`/api/users/promoteToAdmin/${id}`, {
+    method: "PATCH"
+  });
+}
+
+export function demoteToUser(id) {
+  return apiFetchAuthenticated(`/api/users/demoteToUser/${id}`, {
+    method: "PATCH"
+  });
+}

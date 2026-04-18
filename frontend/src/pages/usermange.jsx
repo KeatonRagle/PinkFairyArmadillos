@@ -11,6 +11,8 @@ import {
 	unbanUser,
 	promoteToContributor,
 	denyContributor,
+    promoteToAdmin,
+    demoteToUser,
 } from '../fetch/api'
 import '../styling/usermanage.css'
 
@@ -127,9 +129,23 @@ export default function UserManage() {
 			} catch {
 				setError('Failed to update role.')
 			}
+		} else if (nextRole === 'ROLE_ADMIN') {
+			try {
+				await promoteToAdmin(entry.id)
+				await loadData()
+			} catch {
+				setError('Failed to update role.')
+			}
+        } else if (nextRole === 'ROLE_USER'){
+			try {
+				await demoteToUser(entry.id)
+				await loadData()
+			} catch {
+				setError('Failed to update role.')
+			}
 		} else {
-			setError('Promoting to Admin or demoting to User is not yet supported by the API.')
-		}
+            setError('Something went wrong')
+        }
 	}
 
 	const handleApplicationDecision = async (entry, decision) => {
@@ -197,7 +213,7 @@ export default function UserManage() {
 									<article key={`${entry.type}-${entry.id}`} className="usermanage-entry">
 										<div className="usermanage-entry-header">
 											<div>
-												<h2>{entry.username}</h2>
+												<h2>{entry.name}</h2>
 												{entry.type === 'application' ? <p>Contributor application</p> : null}
 											</div>
 											<div className="usermanage-badges">

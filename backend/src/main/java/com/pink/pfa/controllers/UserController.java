@@ -272,6 +272,19 @@ public class UserController {
         }
     }
 
+    @PreAuthorize("hasRole('ADMIN')")
+    @PatchMapping("/demoteToUser/{id}")
+    public ResponseEntity<Void> demoteToUser(@PathVariable int id) {
+        try {
+            userService.demoteToUser(id);
+            return ResponseEntity.noContent().build();
+        } catch (ResourceNotFoundException e) {
+            return ResponseEntity.notFound().build();
+        } catch (Exception e) {
+            return ResponseEntity.internalServerError().build();
+        }
+    }
+
 
     @PreAuthorize("hasRole('ADMIN')")
     @PatchMapping("/banUser/{id}")
@@ -321,7 +334,14 @@ public class UserController {
     @PreAuthorize("hasRole('ADMIN')")
     @PatchMapping("/denyContributor/{id}")
     public ResponseEntity<Void> denyContributor(@PathVariable int id) {
-        return ResponseEntity.status(HttpStatus.NOT_IMPLEMENTED).build();
+        try {
+            userService.denyContributor(id);
+            return ResponseEntity.noContent().build();
+        } catch (ResourceNotFoundException e) {
+            return ResponseEntity.notFound().build();
+        } catch (Exception e) {
+            return ResponseEntity.internalServerError().build();
+        }
     }
 
     @PreAuthorize("hasRole('ADMIN')")
@@ -370,7 +390,15 @@ public class UserController {
     @PreAuthorize("hasRole('ADMIN')")
     @GetMapping("/getDeniedContributor")
     public ResponseEntity<List<UserDTO>> getDeniedContributor() {
-        return ResponseEntity.status(HttpStatus.NOT_IMPLEMENTED).build();
+        try {
+            return ResponseEntity.ok().body(userService.findAllDeniedContributor());
+        } catch (ResourceNotFoundException e) {
+            return ResponseEntity.notFound().build();
+        } catch (ActionNotAllowedException e) {
+            return ResponseEntity.status(HttpStatus.CONFLICT).build();
+        } catch (Exception e) {
+            return ResponseEntity.internalServerError().build();
+        }
     }
 
 }

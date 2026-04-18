@@ -106,6 +106,13 @@ public class UserService {
             .toList();
     }
 
+    public List<UserDTO> findAllDeniedContributor() {
+        return userRepository.findByDeniedContributor()
+            .stream()
+            .map(UserDTO::fromEntity)
+            .toList();
+    }
+
     /**
      * Fetches a single user by ID and returns it as a {@link UserDTO}.
      * Throws an exception if the user does not exist.
@@ -242,6 +249,14 @@ public class UserService {
         user.setRequestedContributor('A');
         user.setRole(User.Role.ROLE_CONTRIBUTOR);
     }
+    
+    @Transactional
+    public void demoteToUser(int id) {
+        User user = userRepository.findById(id)
+            .orElseThrow(() -> new ResourceNotFoundException("User", id));
+        
+        user.setRole(User.Role.ROLE_USER);
+    }
 
     @Transactional
     public void banUser(int id) {
@@ -285,5 +300,13 @@ public class UserService {
         if (user.getRequestedContributor() == 'A' || user.getRequestedContributor() == 'P')
 			throw new UserAlreadyRequestedContributor(email);
         else user.setRequestedContributor('P');
+    }
+
+    @Transactional
+    public void denyContributor(int id) {
+
+        User user = userRepository.findById(id)
+            .orElseThrow(() -> new ResourceNotFoundException("User", id));
+        user.setRequestedContributor('D');
     }
 }
