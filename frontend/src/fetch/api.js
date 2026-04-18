@@ -224,3 +224,27 @@ export function promoteToContributor(id) {
     method: "PATCH" 
   });
 }
+
+export function denyContributor(id) {
+  return apiFetchAuthenticated(`/api/users/denyContributor/${id}`, {
+    method: "PATCH"
+  });
+}
+
+export function getDeniedContributor() {
+  return apiFetchAuthenticated(`/api/users/getDeniedContributor`, {
+    method: "GET"
+  })
+}
+
+export function promoteToAdmin(id) {
+  return apiFetchAuthenticated(`/api/users/promoteToAdmin/${id}`, {
+    method: "PATCH"
+  });
+}
+
+export function demoteToUser(id) {
+  return apiFetchAuthenticated(`/api/users/demoteToUser/${id}`, {
+    method: "PATCH"
+  });
+}

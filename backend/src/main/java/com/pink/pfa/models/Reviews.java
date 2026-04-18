@@ -46,7 +46,6 @@ public class Reviews {
 	/** Foreign key identifier for the adoptionSite. */
 	@ManyToOne
 	@JoinColumn(name = "site_id", nullable = false)
-	
 	private AdoptionSite site;
 	
 	
@@ -55,12 +54,12 @@ public class Reviews {
 	private double rating;
 	
 	
-	/** Listed review date. */
+	/** Listed review comment. */
 	@Column(name = "rw_comment", nullable = false)
 	private String rwComment;
 	
 	
-	/** review date. */
+	/** Listed review date. */
 	@Column(name = "rw_date", nullable = false)
 	private LocalDate rwDate;
 	

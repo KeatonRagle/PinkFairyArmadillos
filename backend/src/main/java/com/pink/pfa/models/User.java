@@ -73,7 +73,7 @@ public class User {
 	
 	/** User's contributor status check. */
 	@Column(name = "requested_contributor", nullable = false)
-	private boolean requestedContributor = false;
+	private char requestedContributor = 'N';
 	
 	
     /** Optional location metadata associated with the user. */
@@ -104,7 +104,7 @@ public class User {
 	 * @param requestedContributor user requested contributor status
      */
     public User(String name, String email, String password, Role role,
-		String location, boolean isBanned, boolean requestedContributor
+		String location, boolean isBanned, char requestedContributor
 	) {
         this.name = name;
         this.email = email;
@@ -141,7 +141,7 @@ public class User {
 		return isBanned;
 	}
 	
-	public boolean getRequestedContributor() {
+	public char getRequestedContributor() {
 		return requestedContributor;
 	}
 
@@ -167,7 +167,7 @@ public class User {
 		this.isBanned = isBanned;
 	}
 	
-	public void setRequestedContributor(boolean requestedContributor) {
+	public void setRequestedContributor(char requestedContributor) {
 		this.requestedContributor = requestedContributor;
 	}
 }

@@ -30,7 +30,7 @@ public record UserDTO(
         String email,
         User.Role role,
         Boolean isBanned,
-        Boolean requestedContributor
+        Character requestedContributor
 ) {
 
 

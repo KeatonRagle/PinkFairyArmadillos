@@ -35,7 +35,7 @@ public interface ReviewsRepository extends JpaRepository<Reviews, Integer> {
     
 	/** Finds all reviews written by a specific user */
 	List<Reviews> findByUser_UserId(Integer userId);
-    
+	
 	/** Finds all reviews at or above a minimum rating threshold */
 	List<Reviews> findByRatingGreaterThanEqual(Double rating);
 }
