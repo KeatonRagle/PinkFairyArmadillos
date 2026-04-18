@@ -319,6 +319,12 @@ public class UserController {
     }
 
     @PreAuthorize("hasRole('ADMIN')")
+    @PatchMapping("/denyContributor/{id}")
+    public ResponseEntity<Void> denyContributor(@PathVariable int id) {
+        return ResponseEntity.status(HttpStatus.NOT_IMPLEMENTED).build();
+    }
+
+    @PreAuthorize("hasRole('ADMIN')")
     @GetMapping("/getBannedUsers")
     public ResponseEntity<List<UserDTO>> getBannedUsers() {
         try {
@@ -359,4 +365,12 @@ public class UserController {
             return ResponseEntity.internalServerError().build();
         }
     }
+
+
+    @PreAuthorize("hasRole('ADMIN')")
+    @GetMapping("/getDeniedContributor")
+    public ResponseEntity<List<UserDTO>> getDeniedContributor() {
+        return ResponseEntity.status(HttpStatus.NOT_IMPLEMENTED).build();
+    }
+
 }

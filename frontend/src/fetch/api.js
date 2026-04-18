@@ -224,3 +224,15 @@ export function promoteToContributor(id) {
     method: "PATCH" 
   });
 }
+
+export function denyContributor(id) {
+  return apiFetchAuthenticated(`/api/users/denyContributor/${id}`, {
+    method: "PATCH"
+  });
+}
+
+export function getDeniedContributor() {
+  return apiFetchAuthenticated(`/api/users/getDeniedContributor`, {
+    method: "GET"
+  })
+}
