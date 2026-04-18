@@ -73,7 +73,7 @@ public class User {
 	
 	/** User's contributor status check. */
 	@Column(name = "requested_contributor", nullable = false)
-	private char requestedContributor;
+	private char requestedContributor = 'N';
 	
 	
     /** Optional location metadata associated with the user. */
