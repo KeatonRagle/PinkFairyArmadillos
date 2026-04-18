@@ -64,6 +64,19 @@ public class PetService {
             .toList();
     }
 
+    public List<PetDTO> findAllActive() {
+        return petRepository.findByPetStatusNot("INACTIVE")
+            .stream()
+            .map(PetDTO::fromEntity)
+            .toList();
+    }
+
+    public PetDTO findRandomActivePetByType(String type) {
+        return petRepository.findByPetStatusNotAndTypeRand(type, "INACTIVE")
+            .map(PetDTO::fromEntity)
+            .orElseThrow(() -> new ResourceNotFoundException("No active pets found", 0));
+    }
+
     public PetDTO addPet(PetRequest request) {
         Pet pet = new Pet(request.name(), request.breed(), request.age(), request.gender(), 
             request.petType(), request.location(), request.price(), request.size(), 
@@ -172,7 +185,10 @@ public class PetService {
         // between entries in the scrape and existing elements in the DB
         Map<String, Pet> scrapedMap = scrapedPets
             .stream()
-            .collect(Collectors.toMap(this::buildKey, p -> p));
+            .collect(Collectors.toMap(this::buildKey, p -> p, (existing, replacement) -> {
+                System.out.println("Duplicate found for key: " + buildKey(existing));
+                return existing;
+            }));
 
         Map<String, Pet> dbMap = petRepository.findAll()
             .stream()

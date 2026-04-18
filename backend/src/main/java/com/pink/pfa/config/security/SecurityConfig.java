@@ -146,6 +146,7 @@ public class SecurityConfig {
                     "/api/users/login",
                     "/api/users/register",
                     "/api/pets/**",
+                    "/api/featuredPets/**",
                     "/api/public/**"
                 ).permitAll() // any endpoint starting with /api/public is public and does not require auth
                 .anyRequest().authenticated() // any endpoint that does not start with /api/public is private and does require auth

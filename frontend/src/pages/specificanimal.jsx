@@ -1,10 +1,10 @@
-import { useEffect } from 'react'
-import { Link, useLocation, useNavigate } from 'react-router-dom'
+import { useEffect, useState } from 'react'
+import { useLocation } from 'react-router-dom'
 import HomeHeader from '../components/header'
 import HomeFooter from '../components/footer'
+import ReviewsPopup from '../components/ReviewsPopup'
 import '../styling/specificanimal.css'
 
-const placeholderGallery = [1, 2, 3]
 const previewAnimal = {
 	name: 'dog',
 	image: '/images/dogs.jpg',
@@ -19,6 +19,7 @@ const previewAnimal = {
 export default function SpecificAnimal() {
 	const location = useLocation()
 	const animal = location.state?.animal ?? previewAnimal
+	const filters = location.state?.filters ?? null
 	const animalAge = () => {
 		if (!animal) return null
 
@@ -33,6 +34,7 @@ export default function SpecificAnimal() {
 		return ageComponents
 	}
 	const isPreview = !location.state?.animal
+	const [reviewsOpen, setReviewsOpen] = useState(false)
 
 	useEffect(() => {
 		document.body.classList.add('specificanimal-body')
@@ -41,7 +43,13 @@ export default function SpecificAnimal() {
 
 	return (
 		<div className="specificanimal-page">
-			<HomeHeader />
+			<HomeHeader
+				backLink={{
+					to: '/animal-filter',
+					label: 'BACK TO FILTERS',
+					state: filters ? { filters, petType: filters.petType } : undefined,
+				}}
+			/>
 
 			<main className="specificanimal-main">
 				<section className="specificanimal-media-column">
@@ -50,9 +58,9 @@ export default function SpecificAnimal() {
 					</div>
 
 					<div className="specificanimal-gallery-row" aria-label="Additional photos">
-						{placeholderGallery.map((item) => (
-							<div key={item} className="specificanimal-gallery-placeholder">
-								<span>Photo</span>
+						{animal.secondaryImages.map((item, index) => (
+							<div key={animal.name + index} className="specificanimal-main-image-wrap">
+								<img src={item} alt={animal.name} className="specificanimal-main-image" />
 							</div>
 						))}
 					</div>
@@ -67,6 +75,12 @@ export default function SpecificAnimal() {
 								Preview blah blah blah blah.
 							</p>
 						) : null}
+						<button
+							className="specificanimal-reviews-btn"
+							onClick={() => setReviewsOpen(true)}
+						>
+							Reviews
+						</button>
 					</div>
 
 					<div className="specificanimal-about-card">
@@ -98,6 +112,12 @@ export default function SpecificAnimal() {
 			</main>
 
 			<HomeFooter />
+
+			<ReviewsPopup
+				isOpen={reviewsOpen}
+				onClose={() => setReviewsOpen(false)}
+				shelterName={animal.adoptionSite}
+			/>
 		</div>
 	)
 }
