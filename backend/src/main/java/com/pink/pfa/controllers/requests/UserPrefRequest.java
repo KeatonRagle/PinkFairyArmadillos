@@ -1,6 +1,6 @@
 package com.pink.pfa.controllers.requests;
 
-import com.pink.pfa.models.UserPref;
+import com.pink.pfa.models.UserPreferences;
 
 import jakarta.validation.constraints.NotBlank;
 
@@ -25,7 +25,7 @@ import jakarta.validation.constraints.NotBlank;
  */
 public record UserPrefRequest(
     @NotBlank
-    UserPref.Preference pref, 
+    UserPreferences.Preference pref, 
 
     @NotBlank
     String value

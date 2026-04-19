@@ -16,9 +16,9 @@ import com.pink.pfa.context.PfaBase;
 import com.pink.pfa.controllers.requests.UserPrefRequest;
 import com.pink.pfa.exceptions.ResourceNotFoundException;
 import com.pink.pfa.models.User;
-import com.pink.pfa.models.UserPref;
-import com.pink.pfa.models.UserPref.Preference;
-import com.pink.pfa.repos.UserPrefRepository;
+import com.pink.pfa.models.UserPreferences;
+import com.pink.pfa.models.UserPreferences.Preference;
+import com.pink.pfa.repos.UserPreferencesRepository;
 
 /**
  * Integration test suite for {@link UserPrefService}.
@@ -32,12 +32,12 @@ import com.pink.pfa.repos.UserPrefRepository;
 class UserPrefServiceTest extends PfaBase {
 
     private final UserPrefService userPrefService;
-    private final UserPrefRepository userPrefRepository;
+    private final UserPreferencesRepository userPrefRepository;
 
     @Autowired
     public UserPrefServiceTest(
         UserPrefService userPrefService,
-        UserPrefRepository userPrefRepository
+        UserPreferencesRepository userPrefRepository
     ) {
         this.userPrefService = userPrefService;
         this.userPrefRepository = userPrefRepository;
@@ -57,7 +57,7 @@ class UserPrefServiceTest extends PfaBase {
         SeededUser seededUser = getRandUserAndPassByRole(User.Role.ROLE_USER);
         int userId = seededUser.user().getUserId();
 
-        List<UserPref> prefs = userPrefService.findAllByUserId(userId);
+        List<UserPreferences> prefs = userPrefService.findAllByUserId(userId);
 
         assertNotNull(prefs, "Result should not be null");
         assertTrue(prefs.isEmpty(), "Expected no prefs for a freshly seeded user");
@@ -79,7 +79,7 @@ class UserPrefServiceTest extends PfaBase {
         userPrefService.createNewPref(new UserPrefRequest(Preference.BREED, "Labrador"));
         userPrefService.createNewPref(new UserPrefRequest(Preference.GENDER, "female"));
 
-        List<UserPref> prefs = userPrefService.findAllByUserId(userId);
+        List<UserPreferences> prefs = userPrefService.findAllByUserId(userId);
 
         assertEquals(2, prefs.size(), "Expected exactly 2 prefs for this user");
         assertTrue(prefs.stream().allMatch(p -> p.getUser().getUserId() == userId),
@@ -99,15 +99,15 @@ class UserPrefServiceTest extends PfaBase {
         SeededUser seededUser = getRandUserAndPassByRole(User.Role.ROLE_USER);
         mockSecurityContext(seededUser.user());
 
-        UserPref created = userPrefService.createNewPref(
+        UserPreferences created = userPrefService.createNewPref(
             new UserPrefRequest(Preference.SIZE, "Medium")
         );
 
-        UserPref found = userPrefService.findById(created.getId());
+        UserPreferences found = userPrefService.findById(created.getPrefId());
 
         assertNotNull(found, "Expected a pref to be returned");
-        assertEquals(Preference.SIZE, found.getPreferenceType());
-        assertEquals("Medium", found.getValue());
+        assertEquals(Preference.SIZE, found.getPrefTrait());
+        assertEquals("Medium", found.getPrefValue());
     }
 
     /**
@@ -133,14 +133,14 @@ class UserPrefServiceTest extends PfaBase {
         SeededUser seededUser = getRandUserAndPassByRole(User.Role.ROLE_USER);
         mockSecurityContext(seededUser.user());
 
-        UserPref result = userPrefService.createNewPref(
+        UserPreferences result = userPrefService.createNewPref(
             new UserPrefRequest(Preference.BREED, "Poodle")
         );
 
         assertNotNull(result, "Created pref should not be null");
-        assertNotNull(result.getId(), "Saved pref should have a generated ID");
-        assertEquals(Preference.BREED, result.getPreferenceType());
-        assertEquals("Poodle", result.getValue());
+        assertNotNull(result.getPrefId(), "Saved pref should have a generated ID");
+        assertEquals(Preference.BREED, result.getPrefTrait());
+        assertEquals("Poodle", result.getPrefValue());
         assertEquals(seededUser.user().getUserId(), result.getUser().getUserId());
     }
 
@@ -159,7 +159,7 @@ class UserPrefServiceTest extends PfaBase {
         userPrefService.createNewPref(new UserPrefRequest(Preference.AGE_MAX, "5"));
         userPrefService.createNewPref(new UserPrefRequest(Preference.SIZE,    "Large"));
 
-        List<UserPref> prefs = userPrefService.findAllByUserId(
+        List<UserPreferences> prefs = userPrefService.findAllByUserId(
             seededUser.user().getUserId()
         );
 
@@ -180,14 +180,14 @@ class UserPrefServiceTest extends PfaBase {
         SeededUser seededUser = getRandUserAndPassByRole(User.Role.ROLE_USER);
         mockSecurityContext(seededUser.user());
 
-        UserPref created = userPrefService.createNewPref(
+        UserPreferences created = userPrefService.createNewPref(
             new UserPrefRequest(Preference.GENDER, "male")
         );
 
-        userPrefService.deleteUserPref(created.getId());
+        userPrefService.deleteUserPref(created.getPrefId());
 
         assertThrows(Exception.class,
-            () -> userPrefService.findById(created.getId()),
+            () -> userPrefService.findById(created.getPrefId()),
             "Pref should no longer exist after deletion");
     }
 
@@ -200,7 +200,7 @@ class UserPrefServiceTest extends PfaBase {
         // User A creates a pref
         SeededUser userA = getRandUserAndPassByRole(User.Role.ROLE_USER);
         mockSecurityContext(userA.user());
-        UserPref created = userPrefService.createNewPref(
+        UserPreferences created = userPrefService.createNewPref(
             new UserPrefRequest(Preference.SIZE, "Small")
         );
 
@@ -209,7 +209,7 @@ class UserPrefServiceTest extends PfaBase {
         mockSecurityContext(userB.user());
 
         assertThrows(RuntimeException.class,
-            () -> userPrefService.deleteUserPref(created.getId()),
+            () -> userPrefService.deleteUserPref(created.getPrefId()),
             "Should not be able to delete another user's pref");
     }
 
@@ -228,7 +228,7 @@ class UserPrefServiceTest extends PfaBase {
 
         userPrefService.createNewPref(new UserPrefRequest(Preference.BREED, "Beagle"));
 
-        List<UserPref> prefs = userPrefService.findAllByEmail(
+        List<UserPreferences> prefs = userPrefService.findAllByEmail(
             seededUser.user().getEmail()
         );
 
