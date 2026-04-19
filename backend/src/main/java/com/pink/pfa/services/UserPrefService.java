@@ -45,7 +45,8 @@ public class UserPrefService {
     }
 
     public void deleteUserPref(Integer prefId) { 
-        UserPreferences pref = userPrefRepository.findById(prefId)
+        UserDTO user = userService.findByJWT();
+        UserPreferences pref = userPrefRepository.findByUser_UserIdAndPrefId(user.id(), prefId)
             .orElseThrow(() -> new RuntimeException("Preference not found or not yours"));
 
         userPrefRepository.delete(pref);
