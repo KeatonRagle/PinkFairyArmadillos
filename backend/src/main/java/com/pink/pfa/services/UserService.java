@@ -3,6 +3,7 @@ package com.pink.pfa.services;
 import java.util.List;
 
 import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.LockedException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -216,6 +217,7 @@ public class UserService {
         );
         if (authentication.isAuthenticated()) 
             return jwtService.generateToken(userRequest.email().trim().toLowerCase());
+
         return "Nope";
     }
 

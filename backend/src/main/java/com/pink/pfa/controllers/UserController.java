@@ -6,6 +6,7 @@ import java.util.Map;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.authentication.LockedException;
 import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -35,23 +36,28 @@ import jakarta.validation.Valid;
 
 /**
  * REST controller responsible for handling HTTP requests related to user
- * registration, authentication, and retrieval.
+ * registration, authentication, retrieval, role management, and account moderation.
  * <p>
  * Exposes endpoints under {@code /api/users} and delegates all business
- * logic to {@link UserService}.
+ * logic to {@link UserService} and {@link UserPrefService}.
  * </p>
  *
  * <p>Responsibilities:</p>
  * <ul>
  *   <li>Register new users and issue JWTs upon successful registration.</li>
  *   <li>Authenticate existing users and issue JWTs upon successful login.</li>
- *   <li>Retrieve user data by ID or from the JWT of the current request.</li>
+ *   <li>Retrieve user data by ID, email, or from the JWT of the current request.</li>
+ *   <li>Manage user preferences (create, retrieve, delete).</li>
+ *   <li>Promote and demote users between ROLE_USER, ROLE_CONTRIBUTOR, and ROLE_ADMIN.</li>
+ *   <li>Ban and unban user accounts.</li>
+ *   <li>Handle contributor role requests and admin approval/denial flows.</li>
  * </ul>
  *
  * <p>Security:</p>
  * <ul>
  *   <li>Role-based access control is enforced using {@link PreAuthorize}.</li>
  *   <li>JWT authentication is handled by the security filter layer.</li>
+ *   <li>Locked accounts are rejected at both the filter layer (423) and login endpoint.</li>
  * </ul>
  */
 @EnableMethodSecurity
@@ -93,6 +99,7 @@ public class UserController {
             return ResponseEntity.internalServerError().build();
         }
     }
+
     /**
      * Retrieves the currently authenticated user based on the JWT in the request.
      * <p>
@@ -150,6 +157,24 @@ public class UserController {
         }
     }
 
+    /**
+     * Updates the display name of the currently authenticated user.
+     * <p>
+     * Extracts the user identity from the JWT in the {@code Authorization} header
+     * and applies the name change provided in the request body.
+     * </p>
+     * <p>
+     * Returns HTTP 200 (OK) with the updated {@link UserDTO} on success,
+     * HTTP 404 (Not Found) if the resolved user no longer exists,
+     * or HTTP 500 (Internal Server Error) if an unexpected failure occurs.
+     * </p>
+     *
+     * @param request       the incoming HTTP request containing the {@code Authorization: Bearer <token>} header
+     * @param updateRequest the request body containing the new display name
+     * @return {@link ResponseEntity} containing the updated {@link UserDTO},
+     *         an empty 404 if the user does not exist,
+     *         or an empty 500 on unexpected error
+     */
     @PatchMapping("/me/name")
     public ResponseEntity<UserDTO> updateMyName(
         HttpServletRequest request,
@@ -282,14 +307,11 @@ public class UserController {
         }
     }
 
-
     /**
      * Authenticates a user and issues a signed JWT upon successful login.
      * <p>
-     * Delegates credential verification to {@link UserService}. Returns
-     * HTTP 200 (OK) with the authenticated user and a JWT on success,
-     * HTTP 404 (Not Found) if no account exists for the given email,
-     * or HTTP 403 (Forbidden) if the credentials are invalid.
+     * Delegates credential verification to {@link UserService}. On success,
+     * returns HTTP 200 (OK) with the authenticated user and a JWT.
      * </p>
      * <p>
      * Response body contains:
@@ -298,11 +320,17 @@ public class UserController {
      *   <li>{@code "user"} — the authenticated user as a {@link UserDTO}</li>
      *   <li>{@code "token"} — a signed JWT string</li>
      * </ul>
+     * <p>
+     * Returns HTTP 404 (Not Found) if no account exists for the given email,
+     * HTTP 423 (Locked) if the account has been banned or locked by an administrator,
+     * or HTTP 401 (Unauthorized) if the credentials are invalid.
+     * </p>
      *
      * @param request the request body containing login credentials (email and password)
      * @return {@link ResponseEntity} with a {@link Map} of the {@link UserDTO} and JWT,
      *         an empty 404 if the email is not registered,
-     *         or an empty 403 if authentication fails
+     *         an empty 423 if the account is locked,
+     *         or an empty 401 if authentication fails
      */
     @PostMapping("/login")
     public ResponseEntity<Map<String, Object>> login(@RequestBody UserRequest request) {
@@ -313,6 +341,9 @@ public class UserController {
             ));
         } catch (ResourceNotFoundException e) {
             return ResponseEntity.notFound().build();
+        } catch (LockedException e) {
+            System.out.println("hit locked Exception in controller");
+            return ResponseEntity.status(HttpStatus.LOCKED).build();
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
         }
@@ -386,6 +417,20 @@ public class UserController {
         }
     }
 
+    /**
+     * Demotes a user from their current role back to ROLE_USER.
+     * <p>
+     * Access is restricted to existing ADMIN users.
+     * Returns HTTP 204 (No Content) upon successful demotion,
+     * HTTP 404 (Not Found) if no user exists with the given ID,
+     * or HTTP 500 (Internal Server Error) if an unexpected failure occurs.
+     * </p>
+     *
+     * @param id the ID of the user to demote
+     * @return empty {@link ResponseEntity} with 204 status on success,
+     *         an empty 404 if the user does not exist,
+     *         or an empty 500 on unexpected error
+     */
     @PreAuthorize("hasRole('ADMIN')")
     @PatchMapping("/demoteToUser/{id}")
     public ResponseEntity<Void> demoteToUser(@PathVariable int id) {
@@ -399,7 +444,23 @@ public class UserController {
         }
     }
 
-
+    /**
+     * Bans a user account, preventing them from authenticating.
+     * <p>
+     * Access is restricted to existing ADMIN users. A banned user will receive
+     * HTTP 423 (Locked) on any subsequent login attempt.
+     * Returns HTTP 204 (No Content) upon success,
+     * HTTP 404 (Not Found) if no user exists with the given ID,
+     * HTTP 409 (Conflict) if the action is not permitted (e.g., user is already banned),
+     * or HTTP 500 (Internal Server Error) if an unexpected failure occurs.
+     * </p>
+     *
+     * @param id the ID of the user to ban
+     * @return empty {@link ResponseEntity} with 204 status on success,
+     *         an empty 404 if the user does not exist,
+     *         an empty 409 if the action is not allowed,
+     *         or an empty 500 on unexpected error
+     */
     @PreAuthorize("hasRole('ADMIN')")
     @PatchMapping("/banUser/{id}")
     public ResponseEntity<Void> banUser(@PathVariable int id) {
@@ -415,6 +476,22 @@ public class UserController {
         }
     }
 
+    /**
+     * Unbans a previously banned user account, restoring their ability to authenticate.
+     * <p>
+     * Access is restricted to existing ADMIN users.
+     * Returns HTTP 204 (No Content) upon success,
+     * HTTP 404 (Not Found) if no user exists with the given ID,
+     * HTTP 409 (Conflict) if the action is not permitted (e.g., user is not currently banned),
+     * or HTTP 500 (Internal Server Error) if an unexpected failure occurs.
+     * </p>
+     *
+     * @param id the ID of the user to unban
+     * @return empty {@link ResponseEntity} with 204 status on success,
+     *         an empty 404 if the user does not exist,
+     *         an empty 409 if the action is not allowed,
+     *         or an empty 500 on unexpected error
+     */
     @PreAuthorize("hasRole('ADMIN')")
     @PatchMapping("/unbanUser/{id}")
     public ResponseEntity<Void> unbanUser(@PathVariable int id) {
@@ -430,6 +507,22 @@ public class UserController {
         }
     }
 
+    /**
+     * Submits a request from the currently authenticated user to be promoted
+     * to the CONTRIBUTOR role.
+     * <p>
+     * Access is restricted to users with ROLE_USER. The request is queued for
+     * admin review. Returns HTTP 204 (No Content) upon successful submission,
+     * HTTP 404 (Not Found) if the authenticated user no longer exists,
+     * HTTP 409 (Conflict) if the user has already submitted a pending contributor request,
+     * or HTTP 500 (Internal Server Error) if an unexpected failure occurs.
+     * </p>
+     *
+     * @return empty {@link ResponseEntity} with 204 status on success,
+     *         an empty 404 if the user does not exist,
+     *         an empty 409 if a request has already been submitted,
+     *         or an empty 500 on unexpected error
+     */
     @PreAuthorize("hasRole('USER')")
     @PatchMapping("/requestContributor")
     public ResponseEntity<Void> requestContributor() {
@@ -445,6 +538,20 @@ public class UserController {
         }
     }
 
+    /**
+     * Denies a pending contributor role request for the specified user.
+     * <p>
+     * Access is restricted to existing ADMIN users.
+     * Returns HTTP 204 (No Content) upon successful denial,
+     * HTTP 404 (Not Found) if no user exists with the given ID,
+     * or HTTP 500 (Internal Server Error) if an unexpected failure occurs.
+     * </p>
+     *
+     * @param id the ID of the user whose contributor request is being denied
+     * @return empty {@link ResponseEntity} with 204 status on success,
+     *         an empty 404 if the user does not exist,
+     *         or an empty 500 on unexpected error
+     */
     @PreAuthorize("hasRole('ADMIN')")
     @PatchMapping("/denyContributor/{id}")
     public ResponseEntity<Void> denyContributor(@PathVariable int id) {
@@ -458,6 +565,19 @@ public class UserController {
         }
     }
 
+    /**
+     * Retrieves all users whose accounts are currently banned.
+     * <p>
+     * Access is restricted to existing ADMIN users.
+     * Returns HTTP 200 (OK) with a list of {@link UserDTO} on success,
+     * HTTP 404 (Not Found) if no banned users are found,
+     * or HTTP 500 (Internal Server Error) if an unexpected failure occurs.
+     * </p>
+     *
+     * @return {@link ResponseEntity} containing a list of banned {@link UserDTO} objects,
+     *         an empty 404 if none exist,
+     *         or an empty 500 on unexpected error
+     */
     @PreAuthorize("hasRole('ADMIN')")
     @GetMapping("/getBannedUsers")
     public ResponseEntity<List<UserDTO>> getBannedUsers() {
@@ -472,6 +592,19 @@ public class UserController {
         }
     }
 
+    /**
+     * Retrieves all users whose accounts are not currently banned.
+     * <p>
+     * Access is restricted to existing ADMIN users.
+     * Returns HTTP 200 (OK) with a list of {@link UserDTO} on success,
+     * HTTP 404 (Not Found) if no active users are found,
+     * or HTTP 500 (Internal Server Error) if an unexpected failure occurs.
+     * </p>
+     *
+     * @return {@link ResponseEntity} containing a list of active (unbanned) {@link UserDTO} objects,
+     *         an empty 404 if none exist,
+     *         or an empty 500 on unexpected error
+     */
     @PreAuthorize("hasRole('ADMIN')")
     @GetMapping("/getUnbannedUsers")
     public ResponseEntity<List<UserDTO>> getUnbannedUsers() {
@@ -486,6 +619,20 @@ public class UserController {
         }
     }
 
+    /**
+     * Retrieves all users with a pending contributor role request awaiting admin review.
+     * <p>
+     * Access is restricted to existing ADMIN users.
+     * Returns HTTP 200 (OK) with a list of {@link UserDTO} on success,
+     * HTTP 404 (Not Found) if no pending requests are found,
+     * or HTTP 500 (Internal Server Error) if an unexpected failure occurs.
+     * </p>
+     *
+     * @return {@link ResponseEntity} containing a list of {@link UserDTO} objects
+     *         with pending contributor requests,
+     *         an empty 404 if none exist,
+     *         or an empty 500 on unexpected error
+     */
     @PreAuthorize("hasRole('ADMIN')")
     @GetMapping("/getRequestedContributor")
     public ResponseEntity<List<UserDTO>> getRequestedContributor() {
@@ -500,7 +647,20 @@ public class UserController {
         }
     }
 
-
+    /**
+     * Retrieves all users whose contributor role requests have been denied.
+     * <p>
+     * Access is restricted to existing ADMIN users.
+     * Returns HTTP 200 (OK) with a list of {@link UserDTO} on success,
+     * HTTP 404 (Not Found) if no denied requests are found,
+     * or HTTP 500 (Internal Server Error) if an unexpected failure occurs.
+     * </p>
+     *
+     * @return {@link ResponseEntity} containing a list of {@link UserDTO} objects
+     *         with denied contributor requests,
+     *         an empty 404 if none exist,
+     *         or an empty 500 on unexpected error
+     */
     @PreAuthorize("hasRole('ADMIN')")
     @GetMapping("/getDeniedContributor")
     public ResponseEntity<List<UserDTO>> getDeniedContributor() {
@@ -514,5 +674,4 @@ public class UserController {
             return ResponseEntity.internalServerError().build();
         }
     }
-
 }
