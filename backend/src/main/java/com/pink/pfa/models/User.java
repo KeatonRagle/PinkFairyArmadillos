@@ -65,7 +65,7 @@ public class User {
     private String password;
 
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
-    private List<UserPref> preferences = new ArrayList<>();
+    private List<UserPreferences> preferences = new ArrayList<>();
 
     /** Authorization role determining user permissions. */
     @Column(name = "role", nullable = false)
