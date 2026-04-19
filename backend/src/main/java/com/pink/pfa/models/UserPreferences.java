@@ -1,7 +1,11 @@
 package com.pink.pfa.models;
 
+import java.time.LocalDate;
+
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
 import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
@@ -32,7 +36,7 @@ public class UserPreferences {
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	@Column(name = "pref_id")
-	private Integer pref_id;
+	private Integer prefId;
 	
 	
 	/** Foreign key identifier for the user. */
@@ -42,13 +46,19 @@ public class UserPreferences {
 	
 	
 	/** Trait user prefers. */
+	public enum Preference { BREED, GENDER, AGE_MIN, AGE_MAX, SIZE }
 	@Column(name = "pref_trait", nullable = false)
-	private String prefTrait;
+    @Enumerated(EnumType.STRING)
+	private Preference prefTrait;
 	
 	
 	/** Value of trait user prefers. */
 	@Column(name = "pref_value", nullable = false)
 	private String prefValue;
+
+	/** The timestamp when the preference was created */
+	@Column(name = "created_at", nullable = false)
+	private LocalDate createAt = LocalDate.now();
 	
 	
 	/** Default constructor required by JPA. */
@@ -61,7 +71,7 @@ public class UserPreferences {
      * @param prefTrait trait user prefers
 	 * @param prefValue value of trait user prefers
      */
-	public UserPreferences(String prefTrait, String prefValue) {
+	public UserPreferences(Preference prefTrait, String prefValue) {
 		this.prefTrait = prefTrait;
 		this.prefValue = prefValue;
 	}

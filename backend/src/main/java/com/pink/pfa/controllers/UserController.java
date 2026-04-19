@@ -25,7 +25,8 @@ import com.pink.pfa.exceptions.ActionNotAllowedException;
 import com.pink.pfa.exceptions.ResourceNotFoundException;
 import com.pink.pfa.exceptions.UserAlreadyExistsException;
 import com.pink.pfa.exceptions.UserAlreadyRequestedContributor;
-import com.pink.pfa.models.UserPref;
+import com.pink.pfa.models.UserPreferences;
+import com.pink.pfa.models.UserPreferences;
 import com.pink.pfa.models.datatransfer.UserDTO;
 import com.pink.pfa.services.UserPrefService;
 import com.pink.pfa.services.UserService;
@@ -133,19 +134,19 @@ public class UserController {
     /**
      * Retrieves a specific user's preferences by their unique ID.
      * <p>
-     * Returns HTTP 200 (OK) with the corresponding list of {@link UserPref} on success,
+     * Returns HTTP 200 (OK) with the corresponding list of {@link UserPreferences} on success,
      * HTTP 404 (Not Found) if no user exists with the given ID,
      * or HTTP 500 (Internal Server Error) if an unexpected failure occurs.
      * </p>
      *
      * @param id the unique identifier of the user to retrieve
-     * @return {@link ResponseEntity} containing the list of {@link UserPref},
+     * @return {@link ResponseEntity} containing the list of {@link UserPreferences},
      *         an empty 404 if the user does not exist,
      *         or an empty 500 on unexpected error
      */
     @PreAuthorize("hasRole('ADMIN')")
     @GetMapping("/{id}/getPrefs")
-    public ResponseEntity<List<UserPref>> getAllPrefsFromUser(
+    public ResponseEntity<List<UserPreferences>> getAllPrefsFromUser(
         @PathVariable Integer id
     ) {
         try {
@@ -192,18 +193,18 @@ public class UserController {
     /**
      * Retrieves the currently authenticated user's preferences (if such authentication has occurred).
      * <p>
-     * Returns HTTP 200 (OK) with the corresponding list of {@link UserPref} on success,
+     * Returns HTTP 200 (OK) with the corresponding list of {@link UserPreferences} on success,
      * HTTP 404 (Not Found) if no user exists with the given ID,
      * or HTTP 500 (Internal Server Error) if an unexpected failure occurs.
      * </p>
      *
      * @param id the unique identifier of the user to retrieve
-     * @return {@link ResponseEntity} containing the list of {@link UserPref},
+     * @return {@link ResponseEntity} containing the list of {@link UserPreferences},
      *         an empty 404 if the user does not exist,
      *         or an empty 500 on unexpected error
      */
     @GetMapping("/me/prefs")
-    public ResponseEntity<List<UserPref>> getMyPrefs() {
+    public ResponseEntity<List<UserPreferences>> getMyPrefs() {
         try {
             UserDTO authUserDTO = userService.findByJWT();
             return ResponseEntity.ok().body(userPrefService.findAllByUserId(authUserDTO.id()));
@@ -218,18 +219,18 @@ public class UserController {
      * Creates a new preference tied to the currently authenticated user's preferences 
      * (if such authentication has occurred).
      * <p>
-     * Returns HTTP 200 (OK) with the corresponding {@link UserPref} on success,
+     * Returns HTTP 200 (OK) with the corresponding {@link UserPreferences} on success,
      * HTTP 404 (Not Found) if no user exists with the given ID,
      * or HTTP 500 (Internal Server Error) if an unexpected failure occurs.
      * </p>
      *
      * @param id the unique identifier of the user to retrieve
-     * @return {@link ResponseEntity} containing the {@link UserPref},
+     * @return {@link ResponseEntity} containing the {@link UserPreferences},
      *         an empty 404 if the user does not exist,
      *         or an empty 500 on unexpected error
      */
     @PostMapping("/me/addPref")
-    public ResponseEntity<UserPref> addPref(
+    public ResponseEntity<UserPreferences> addPref(
         @Valid @RequestBody UserPrefRequest prefReq
     ) {
         try {
@@ -245,13 +246,13 @@ public class UserController {
      * Deletes a preference by id tied to the currently authenticated user's preferences 
      * (if such authentication has occurred).
      * <p>
-     * Returns HTTP 200 (OK) with the corresponding {@link UserPref} on success,
+     * Returns HTTP 200 (OK) with the corresponding {@link UserPreferences} on success,
      * HTTP 404 (Not Found) if no user exists with the given ID,
      * or HTTP 500 (Internal Server Error) if an unexpected failure occurs.
      * </p>
      *
      * @param id the unique identifier of the user to retrieve
-     * @return {@link ResponseEntity} containing the {@link UserPref},
+     * @return {@link ResponseEntity} containing the {@link UserPreferences},
      *         an empty 404 if the user does not exist,
      *         or an empty 500 on unexpected error
      */
