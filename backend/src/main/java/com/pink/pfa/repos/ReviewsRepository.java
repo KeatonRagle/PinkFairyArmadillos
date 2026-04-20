@@ -1,6 +1,7 @@
 package com.pink.pfa.repos;
 
 import java.util.List;
+import java.util.Optional;
 
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
@@ -38,4 +39,7 @@ public interface ReviewsRepository extends JpaRepository<Reviews, Integer> {
 	
 	/** Finds all reviews at or above a minimum rating threshold */
 	List<Reviews> findByRatingGreaterThanEqual(Double rating);
+
+	/* Finds by a review id and by the user id */
+	Optional<Reviews> findByReviewIdAndUser_UserId(Integer id, Integer userId);
 }
