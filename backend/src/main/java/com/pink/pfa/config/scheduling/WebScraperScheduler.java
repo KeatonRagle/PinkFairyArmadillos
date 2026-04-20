@@ -8,6 +8,7 @@ import org.springframework.scheduling.annotation.Async;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 
+import com.pink.pfa.exceptions.NoAdoptionSitesException;
 import com.pink.pfa.models.AdoptionSite;
 import com.pink.pfa.models.Pet;
 import com.pink.pfa.services.AdoptionSiteService;
@@ -76,9 +77,10 @@ public class WebScraperScheduler {
             petService.sync(pets);
 
         // gets thrown in webScraperService.runScraper()
+        } catch (NoAdoptionSitesException e) {
+            log.error("There are no AdoptionSites approved for scrape in the database");
         } catch (NoResultException e) {
             log.error("Scheduler Failed to Get Data From WebScraperService");
-
         // gets thrown in petService.sync()
         } catch (IllegalArgumentException e) {
             log.error("Scheduler Failed to Sync Data Gathered From Scrape to the DataBase");
