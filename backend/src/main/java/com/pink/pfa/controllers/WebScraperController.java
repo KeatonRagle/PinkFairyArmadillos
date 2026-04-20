@@ -11,6 +11,7 @@ import org.springframework.web.bind.annotation.RestController;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.pink.pfa.exceptions.NoAdoptionSitesException;
 import com.pink.pfa.models.AdoptionSite;
 import com.pink.pfa.models.Pet;
 import com.pink.pfa.services.AdoptionSiteService;
@@ -58,9 +59,12 @@ public class WebScraperController {
             petService.sync(scrapedPets);
             databaseBackupService.backup("post_scrape");
             return ResponseEntity.ok("Scrape complete. Synced " + scrapedPets.size() + " pets.");
+        } catch (NoAdoptionSitesException e) {
+            log.error("Scrape failed", e);
+            return ResponseEntity.internalServerError().body(e.getMessage());
         } catch (Exception e) {
             log.error("Scrape failed", e);
-            return ResponseEntity.internalServerError().body("Scrape failed: " + e.getMessage());
+            return ResponseEntity.internalServerError().body(e.getMessage());
         }
     }
     

@@ -10,6 +10,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.bind.annotation.RequestMapping;
 
 import com.pink.pfa.controllers.requests.AdoptionSiteRequest;
+import com.pink.pfa.exceptions.NoAdoptionSitesException;
 import com.pink.pfa.exceptions.ResourceNotFoundException;
 import com.pink.pfa.exceptions.SiteAlreadyExistsException;
 import com.pink.pfa.models.AdoptionSite;
@@ -106,7 +107,10 @@ public class AdoptionSiteService {
      * @return list of approved {@link AdoptionSite} entities
      */
     public List<AdoptionSite> findAllForScrape() {
-        return adoptionSiteRepository.findByStatus('A');
+        List<AdoptionSite> sites = adoptionSiteRepository.findByStatus('A');
+        if (sites.isEmpty())
+            throw new NoAdoptionSitesException();
+        return sites;
     }
 
 

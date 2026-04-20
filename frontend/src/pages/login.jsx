@@ -49,6 +49,8 @@ export default function Login() {
             setError("No account found with that email.")
         } else if (err.status === 401) {
             setError("Incorrect password.")
+        } else if (err.status === 423) {
+            setError("Your account has been banned")
         } else {
             setError("Something went wrong. Please try again.")
         }
