@@ -34,7 +34,7 @@ public class FeaturedPets {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
 	@Column(name = "pet_id")
-    private Integer featuredPetId;
+    private Integer petId;
 	
 	
 	/** Foreign key identifier for the pet. */
@@ -45,12 +45,12 @@ public class FeaturedPets {
 	
 	/** Featured pet's listed start date. */
 	@Column(name = "start_date", nullable = false)
-	private LocalDate startDate;
+	private LocalDate startDate = LocalDate.now();
 	
 	
 	/** Featured pet's listed end date. */
 	@Column(name = "end_date", nullable = false)
-	private LocalDate endDate;
+	private LocalDate endDate = LocalDate.now().plusDays(1);
 	
 	
 	/** Featured pet's reason for being featured. */
@@ -68,9 +68,7 @@ public class FeaturedPets {
      * @param endDate pet's feature end date
      * @param reason admin/contributor added reason
      */
-	public FeaturedPets(LocalDate startDate, LocalDate endDate, String reason) {
-		this.startDate = startDate;
-		this.startDate = endDate;
+	public FeaturedPets(String reason) {
 		this.reason = reason;
 	}
 }
