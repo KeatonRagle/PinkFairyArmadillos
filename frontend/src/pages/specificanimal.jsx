@@ -3,6 +3,7 @@ import { useLocation } from 'react-router-dom'
 import HomeHeader from '../components/header'
 import HomeFooter from '../components/footer'
 import ReviewsPopup from '../components/ReviewsPopup'
+import PopupErrorBoundary from '../components/PopupErrorBoundary'
 import '../styling/specificanimal.css'
 
 const previewAnimal = {
@@ -13,13 +14,13 @@ const previewAnimal = {
 	gender: 'Female',
 	age: 2,
 	breed: 'Terrier Mix',
-	misc: 'Friendly with families, enjoys walks, and is ready for a home visit.',
 }
 
 export default function SpecificAnimal() {
 	const location = useLocation()
 	const animal = location.state?.animal ?? previewAnimal
 	const filters = location.state?.filters ?? null
+	const backToFiltersState = filters ? { filters, petType: filters.petType } : undefined
 	const animalAge = () => {
 		if (!animal) return null
 
@@ -47,7 +48,9 @@ export default function SpecificAnimal() {
 				backLink={{
 					to: '/animal-filter',
 					label: 'BACK TO FILTERS',
-					state: filters ? { filters, petType: filters.petType } : undefined,
+					ariaLabel: 'Back to filters',
+					state: backToFiltersState,
+					renderAsArrow: true,
 				}}
 			/>
 
@@ -79,7 +82,7 @@ export default function SpecificAnimal() {
 							className="specificanimal-reviews-btn"
 							onClick={() => setReviewsOpen(true)}
 						>
-							Reviews
+							Reviews and Info
 						</button>
 					</div>
 
@@ -102,10 +105,6 @@ export default function SpecificAnimal() {
 								<span className="specificanimal-detail-label">Breed</span>
 								<span>{animal.breed || 'Unknown'}</span>
 							</div>
-							<div className="specificanimal-detail-item">
-								<span className="specificanimal-detail-label">Misc</span>
-								<span>{animal.misc}</span>
-							</div>
 						</div>
 					</div>
 				</section>
@@ -113,11 +112,20 @@ export default function SpecificAnimal() {
 
 			<HomeFooter />
 
-			<ReviewsPopup
-				isOpen={reviewsOpen}
-				onClose={() => setReviewsOpen(false)}
-				shelterName={animal.adoptionSite}
-			/>
+			<PopupErrorBoundary resetKey={reviewsOpen ? 'open' : 'closed'}>
+				<ReviewsPopup
+					isOpen={reviewsOpen}
+					onClose={() => setReviewsOpen(false)}
+					shelterName={animal.adoptionSite}
+					siteInfo={{
+						siteId: animal.site_id ?? animal.siteId ?? null,
+						name: animal.adoption_site_name || animal.adoptionSite || 'Adoption site name coming soon.',
+						url: animal.adoption_site_url || animal.adoptionSiteUrl || 'https://example-adoption-site.org',
+						email: animal.adoption_site_email || animal.adoptionSiteEmail || 'info@example-adoption-site.org',
+						phone: animal.adoption_site_phone || animal.adoptionSitePhone || '(555) 123-4567',
+					}}
+				/>
+			</PopupErrorBoundary>
 		</div>
 	)
 }

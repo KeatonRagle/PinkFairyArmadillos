@@ -48,20 +48,51 @@
 
 .reviews-close-btn {
 	position: absolute;
-	top: 14px;
-	right: 16px;
+	top: 8px;
+	right: 8px;
 	background: none;
 	border: none;
-	font-size: 1.1rem;
+	font-size: 1.2rem;
+	line-height: 1;
 	color: #7a7a7a;
 	cursor: pointer;
-	padding: 4px 8px;
+	width: 32px;
+	height: 32px;
+	padding: 0;
 	border-radius: 6px;
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
 }
 
 .reviews-close-btn:hover {
 	background: #f0e6df;
 	color: #b44b25;
+}
+
+.reviews-tab-row {
+	display: flex;
+	gap: 8px;
+	padding: 12px 24px;
+	border-bottom: 1px solid #ead6cc;
+	background: #f8f4f1;
+}
+
+.reviews-tab-btn {
+	border: 1px solid #decfc7;
+	background: #ffffff;
+	color: #7a6d66;
+	border-radius: 999px;
+	padding: 0.35rem 0.9rem;
+	font-family: 'Hind Kochi', sans-serif;
+	font-size: 0.85rem;
+	cursor: pointer;
+}
+
+.reviews-tab-btn.active {
+	border-color: #b44b25;
+	color: #b44b25;
+	background: #fff7f3;
 }
 
 /* ── Review list ── */
@@ -127,10 +158,11 @@
 
 /* ── Footer (Add Review button) ── */
 .reviews-modal-footer {
-	padding: 14px 24px;
+	padding: 20px 24px 10px;
 	border-top: 1px solid #ead6cc;
 	display: flex;
 	justify-content: flex-end;
+	align-items: center;
 }
 
 .reviews-add-btn {
@@ -259,6 +291,41 @@
 .reviews-submit-btn:disabled {
 	background: #ccc;
 	cursor: not-allowed;
+}
+
+.reviews-info-panel {
+	padding: 20px 24px 24px;
+	display: grid;
+	gap: 12px;
+	overflow-y: auto;
+}
+
+.reviews-info-row {
+	display: grid;
+	grid-template-columns: 80px 1fr;
+	gap: 12px;
+	padding: 12px;
+	border-radius: 10px;
+	background: #ffffff;
+	box-shadow: 0 1px 6px rgba(0, 0, 0, 0.05);
+	word-break: break-word;
+	color: #4b4b4b;
+}
+
+.reviews-info-label {
+	font-weight: 600;
+	color: #b44b25;
+}
+
+.reviews-info-link {
+	color: #b44b25;
+	text-decoration: none;
+}
+
+.reviews-info-link:hover,
+.reviews-info-link:focus-visible {
+	text-decoration: underline;
+	outline: none;
 }
 
 /* ── Reviews button on pet page ── */

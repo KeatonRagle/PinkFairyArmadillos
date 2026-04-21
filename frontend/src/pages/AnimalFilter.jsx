@@ -50,6 +50,13 @@ function filterPetsClientSide(pets, filters) {
 }
 
 function mapPetToAnimal(pet) {
+	const site = pet.site || {}
+	const siteId = pet.site_id ?? pet.siteId ?? site.siteId ?? null
+	const siteName = pet.adoption_site_name || pet.adoptionSite || site.name || null
+	const siteUrl = pet.adoption_site_url || pet.adoptionSiteUrl || site.url || null
+	const siteEmail = pet.adoption_site_email || pet.adoptionSiteEmail || site.email || null
+	const sitePhone = pet.adoption_site_phone || pet.adoptionSitePhone || site.phone || null
+
 	return {
 		id: pet.id,
 		name: pet.name,
@@ -58,7 +65,11 @@ function mapPetToAnimal(pet) {
 		gender: pet.gender === 'M' ? 'Male' : pet.gender === 'F' ? 'Female' : pet.gender,
 		location: pet.location,
 		misc: pet.pet_status || pet.pet_type || 'More details coming soon.',
-		adoptionSite: 'Adoption site information coming soon.',
+		adoptionSite: siteName || 'Adoption site information coming soon.',
+		site_id: siteId,
+		adoption_site_url: siteUrl,
+		adoption_site_email: siteEmail,
+		adoption_site_phone: sitePhone,
 		image: pet.img_url || '/images/waveShort.png',
 		secondaryImages: pet.secondary_images || []
 	}

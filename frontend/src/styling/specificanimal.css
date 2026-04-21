@@ -9,6 +9,33 @@
 	padding-bottom: 170px;
 }
 
+.specificanimal-back-row {
+	display: none;
+}
+
+.specificanimal-top-back-button {
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+	width: 44px;
+	height: 44px;
+	border-radius: 999px;
+	background: #b44b25;
+	color: #ffffff;
+	text-decoration: none;
+	font-size: 1.35rem;
+	line-height: 1;
+	box-shadow: 0 8px 22px rgba(180, 75, 37, 0.28);
+	transition: background-color 0.2s ease, transform 0.2s ease;
+}
+
+.specificanimal-top-back-button:hover,
+.specificanimal-top-back-button:focus-visible {
+	background: #943b19;
+	transform: translateX(-2px);
+	outline: none;
+}
+
 .specificanimal-main {
 	max-width: 1280px;
 	margin: 2rem auto;
@@ -160,6 +187,10 @@
 }
 
 @media (max-width: 900px) {
+	.specificanimal-back-row {
+		padding: 0 1rem;
+	}
+
 	.specificanimal-main {
 		grid-template-columns: 1fr;
 		padding: 0 1rem;
