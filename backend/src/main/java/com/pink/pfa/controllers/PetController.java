@@ -2,6 +2,7 @@ package com.pink.pfa.controllers;
 
 import java.util.List;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -17,6 +18,7 @@ import com.pink.pfa.exceptions.ResourceNotFoundException;
 import com.pink.pfa.exceptions.SiteAlreadyExistsException;
 import com.pink.pfa.models.datatransfer.PetDTO;
 import com.pink.pfa.services.PetService;
+import com.pink.pfa.services.UserService;
 
 /**
  * REST controller exposing the {@code /api/pets} API surface for the Pets for All platform.
@@ -40,11 +42,8 @@ import com.pink.pfa.services.PetService;
 @RequestMapping("/api/pets")
 public class PetController {
 
-    private final PetService petService;
-
-    public PetController (PetService petService) {
-        this.petService = petService;
-    }
+    @Autowired private PetService petService;
+    @Autowired private UserService userService;
 
     /**
      * Returns all pets currently stored in the database, along with a UTC timestamp.
@@ -67,10 +66,11 @@ public class PetController {
         @RequestParam(required = false) Integer startAge,
         @RequestParam(required = false) Integer endAge,
         @RequestParam(required = false) String breed,
-        @RequestParam(required = false) String size
+        @RequestParam(required = false) String size,
+        @RequestParam(required = false) Boolean filterPrefs
     ) {
         try {
-            return ResponseEntity.ok().body(petService.findByFilter(petType, gender, startAge, endAge, breed, size));
+            return ResponseEntity.ok().body(petService.findByFilter(petType, gender, startAge, endAge, breed, size, filterPrefs));
         } catch (ResourceNotFoundException e) {
             return ResponseEntity.notFound().build();
         } catch (Exception e) {

@@ -26,7 +26,6 @@ import com.pink.pfa.exceptions.ResourceNotFoundException;
 import com.pink.pfa.exceptions.UserAlreadyExistsException;
 import com.pink.pfa.exceptions.UserAlreadyRequestedContributor;
 import com.pink.pfa.models.UserPreferences;
-import com.pink.pfa.models.UserPreferences;
 import com.pink.pfa.models.datatransfer.UserDTO;
 import com.pink.pfa.services.UserPrefService;
 import com.pink.pfa.services.UserService;
@@ -203,6 +202,7 @@ public class UserController {
      *         an empty 404 if the user does not exist,
      *         or an empty 500 on unexpected error
      */
+
     @GetMapping("/me/prefs")
     public ResponseEntity<List<UserPreferences>> getMyPrefs() {
         try {
