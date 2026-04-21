@@ -9,6 +9,7 @@ export default function ContributorApp() {
 	const navigate = useNavigate()
 	const { username, role } = useAuth()
 	const [submitted, setSubmitted] = useState(false)
+    const [denied, setDenied] = useState(false)
 	const [loading, setLoading] = useState(true)
 	const [error, setError] = useState(null)
 
@@ -24,6 +25,7 @@ export default function ContributorApp() {
 		getCurrentUser()
 			.then((user) => {
 				if (user.requestedContributor == 'P') setSubmitted(true)
+				if (user.requestedContributor == 'D') setDenied(true)
 			})
 			.catch(() => setError('Failed to load user data.'))
 			.finally(() => setLoading(false))
@@ -54,13 +56,19 @@ export default function ContributorApp() {
 				description: 'Your contributor application is pending review.',
 				className: 'is-pending',
 			}
-		}
+		} else if (denied) {
+            return {
+                label: 'Denied',
+                description: 'Your contributor application has been denied.',
+                className: 'is-denied',
+            }
+        }
 		return {
 			label: 'Not Submitted',
 			description: 'You have not requested contributor access yet.',
 			className: 'is-idle',
 		}
-	}, [submitted])
+	}, [submitted, denied])
 
 	return (
 		<div className="contributorapp-page">
@@ -84,7 +92,7 @@ export default function ContributorApp() {
 						<form className="contributorapp-form" onSubmit={handleSubmit}>
 							{error ? <p className="contributorapp-error">{error}</p> : null}
 							<div className="contributorapp-actions">
-								{!submitted ? (
+								{!submitted && !denied ? (
 									<button type="submit" className="contributorapp-button" disabled={loading}>
 										Submit Application
 									</button>
