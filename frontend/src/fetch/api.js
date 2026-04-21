@@ -127,6 +127,29 @@ export function getFeaturedPets() {
   });
 }
 
+export function getAllReviews(minRating) {
+  const query = typeof minRating === 'number'
+    ? `?minRating=${encodeURIComponent(minRating)}`
+    : '';
+
+  return apiFetchAuthenticated(`/api/reviews/getAll${query}`, {
+    method: "GET",
+  });
+}
+
+export function submitReview(review) {
+  return apiFetchAuthenticated("/api/reviews/submitReview", {
+    method: "POST",
+    body: JSON.stringify(review),
+  });
+}
+
+export function deleteReview(id) {
+  return apiFetchAuthenticated(`/api/reviews/${id}`, {
+    method: "DELETE",
+  });
+}
+
 export function submitSite(contribution) {
   return apiFetchAuthenticated("/api/adoptionSite/submitSite", {
     method: "POST",

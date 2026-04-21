@@ -205,6 +205,7 @@ public class UserController {
      *         an empty 404 if the user does not exist,
      *         or an empty 500 on unexpected error
      */
+
     @GetMapping("/me/prefs")
     public ResponseEntity<List<UserPrefDTO>> getMyPrefs() {
         try {
