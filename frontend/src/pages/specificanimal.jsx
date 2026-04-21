@@ -13,13 +13,13 @@ const previewAnimal = {
 	gender: 'Female',
 	age: 2,
 	breed: 'Terrier Mix',
-	misc: 'Friendly with families, enjoys walks, and is ready for a home visit.',
 }
 
 export default function SpecificAnimal() {
 	const location = useLocation()
 	const animal = location.state?.animal ?? previewAnimal
 	const filters = location.state?.filters ?? null
+	const backToFiltersState = filters ? { filters, petType: filters.petType } : undefined
 	const animalAge = () => {
 		if (!animal) return null
 
@@ -47,9 +47,24 @@ export default function SpecificAnimal() {
 				backLink={{
 					to: '/animal-filter',
 					label: 'BACK TO FILTERS',
-					state: filters ? { filters, petType: filters.petType } : undefined,
+					ariaLabel: 'Back to filters',
+					state: backToFiltersState,
+					renderAsArrow: true,
 				}}
 			/>
+
+			{/*
+			<div className="specificanimal-back-row">
+				<Link
+					to="/animal-filter"
+					state={backToFiltersState}
+					className="specificanimal-top-back-button"
+					aria-label="Back to filters"
+				>
+					<span aria-hidden="true">←</span>
+				</Link>
+			</div>
+			*/}
 
 			<main className="specificanimal-main">
 				<section className="specificanimal-media-column">
@@ -101,10 +116,6 @@ export default function SpecificAnimal() {
 							<div className="specificanimal-detail-item">
 								<span className="specificanimal-detail-label">Breed</span>
 								<span>{animal.breed || 'Unknown'}</span>
-							</div>
-							<div className="specificanimal-detail-item">
-								<span className="specificanimal-detail-label">Misc</span>
-								<span>{animal.misc}</span>
 							</div>
 						</div>
 					</div>
