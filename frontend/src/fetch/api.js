@@ -71,6 +71,25 @@ export function getCurrentUser() {
   });
 }
 
+export function getCurrentUserPrefs() {
+  return apiFetchAuthenticated("/api/users/me/prefs", {
+    method: "GET",
+  });
+}
+
+export function addUserPref(userPref) {
+  return apiFetchAuthenticated("/api/users/me/addPref", {
+    method: "POST",
+    body: JSON.stringify(userPref)
+  });
+}
+
+export function deleteUserPref(prefId) {
+  return apiFetchAuthenticated(`/api/users/me/deletePref?prefId=${prefId}`, {
+    method: "DELETE",
+  });
+}
+
 export function updateCurrentUsername(name) {
   return apiFetchAuthenticated("/api/users/me/name", {
     method: "PATCH",

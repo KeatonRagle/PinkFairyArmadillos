@@ -1,7 +1,9 @@
 package com.pink.pfa.controllers;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -26,8 +28,8 @@ import com.pink.pfa.exceptions.ResourceNotFoundException;
 import com.pink.pfa.exceptions.UserAlreadyExistsException;
 import com.pink.pfa.exceptions.UserAlreadyRequestedContributor;
 import com.pink.pfa.models.UserPreferences;
-import com.pink.pfa.models.UserPreferences;
 import com.pink.pfa.models.datatransfer.UserDTO;
+import com.pink.pfa.models.datatransfer.UserPrefDTO;
 import com.pink.pfa.services.UserPrefService;
 import com.pink.pfa.services.UserService;
 
@@ -204,10 +206,10 @@ public class UserController {
      *         or an empty 500 on unexpected error
      */
     @GetMapping("/me/prefs")
-    public ResponseEntity<List<UserPreferences>> getMyPrefs() {
+    public ResponseEntity<List<UserPrefDTO>> getMyPrefs() {
         try {
             UserDTO authUserDTO = userService.findByJWT();
-            return ResponseEntity.ok().body(userPrefService.findAllByUserId(authUserDTO.id()));
+            return ResponseEntity.ok().body(userPrefService.findAllByUserId(authUserDTO.id()).stream().map(item -> UserPrefDTO.fromEntity(item)).collect(Collectors.toCollection(ArrayList::new)));
         } catch (ResourceNotFoundException e) {
             return ResponseEntity.notFound().build();
         } catch (Exception e) {
@@ -230,11 +232,11 @@ public class UserController {
      *         or an empty 500 on unexpected error
      */
     @PostMapping("/me/addPref")
-    public ResponseEntity<UserPreferences> addPref(
+    public ResponseEntity<UserPrefDTO> addPref(
         @Valid @RequestBody UserPrefRequest prefReq
     ) {
         try {
-            return ResponseEntity.ok().body(userPrefService.createNewPref(prefReq));
+            return ResponseEntity.ok().body(UserPrefDTO.fromEntity(userPrefService.createNewPref(prefReq)));
         } catch (ResourceNotFoundException e) {
             return ResponseEntity.notFound().build();
         } catch (Exception e) {
