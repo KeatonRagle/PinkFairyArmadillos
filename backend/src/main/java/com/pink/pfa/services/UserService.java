@@ -186,6 +186,10 @@ public class UserService {
         User user = userRepository.findByEmail(email)
                 .orElseThrow(() -> new ResourceNotFoundException("User", email));
 
+        if (userRepository.existsByEmail(updateRequest.email())) {
+            throw new UserAlreadyExistsException(updateRequest.email());
+        }
+
         user.setEmail(updateRequest.email().trim().toLowerCase());
         return UserDTO.fromEntity(user);
     }

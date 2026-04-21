@@ -197,6 +197,8 @@ public class UserController {
             return ResponseEntity.ok().body(userService.updateEmailByJWT(updateRequest));
         } catch (ResourceNotFoundException e) {
             return ResponseEntity.notFound().build();
+        } catch (UserAlreadyExistsException e) {
+            return ResponseEntity.status(HttpStatus.CONFLICT).build();
         } catch (Exception e) {
             return ResponseEntity.internalServerError().build();
         }

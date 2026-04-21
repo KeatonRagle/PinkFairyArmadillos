@@ -84,8 +84,12 @@ export default function Profile() {
             setCurrentEmail(updatedUser.email ?? trimmedEmail)
             setEmailDraft('')
             setStatusMessage('Email updated.')
-        } catch {
-            setStatusMessage('Unable to update email right now.')
+        } catch (e) {
+            if (e.status === 409) {
+                setStatusMessage("An account with that email already exists.")
+            } else {
+                setStatusMessage('Unable to update email right now.')
+            }
         } finally {
             setIsSavingEmail(false)
         }
