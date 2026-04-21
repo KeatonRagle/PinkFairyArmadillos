@@ -23,9 +23,28 @@ export default function Contribute() {
 	}, [])
 
 
+	const formatPhoneNumber = (value) => {
+		// Remove all non-digit characters
+		const digitsOnly = value.replace(/\D/g, '')
+		
+		// Limit to 10 digits
+		const limitedDigits = digitsOnly.slice(0, 10)
+		
+		// Format as (XXX) XXX-XXXX
+		if (limitedDigits.length === 0) return ''
+		if (limitedDigits.length <= 3) return `(${limitedDigits}`
+		if (limitedDigits.length <= 6) return `(${limitedDigits.slice(0, 3)}) ${limitedDigits.slice(3)}`
+		return `(${limitedDigits.slice(0, 3)}) ${limitedDigits.slice(3, 6)}-${limitedDigits.slice(6)}`
+	}
+
 	const handleChange = (event) => {
 		const { name, value } = event.target
-		setFormData((current) => ({ ...current, [name]: value }))
+		if (name === 'phone') {
+			const formattedPhone = formatPhoneNumber(value)
+			setFormData((current) => ({ ...current, [name]: formattedPhone }))
+		} else {
+			setFormData((current) => ({ ...current, [name]: value }))
+		}
 	}
 
 	const handleSubmit = async (event) => {
@@ -34,7 +53,12 @@ export default function Contribute() {
 		setSuccess('')
 		setLoading(true)
 		try {
-            await submitSite(formData)
+			// Strip formatting from phone before submitting
+			const submissionData = {
+				...formData,
+				phone: formData.phone.replace(/\D/g, '')
+			}
+            await submitSite(submissionData)
 			setSuccess('Contribution submitted for admin review.')
 			setFormData({ url: '', name: '', email: '', phone: '' })
 		} catch (err) {
