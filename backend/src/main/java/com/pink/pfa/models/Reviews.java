@@ -34,7 +34,7 @@ public class Reviews {
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	@Column(name = "review_id")
-	private Integer review_id;
+	private Integer reviewId;
 	
 	
 	/** Foreign key identifier for the user. */
@@ -61,7 +61,7 @@ public class Reviews {
 	
 	/** Listed review date. */
 	@Column(name = "rw_date", nullable = false)
-	private LocalDate rwDate;
+	private LocalDate rwDate = LocalDate.now();
 	
 	
 	/** Default constructor required by JPA. */
@@ -75,9 +75,8 @@ public class Reviews {
      * @param rwComment user review comment
 	 * @param rwDate review date
      */
-	public Reviews(double rating, String rwComment, LocalDate rwDate) {
+	public Reviews(double rating, String rwComment) {
 		this.rating = rating;
 		this.rwComment = rwComment;
-		this.rwDate = rwDate;
 	}
 }

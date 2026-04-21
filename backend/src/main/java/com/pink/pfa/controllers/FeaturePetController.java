@@ -75,7 +75,7 @@ public class FeaturePetController {
         @PathVariable Integer id
     ) {
         try {
-            return ResponseEntity.ok().body(featuredPetService.findById(id));
+            return ResponseEntity.ok().body(featuredPetService.findByPetId(id));
         } catch (ResourceNotFoundException e) {
             return ResponseEntity.notFound().build();
         } catch (Exception e) {
