@@ -113,7 +113,7 @@ export function getAllReviews(minRating) {
     ? `?minRating=${encodeURIComponent(minRating)}`
     : '';
 
-  return apiFetchUnauthenicated(`/api/reviews/getAll${query}`, {
+  return apiFetchAuthenticated(`/api/reviews/getAll${query}`, {
     method: "GET",
   });
 }

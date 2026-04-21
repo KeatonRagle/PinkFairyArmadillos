@@ -1,7 +1,7 @@
 import { createPortal } from 'react-dom'
 import { useEffect, useState } from 'react'
 import { useAuth } from '../auth/AuthContext.jsx'
-import { getAllReviews, submitReview } from '../fetch/api'
+import { getAllReviews, getApprovedSites, submitReview } from '../fetch/api'
 import '../styling/ReviewsPopup.css'
 
 function StarRating({ value, onChange }) {
@@ -45,6 +45,7 @@ export default function ReviewsPopup({ isOpen, onClose, shelterName, siteInfo = 
 	const [reviews, setReviews] = useState([])
 	const [loadingReviews, setLoadingReviews] = useState(false)
 	const [reviewsError, setReviewsError] = useState('')
+	const [resolvedSiteId, setResolvedSiteId] = useState(siteInfo.siteId || null)
 
 	// Reset add-review form whenever popup opens/closes
 	useEffect(() => {
@@ -74,6 +75,33 @@ export default function ReviewsPopup({ isOpen, onClose, shelterName, siteInfo = 
 		url: siteInfo.url || 'https://example-adoption-site.org',
 		email: siteInfo.email || 'info@example-adoption-site.org',
 		phone: siteInfo.phone || '(555) 123-4567',
+	}
+
+	const effectiveSiteId = infoContent.siteId || resolvedSiteId
+
+	const resolveSiteIdFromApprovedSites = async () => {
+		if (infoContent.siteId) {
+			setResolvedSiteId(infoContent.siteId)
+			return
+		}
+
+		try {
+			const sites = await getApprovedSites()
+			const siteList = Array.isArray(sites) ? sites : []
+			const normalizedName = String(infoContent.name || '').trim().toLowerCase()
+			const normalizedUrl = String(infoContent.url || '').trim().toLowerCase()
+
+			const matched = siteList.find((site) => {
+				const siteName = String(site?.name || '').trim().toLowerCase()
+				const siteUrl = String(site?.url || '').trim().toLowerCase()
+				return (normalizedName && siteName === normalizedName)
+					|| (normalizedUrl && siteUrl === normalizedUrl)
+			})
+
+			setResolvedSiteId(matched?.siteId || null)
+		} catch {
+			setResolvedSiteId(null)
+		}
 	}
 
 	const normalizeReview = (review, index) => {
@@ -114,8 +142,8 @@ export default function ReviewsPopup({ isOpen, onClose, shelterName, siteInfo = 
 				: []
 
 			let filteredReviews = reviewList
-			if (infoContent.siteId) {
-				filteredReviews = reviewList.filter((review) => String(review.siteId) === String(infoContent.siteId))
+			if (effectiveSiteId) {
+				filteredReviews = reviewList.filter((review) => String(review.siteId) === String(effectiveSiteId))
 			} else {
 				const normalizedName = String(infoContent.name || '').trim().toLowerCase()
 				if (normalizedName) {
@@ -136,7 +164,13 @@ export default function ReviewsPopup({ isOpen, onClose, shelterName, siteInfo = 
 		if (isOpen && activeTab === 'reviews' && view === 'list') {
 			loadReviews()
 		}
-	}, [isOpen, activeTab, view])
+	}, [isOpen, activeTab, view, effectiveSiteId])
+
+	useEffect(() => {
+		if (isOpen) {
+			resolveSiteIdFromApprovedSites()
+		}
+	}, [isOpen, infoContent.siteId, infoContent.name, infoContent.url])
 
 	const handleSubmit = async (e) => {
 		e.preventDefault()
@@ -145,7 +179,7 @@ export default function ReviewsPopup({ isOpen, onClose, shelterName, siteInfo = 
 			setReviewsError('Please log in to submit a review.')
 			return
 		}
-		if (!infoContent.siteId) {
+		if (!effectiveSiteId) {
 			setReviewsError('This pet is missing a site reference, so a review cannot be submitted yet.')
 			return
 		}
@@ -156,7 +190,7 @@ export default function ReviewsPopup({ isOpen, onClose, shelterName, siteInfo = 
 		try {
 			await submitReview({
 				userID: Number(currentUserId),
-				siteId: Number(infoContent.siteId),
+				siteId: Number(effectiveSiteId),
 				rating: Number(rating),
 				comment: comment.trim(),
 			})
@@ -244,8 +278,9 @@ export default function ReviewsPopup({ isOpen, onClose, shelterName, siteInfo = 
 						<div className="reviews-modal-footer">
 							<button
 								className="reviews-add-btn"
+								type="button"
 								onClick={() => setView('add')}
-								disabled={!currentUserId || !infoContent.siteId}
+								disabled={!currentUserId}
 							>
 								+ Add a Review
 							</button>

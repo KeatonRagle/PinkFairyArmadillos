@@ -1,11 +1,12 @@
 import { useEffect, useState } from 'react'
-import { getApprovedSites } from '../fetch/api'
+import { getAllReviews, getApprovedSites } from '../fetch/api'
 import HomeHeader from '../components/header'
 import HomeFooter from '../components/footer'
 import '../styling/ShelterInfo.css'
 
 export default function ShelterInfo() {
 	const [approvedSites, setApprovedSites] = useState([])
+	const [siteRatings, setSiteRatings] = useState({})
 	const [openSiteId, setOpenSiteId] = useState(null)
 	const [loading, setLoading] = useState(true)
 	const [error, setError] = useState('')
@@ -21,11 +22,41 @@ export default function ShelterInfo() {
 			setError('')
 
 			try {
-				const sites = await getApprovedSites()
+				const [sites, reviews] = await Promise.all([
+					getApprovedSites(),
+					getAllReviews(),
+				])
+
+				const reviewList = Array.isArray(reviews) ? reviews : []
+				const ratingBuckets = reviewList.reduce((acc, review) => {
+					const rawSiteId = review?.siteId ?? review?.site?.siteId
+					const siteId = Number(rawSiteId)
+					const rating = Number(review?.rating)
+
+					if (!Number.isFinite(siteId) || !Number.isFinite(rating)) {
+						return acc
+					}
+
+					const current = acc[siteId] || { sum: 0, count: 0 }
+					current.sum += rating
+					current.count += 1
+					acc[siteId] = current
+					return acc
+				}, {})
+
+				const averagedRatings = Object.entries(ratingBuckets).reduce((acc, [siteId, bucket]) => {
+					if (bucket.count > 0) {
+						acc[siteId] = bucket.sum / bucket.count
+					}
+					return acc
+				}, {})
+
 				setApprovedSites(Array.isArray(sites) ? sites : [])
+				setSiteRatings(averagedRatings)
 			} catch {
 				setError('Failed to load approved websites.')
 				setApprovedSites([])
+				setSiteRatings({})
 			} finally {
 				setLoading(false)
 			}
@@ -48,8 +79,11 @@ export default function ShelterInfo() {
 		return `(${digitsOnly.slice(0, 3)}) ${digitsOnly.slice(3, 6)}-${digitsOnly.slice(6)}`
 	}
 
-	const formatOverallRating = (rating) => {
-		const parsedRating = Number(rating)
+	const formatOverallRating = (siteId, fallbackRating) => {
+		const liveRating = siteRatings[siteId]
+		const parsedRating = Number(
+			Number.isFinite(liveRating) ? liveRating : fallbackRating
+		)
 		return Number.isFinite(parsedRating) ? `${parsedRating.toFixed(1)} / 5` : 'Not rated yet'
 	}
 
@@ -109,7 +143,7 @@ export default function ShelterInfo() {
 												</div>
 												<div className="shelterinfo-detail-row">
 													<span className="shelterinfo-detail-label">Rating</span>
-													<span>{formatOverallRating(site.rating)}</span>
+													<span>{formatOverallRating(site.siteId, site.rating)}</span>
 												</div>
 											</div>
 										) : null}
