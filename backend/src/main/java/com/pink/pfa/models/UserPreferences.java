@@ -46,7 +46,7 @@ public class UserPreferences {
 	
 	
 	/** Trait user prefers. */
-	public enum Preference { BREED, GENDER, AGE_MIN, AGE_MAX, SIZE }
+	public enum Preference { PET_TYPE, BREED, GENDER, AGE_MIN, AGE_MAX, SIZE }
 	@Column(name = "pref_trait", nullable = false)
     @Enumerated(EnumType.STRING)
 	private Preference prefTrait;

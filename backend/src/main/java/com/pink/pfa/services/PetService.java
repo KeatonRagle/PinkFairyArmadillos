@@ -7,6 +7,7 @@ import java.util.stream.Collectors;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.web.bind.annotation.RequestMapping;
 
@@ -14,7 +15,9 @@ import com.pink.pfa.controllers.requests.PetRequest;
 import com.pink.pfa.exceptions.ResourceNotFoundException;
 import com.pink.pfa.models.AdoptionSite;
 import com.pink.pfa.models.Pet;
+import com.pink.pfa.models.UserPreferences;
 import com.pink.pfa.models.datatransfer.PetDTO;
+import com.pink.pfa.models.datatransfer.UserDTO;
 import com.pink.pfa.repos.AdoptionSiteRepository;
 import com.pink.pfa.repos.PetRepository;
 
@@ -45,6 +48,8 @@ public class PetService {
     private static final Logger log = LoggerFactory.getLogger(PetService.class);
     private final PetRepository petRepository;
     private final AdoptionSiteRepository adoptionRepository;
+    @Autowired private UserService userService;
+    @Autowired private UserPrefService userPrefService;
 
     public PetService (PetRepository petRepository, AdoptionSiteRepository adoptionRepository) {
         this.petRepository = petRepository;
@@ -118,6 +123,29 @@ public class PetService {
             .toList();
     }
 
+    private int scorePet(Pet pet, List<UserPreferences> prefs) {
+        int score = 0;
+
+        for (var pref : prefs) {
+            String val = pref.getPrefValue();
+
+            boolean matches = switch (pref.getPrefTrait()) {
+                case BREED   -> pet.getBreed().toLowerCase().contains(val.toLowerCase());
+                case GENDER  -> String.valueOf(pet.getGender()).equalsIgnoreCase(val);
+                case AGE_MAX -> pet.getAge() <= Integer.valueOf(val);
+                case AGE_MIN -> pet.getAge() >= Integer.valueOf(val);
+                case SIZE    -> pet.getSize().equalsIgnoreCase(val);
+                case PET_TYPE-> pet.getPetType().equalsIgnoreCase(val);
+            };
+
+            if (matches) {
+                score++;
+            }
+        }
+
+        return score;
+    }
+
     /**
      * Fetches all pets by a given set of filters and returns it as a list of {@link PetDTO}.
      * Throws an exception if the no pets exist.
@@ -128,45 +156,45 @@ public class PetService {
      * @param endAge Ending Age range of the pet
      * @param breed Breed of the pet
      * @param size Size of the pet
+     * @param filterPrefs Flag that tells us if we're supposed to filter by preferences
      * @return list of {@link PetDTO} for the requested name
      */ 
-    public List<PetDTO> findByFilter(String petType, String gender, Integer startAge, Integer endAge, String breed, String size) {
+    public List<PetDTO> findByFilter(String petType, String gender, Integer startAge, Integer endAge, String breed, String size, Boolean filterPrefs) {
         List<Pet> allPets = petRepository.findAll();
-
-        if (petType != null) {
-            allPets = allPets.stream()
-                .filter(pet -> pet.getPetType().equalsIgnoreCase(petType))
-                .toList();
-        }
-        if (gender != null) {
-            allPets = allPets.stream()
-                .filter(pet -> String.valueOf(pet.getGender()).equalsIgnoreCase(gender))
-                .toList();
-        }
-        if (startAge == null && endAge != null) {
-            allPets = allPets.stream().filter(pet -> pet.getAge() <= endAge).toList();
-        } else if (startAge != null && endAge == null) {
-            allPets = allPets.stream().filter(pet -> pet.getAge() >= startAge).toList();
-        } else if (startAge != null && endAge != null) {
-            allPets = allPets.stream().filter(pet -> pet.getAge() >= startAge && pet.getAge() <= endAge).toList();
-        }
-        if (breed != null && !breed.isBlank()) {
-            allPets = allPets.stream()
-                .filter(pet -> pet.getBreed().toLowerCase().contains(breed.toLowerCase()))
-                .toList();
-        }
-        if (size != null) {
-            allPets = allPets.stream()
-                .filter(pet -> pet.getSize().equalsIgnoreCase(size))
-                .toList();
-        }
+        allPets = allPets.stream()
+            .filter(pet -> petType == null                  ||  pet.getPetType().equalsIgnoreCase(petType))
+            .filter(pet -> gender == null                   ||  String.valueOf(pet.getGender()).equalsIgnoreCase(gender))
+            .filter(pet -> startAge == null                 ||  pet.getAge() >= startAge)
+            .filter(pet -> endAge == null                   ||  pet.getAge() <= endAge)
+            .filter(pet -> breed == null || breed.isBlank() ||  pet.getBreed().toLowerCase().contains(breed.toLowerCase()))
+            .filter(pet -> size == null                     ||  pet.getSize().equalsIgnoreCase(size)).toList();
 
         if (allPets.isEmpty()) {
             throw new ResourceNotFoundException("Pet", petType + gender + startAge + endAge + breed + size);
         }
 
+        if (filterPrefs == null || !filterPrefs){
+            return allPets.stream()
+                .map(PetDTO::fromEntity)
+                .toList();
+        }
+
+        UserDTO authUserDTO;
+        try {
+            // user exists, try to filter
+            authUserDTO = userService.findByJWT();
+        } catch (Exception e) {
+            // else we just return what we have
+            return allPets.stream()
+                .map(PetDTO::fromEntity)
+                .toList();
+        }
+
+        List<UserPreferences> prefs = userPrefService.findAllByUserId(authUserDTO.id());
         return allPets.stream()
-            .map(PetDTO::fromEntity)
+            .map(pet -> Map.entry(pet, scorePet(pet, prefs))) // pair pet + score
+            .sorted((a, b) -> Integer.compare(b.getValue(), a.getValue())) // high -> low
+            .map(entry -> PetDTO.fromEntity(entry.getKey()))
             .toList();
     }
 
