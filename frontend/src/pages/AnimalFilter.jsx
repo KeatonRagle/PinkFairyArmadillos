@@ -58,7 +58,11 @@ function mapPetToAnimal(pet) {
 		gender: pet.gender === 'M' ? 'Male' : pet.gender === 'F' ? 'Female' : pet.gender,
 		location: pet.location,
 		misc: pet.pet_status || pet.pet_type || 'More details coming soon.',
-		adoptionSite: 'Adoption site information coming soon.',
+		adoptionSite: pet.adoption_site_name || pet.adoptionSite || 'Adoption site information coming soon.',
+		site_id: pet.site_id ?? pet.siteId ?? null,
+		adoption_site_url: pet.adoption_site_url || pet.adoptionSiteUrl || null,
+		adoption_site_email: pet.adoption_site_email || pet.adoptionSiteEmail || null,
+		adoption_site_phone: pet.adoption_site_phone || pet.adoptionSitePhone || null,
 		image: pet.img_url || '/images/waveShort.png',
 		secondaryImages: pet.secondary_images || []
 	}

@@ -3,6 +3,7 @@ import { useLocation } from 'react-router-dom'
 import HomeHeader from '../components/header'
 import HomeFooter from '../components/footer'
 import ReviewsPopup from '../components/ReviewsPopup'
+import PopupErrorBoundary from '../components/PopupErrorBoundary'
 import '../styling/specificanimal.css'
 
 const previewAnimal = {
@@ -53,19 +54,6 @@ export default function SpecificAnimal() {
 				}}
 			/>
 
-			{/*
-			<div className="specificanimal-back-row">
-				<Link
-					to="/animal-filter"
-					state={backToFiltersState}
-					className="specificanimal-top-back-button"
-					aria-label="Back to filters"
-				>
-					<span aria-hidden="true">←</span>
-				</Link>
-			</div>
-			*/}
-
 			<main className="specificanimal-main">
 				<section className="specificanimal-media-column">
 					<div className="specificanimal-main-image-wrap">
@@ -94,7 +82,7 @@ export default function SpecificAnimal() {
 							className="specificanimal-reviews-btn"
 							onClick={() => setReviewsOpen(true)}
 						>
-							Reviews
+							Reviews and Info
 						</button>
 					</div>
 
@@ -124,11 +112,20 @@ export default function SpecificAnimal() {
 
 			<HomeFooter />
 
-			<ReviewsPopup
-				isOpen={reviewsOpen}
-				onClose={() => setReviewsOpen(false)}
-				shelterName={animal.adoptionSite}
-			/>
+			<PopupErrorBoundary resetKey={reviewsOpen ? 'open' : 'closed'}>
+				<ReviewsPopup
+					isOpen={reviewsOpen}
+					onClose={() => setReviewsOpen(false)}
+					shelterName={animal.adoptionSite}
+					siteInfo={{
+						siteId: animal.site_id ?? animal.siteId ?? null,
+						name: animal.adoption_site_name || animal.adoptionSite || 'Adoption site name coming soon.',
+						url: animal.adoption_site_url || animal.adoptionSiteUrl || 'https://example-adoption-site.org',
+						email: animal.adoption_site_email || animal.adoptionSiteEmail || 'info@example-adoption-site.org',
+						phone: animal.adoption_site_phone || animal.adoptionSitePhone || '(555) 123-4567',
+					}}
+				/>
+			</PopupErrorBoundary>
 		</div>
 	)
 }

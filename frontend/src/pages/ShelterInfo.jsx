@@ -1,37 +1,14 @@
-import { useEffect, useRef, useState } from 'react'
+import { useEffect, useState } from 'react'
+import { getApprovedSites } from '../fetch/api'
 import HomeHeader from '../components/header'
 import HomeFooter from '../components/footer'
 import '../styling/ShelterInfo.css'
 
 export default function ShelterInfo() {
-	const [openFilter, setOpenFilter] = useState(null)
-	const [selectedRadius, setSelectedRadius] = useState('')
-	const [selectedType, setSelectedType] = useState('')
-	const topbarRef = useRef(null)
-	const placeholderShelters = [1, 2, 3, 4, 5, 6]
-
-	const radiusOptions = [
-		'Within 20 miles',
-		'Within 40 miles',
-		'Within 80 miles',
-		'Within 100 miles',
-	]
-
-	const shelterTypeOptions = [
-		'Municipal Shelter',
-		'Private Shelter',
-		'Rescue Organization',
-		'Foster-Based Rescue',
-		'Breed-Specific Rescue',
-		'Sanctuary',
-		'Adoption Center',
-	]
-
-	const toggleFilter = (filterName) => {
-		setOpenFilter((currentFilter) =>
-			currentFilter === filterName ? null : filterName,
-		)
-	}
+	const [approvedSites, setApprovedSites] = useState([])
+	const [openSiteId, setOpenSiteId] = useState(null)
+	const [loading, setLoading] = useState(true)
+	const [error, setError] = useState('')
 
 	useEffect(() => {
 		document.body.classList.add('shelterinfo-body')
@@ -39,92 +16,111 @@ export default function ShelterInfo() {
 	}, [])
 
 	useEffect(() => {
-		const handleDocumentMouseDown = (event) => {
-			if (!topbarRef.current?.contains(event.target)) {
-				setOpenFilter(null)
+		const loadApprovedSites = async () => {
+			setLoading(true)
+			setError('')
+
+			try {
+				const sites = await getApprovedSites()
+				setApprovedSites(Array.isArray(sites) ? sites : [])
+			} catch {
+				setError('Failed to load approved websites.')
+				setApprovedSites([])
+			} finally {
+				setLoading(false)
 			}
 		}
 
-		document.addEventListener('mousedown', handleDocumentMouseDown)
-		return () => document.removeEventListener('mousedown', handleDocumentMouseDown)
+		loadApprovedSites()
 	}, [])
+
+	const toggleSite = (siteId) => {
+		setOpenSiteId((currentSiteId) => (currentSiteId === siteId ? null : siteId))
+	}
+
+	const formatPhone = (phone) => {
+		const digitsOnly = String(phone || '').replace(/\D/g, '')
+
+		if (digitsOnly.length !== 10) {
+			return phone || 'Not provided'
+		}
+
+		return `(${digitsOnly.slice(0, 3)}) ${digitsOnly.slice(3, 6)}-${digitsOnly.slice(6)}`
+	}
+
+	const formatOverallRating = (rating) => {
+		const parsedRating = Number(rating)
+		return Number.isFinite(parsedRating) ? `${parsedRating.toFixed(1)} / 5` : 'Not rated yet'
+	}
+
+	const visibleSites = Array.isArray(approvedSites) ? approvedSites : []
 
 	return (
 		<div className="shelterinfo-page">
 			<HomeHeader />
-			<main className="shelterinfo-main" >
-				<section className="shelterinfo-topbar" ref={topbarRef}>
-					<h1>Filter shelter by:</h1>
-					<div className="shelterinfo-filter-row">
-						<input
-							type="text"
-							className="shelterinfo-search-input shelterinfo-location-input"
-							placeholder="Your City"
-							aria-label="Location"
-						/>
-
-						<div className={`shelterinfo-dropdown-group radius-dropdown-group ${openFilter === 'radius' ? 'open' : ''}`}>
-							<button
-								type="button"
-								className={`shelterinfo-dropdown-toggle ${selectedRadius ? '' : 'shelterinfo-dropdown-placeholder'}`}
-								onClick={() => toggleFilter('radius')}
-							>
-								{selectedRadius || 'Search Radius'}
-							</button>
-							{openFilter === 'radius' && (
-								<div className="shelterinfo-dropdown-options">
-									{radiusOptions.map((radiusOption) => (
-										<button
-											key={radiusOption}
-											type="button"
-											className="shelterinfo-dropdown-option-button"
-											onClick={() => {
-												setSelectedRadius(radiusOption)
-												setOpenFilter(null)
-											}}
-										>
-											{radiusOption}
-										</button>
-									))}
-								</div>
-							)}
-						</div>
-
-						<div className={`shelterinfo-dropdown-group type-dropdown-group ${openFilter === 'type' ? 'open' : ''}`}>
-							<button
-								type="button"
-								className={`shelterinfo-dropdown-toggle ${selectedType ? '' : 'shelterinfo-dropdown-placeholder'}`}
-								onClick={() => toggleFilter('type')}
-							>
-								{selectedType || 'Shelter Type'}
-							</button>
-							{openFilter === 'type' && (
-								<div className="shelterinfo-dropdown-options">
-									{shelterTypeOptions.map((typeOption) => (
-										<button
-											key={typeOption}
-											type="button"
-											className="shelterinfo-dropdown-option-button"
-											onClick={() => {
-												setSelectedType(typeOption)
-												setOpenFilter(null)
-											}}
-										>
-											{typeOption}
-										</button>
-									))}
-								</div>
-							)}
-						</div>
-					</div>
+			<main className="shelterinfo-main">
+				<section className="shelterinfo-hero">
+					<p className="shelterinfo-eyebrow">Adoption Sites</p>
 				</section>
 
-				<section className="shelterinfo-placeholder-grid" aria-label="Shelter placeholders">
-					{placeholderShelters.map((placeholderId) => (
-						<article key={placeholderId} className="shelterinfo-placeholder-card" aria-hidden="true" />
-					))}
+				<section className="shelterinfo-list-section" aria-label="Approved shelters and rescue websites">
+					{loading ? <p className="shelterinfo-status">Loading approved websites...</p> : null}
+					{error ? <p className="shelterinfo-status shelterinfo-status-error">{error}</p> : null}
+
+					{!loading && !error && visibleSites.length === 0 ? (
+						<p className="shelterinfo-status">No approved websites are available yet.</p>
+					) : null}
+
+					{!loading && !error ? (
+						<div className="shelterinfo-site-list">
+							{visibleSites.map((site, index) => {
+								const isOpen = openSiteId === site.siteId
+
+								return (
+									<article key={site.siteId ?? site.url ?? index} className={`shelterinfo-site-card ${isOpen ? 'open' : ''}`}>
+										<button
+											type="button"
+											className="shelterinfo-site-toggle"
+											onClick={() => toggleSite(site.siteId)}
+											aria-expanded={isOpen}
+										>
+											<div className="shelterinfo-site-summary">
+												<p className="shelterinfo-site-name">{site.name || 'Unnamed website'}</p>
+												<p className="shelterinfo-site-url">{site.url || 'No website link provided'}</p>
+											</div>
+											<span className="shelterinfo-site-icon" aria-hidden="true">{isOpen ? '−' : '+'}</span>
+										</button>
+
+										{isOpen ? (
+											<div className="shelterinfo-site-details">
+												<div className="shelterinfo-detail-row">
+													<span className="shelterinfo-detail-label">Website</span>
+													<a href={site.url} target="_blank" rel="noreferrer" className="shelterinfo-detail-link">
+														{site.url}
+													</a>
+												</div>
+												<div className="shelterinfo-detail-row">
+													<span className="shelterinfo-detail-label">Email</span>
+													<span>{site.email || 'Not provided'}</span>
+												</div>
+												<div className="shelterinfo-detail-row">
+													<span className="shelterinfo-detail-label">Phone</span>
+													<span>{formatPhone(site.phone)}</span>
+												</div>
+												<div className="shelterinfo-detail-row">
+													<span className="shelterinfo-detail-label">Rating</span>
+													<span>{formatOverallRating(site.rating)}</span>
+												</div>
+											</div>
+										) : null}
+									</article>
+								)
+							})}
+						</div>
+					) : null}
 				</section>
 			</main>
+			<HomeFooter />
 		</div>
 	)
 }

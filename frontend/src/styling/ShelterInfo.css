@@ -1,6 +1,6 @@
 body.shelterinfo-body {
 	margin: 0;
-	background-color: #F8F8F8;
+	background-color: #f8f8f8;
 }
 
 .shelterinfo-page {
@@ -11,170 +11,184 @@ body.shelterinfo-body {
 
 .shelterinfo-main {
 	flex: 1;
-}
-
-.shelterinfo-placeholder-grid {
-	display: grid;
-	grid-template-columns: repeat(auto-fill, minmax(380px, 1fr));
-	gap: 40px;
-	padding: 40px;
-	margin-bottom: 56px;
+	width: 100%;
+	max-width: 1080px;
+	margin: 0 auto;
+	padding: 48px 20px 120px;
 	box-sizing: border-box;
 }
 
-.shelterinfo-placeholder-card {
-	height: 200px;
-	width: 380px;
-	background: #ececec;
-	border-radius: 14px;
-	box-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
+.shelterinfo-hero {
+	padding: 20px 0 28px;
 }
 
-.shelterinfo-topbar {
-	width: 100%;
-	min-height: 115px;
-	background-color: #b44b25;
-	display: flex;
-	align-items: center;
-	justify-content: center;
-	padding: 0 40px;
-	box-sizing: border-box;
-	position: relative;
-}
-
-.shelterinfo-topbar h1 {
-	position: absolute;
-	left: 40px;
-	color: white;
-	margin: 0;
-	padding: 0;
-	font-family: 'Hind Kochi', sans-serif;
-	font-weight: 300;
-	font-size: 25px;
-	white-space: nowrap;
-}
-
-.shelterinfo-filter-row {
-	display: flex;
-	align-items: center;
-	justify-content: center;
-	gap: 50px;
-	flex-wrap: wrap;
-	width: 100%;
-}
-
-.shelterinfo-search-input {
-	height: 45px;
-	padding: 0 40px 0 12px;
-	border: none;
-	border-radius: 6px;
-	font-family: 'Hind Kochi', sans-serif;
-	font-size: 15px;
-	color: #343434;
-	min-width: 180px;
-	background-color: #ffffff;
-	background-repeat: no-repeat;
-	background-position: calc(100% - 12px) center;
-}
-
-.shelterinfo-search-input::placeholder {
-	color: #7a7a7a;
-}
-
-.shelterinfo-location-input {
-	background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='14' height='14' viewBox='0 0 24 24'%3E%3Ccircle cx='11' cy='11' r='7' fill='none' stroke='%237a7a7a' stroke-width='2'/%3E%3Cpath d='M20 20l-4-4' fill='none' stroke='%237a7a7a' stroke-width='2' stroke-linecap='round'/%3E%3C/svg%3E");
-}
-
-.shelterinfo-dropdown-group {
-	--dropdown-extend-height: 190px;
-	position: relative;
-	width: 220px;
-	display: flex;
-	flex-direction: column;
-}
-
-.radius-dropdown-group {
-	--dropdown-extend-height: 180px;
-}
-
-.type-dropdown-group {
-	--dropdown-extend-height: 300px;
-}
-
-.shelterinfo-dropdown-group.open {
-	z-index: 20;
-}
-
-.shelterinfo-dropdown-toggle {
-	position: relative;
-	width: 100%;
-	height: 45px;
-	margin: 0;
-	border: none;
-	border-radius: 6px;
-	padding: 0 40px 0 12px;
-	background: #ffffff;
-	color: #343434;
-	font-size: 15px;
-	font-family: 'Hind Kochi', sans-serif;
-	text-align: left;
-	cursor: pointer;
-	background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath d='M1 1l5 5 5-5' fill='none' stroke='%23b44b25' stroke-width='1.5' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E");
-	background-repeat: no-repeat;
-	background-position: calc(100% - 12px) center;
-}
-
-.shelterinfo-dropdown-placeholder {
-	color: #7a7a7a;
-}
-
-.shelterinfo-dropdown-group.open .shelterinfo-dropdown-toggle {
-	border-bottom-left-radius: 0;
-	border-bottom-right-radius: 0;
-	background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath d='M1 6l5-5 5 5' fill='none' stroke='%23b44b25' stroke-width='1.5' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E");
-}
-
-.shelterinfo-dropdown-group.open .shelterinfo-dropdown-toggle::after {
-	content: '';
-	position: absolute;
-	left: 0;
-	right: 0;
-	top: 100%;
-	height: var(--dropdown-extend-height);
-	background: #ffffff;
-	border-top: none;
-	border-bottom-left-radius: 6px;
-	border-bottom-right-radius: 6px;
-	z-index: 1;
-}
-
-.shelterinfo-dropdown-options {
-	position: absolute;
-	top: 50px;
-	left: 0;
-	width: 100%;
-	display: flex;
-	flex-direction: column;
-	gap: 8px;
-	z-index: 2;
-	padding: 6px 0;
-}
-
-.shelterinfo-dropdown-option-button {
-	width: calc(100% - 20px);
-	height: 32px;
-	margin: 0 10px;
-	border: none;
-	border-radius: 6px;
-	padding: 0 10px;
-	background: #f8f8f8;
+.shelterinfo-eyebrow {
+	margin: 0 0 12px;
 	color: #b44b25;
-	font-size: 15px;
 	font-family: 'Hind Kochi', sans-serif;
-	text-align: left;
+	font-size: 0.9rem;
+	font-weight: 600;
+	letter-spacing: 0.16em;
+	text-transform: uppercase;
+}
+
+.shelterinfo-hero h1 {
+	margin: 0;
+	color: #2f2f2f;
+	font-family: 'Hind Kochi', sans-serif;
+	font-size: clamp(2rem, 4vw, 3rem);
+	font-weight: 400;
+}
+
+.shelterinfo-intro {
+	max-width: 700px;
+	margin: 16px 0 0;
+	color: #5f5f5f;
+	font-family: 'Hind Kochi', sans-serif;
+	font-size: 1.05rem;
+	line-height: 1.7;
+}
+
+.shelterinfo-list-section {
+	padding-top: 8px;
+}
+
+.shelterinfo-status {
+	margin: 0;
+	padding: 18px 22px;
+	background: #ffffff;
+	border-radius: 18px;
+	box-shadow: 0 10px 28px rgba(0, 0, 0, 0.06);
+	color: #4d4d4d;
+	font-family: 'Hind Kochi', sans-serif;
+}
+
+.shelterinfo-status-error {
+	color: #a52828;
+}
+
+.shelterinfo-site-list {
+	display: flex;
+	flex-direction: column;
+	gap: 18px;
+	margin-top: 12px;
+}
+
+.shelterinfo-site-card {
+	background: #ffffff;
+	border: 1px solid #efe4de;
+	border-radius: 22px;
+	box-shadow: 0 14px 34px rgba(0, 0, 0, 0.06);
+	overflow: hidden;
+}
+
+.shelterinfo-site-toggle {
+	width: 100%;
+	border: none;
+	background: transparent;
+	padding: 24px 26px;
+	display: grid;
+	grid-template-columns: 1fr auto 1fr;
+	align-items: center;
+	text-align: center;
 	cursor: pointer;
 }
 
-.shelterinfo-dropdown-option-button:hover {
-	background: #e5e7eb;
+.shelterinfo-site-summary {
+	grid-column: 2;
+	justify-self: center;
+	min-width: 0;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	gap: 12px;
+	flex-wrap: wrap;
+}
+
+.shelterinfo-site-name {
+	margin: 0;
+	display: inline;
+	color: #2f2f2f;
+	font-family: 'Hind Kochi', sans-serif;
+	font-size: 1.25rem;
+	font-weight: 500;
+}
+
+.shelterinfo-site-url {
+	margin: 0;
+	display: inline;
+	color: #7b665d;
+	font-family: 'Hind Kochi', sans-serif;
+	font-size: 0.98rem;
+	line-height: 1.5;
+	word-break: break-word;
+}
+
+.shelterinfo-site-icon {
+	grid-column: 3;
+	justify-self: end;
+	width: 36px;
+	height: 36px;
+	border-radius: 999px;
+	background: #f6ece7;
+	color: #b44b25;
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+	font-size: 1.4rem;
+	line-height: 1;
+}
+
+.shelterinfo-site-details {
+	padding: 0 26px 24px;
+	display: grid;
+	gap: 14px;
+}
+
+.shelterinfo-detail-row {
+	display: grid;
+	grid-template-columns: 120px 1fr;
+	gap: 14px;
+	padding-top: 14px;
+	border-top: 1px solid #f0e5de;
+	color: #444444;
+	font-family: 'Hind Kochi', sans-serif;
+	line-height: 1.6;
+	word-break: break-word;
+}
+
+.shelterinfo-detail-label {
+	color: #b44b25;
+	font-weight: 600;
+}
+
+.shelterinfo-detail-link {
+	color: #b44b25;
+	text-decoration: none;
+}
+
+.shelterinfo-detail-link:hover,
+.shelterinfo-detail-link:focus-visible {
+	text-decoration: underline;
+	outline: none;
+}
+
+@media (max-width: 700px) {
+	.shelterinfo-main {
+		padding: 36px 16px 120px;
+	}
+
+	.shelterinfo-site-toggle {
+		padding: 20px;
+		gap: 16px;
+	}
+
+	.shelterinfo-site-details {
+		padding: 0 20px 20px;
+	}
+
+	.shelterinfo-detail-row {
+		grid-template-columns: 1fr;
+		gap: 4px;
+	}
 }

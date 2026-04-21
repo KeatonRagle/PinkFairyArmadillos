@@ -9,18 +9,11 @@
 	padding-bottom: 170px;
 }
 
-/*
 .specificanimal-back-row {
-	width: 100%;
-	margin: 8rem 0 0;
-	padding: 0 6rem;
-	display: flex;
-	justify-content: flex-start;
+	display: none;
 }
 
 .specificanimal-top-back-button {
-	position: relative;
-	top: 4.5rem;
 	display: inline-flex;
 	align-items: center;
 	justify-content: center;
@@ -42,7 +35,6 @@
 	transform: translateX(-2px);
 	outline: none;
 }
-*/
 
 .specificanimal-main {
 	max-width: 1280px;
@@ -195,9 +187,9 @@
 }
 
 @media (max-width: 900px) {
-	/* .specificanimal-back-row {
+	.specificanimal-back-row {
 		padding: 0 1rem;
-	} */
+	}
 
 	.specificanimal-main {
 		grid-template-columns: 1fr;
