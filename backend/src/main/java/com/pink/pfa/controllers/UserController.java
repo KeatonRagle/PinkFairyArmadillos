@@ -18,7 +18,9 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestParam;
  import org.springframework.web.bind.annotation.RestController;
 
+import com.pink.pfa.controllers.requests.UpdateUserEmailRequest;
 import com.pink.pfa.controllers.requests.UpdateUserNameRequest;
+import com.pink.pfa.controllers.requests.UpdateUserPasswordRequest;
 import com.pink.pfa.controllers.requests.UserPrefRequest;
 import com.pink.pfa.controllers.requests.UserRequest;
 import com.pink.pfa.exceptions.ActionNotAllowedException;
@@ -182,6 +184,28 @@ public class UserController {
     ) {
         try {
             return ResponseEntity.ok().body(userService.updateNameByJWT(request, updateRequest));
+        } catch (ResourceNotFoundException e) {
+            return ResponseEntity.notFound().build();
+        } catch (Exception e) {
+            return ResponseEntity.internalServerError().build();
+        }
+    }
+
+    @PatchMapping("/me/updateEmail") 
+    public ResponseEntity<UserDTO> updateMyEmail(@Valid @RequestBody UpdateUserEmailRequest updateRequest) {
+        try {
+            return ResponseEntity.ok().body(userService.updateEmailByJWT(updateRequest));
+        } catch (ResourceNotFoundException e) {
+            return ResponseEntity.notFound().build();
+        } catch (Exception e) {
+            return ResponseEntity.internalServerError().build();
+        }
+    }
+
+    @PatchMapping("/me/updatePassword") 
+    public ResponseEntity<UserDTO> updateMyPassword(@Valid @RequestBody UpdateUserPasswordRequest updateRequest) {
+        try {
+            return ResponseEntity.ok().body(userService.updatePasswordByJWT(updateRequest));
         } catch (ResourceNotFoundException e) {
             return ResponseEntity.notFound().build();
         } catch (Exception e) {
