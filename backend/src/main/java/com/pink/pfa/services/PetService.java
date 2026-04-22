@@ -13,8 +13,8 @@ import org.springframework.web.bind.annotation.RequestMapping;
 
 import com.pink.pfa.controllers.requests.PetRequest;
 import com.pink.pfa.exceptions.ResourceNotFoundException;
-import com.pink.pfa.models.AdoptionSite;
 import com.pink.pfa.models.Pet;
+import com.pink.pfa.models.PetImage;
 import com.pink.pfa.models.UserPreferences;
 import com.pink.pfa.models.datatransfer.PetDTO;
 import com.pink.pfa.models.datatransfer.UserDTO;
@@ -198,6 +198,7 @@ public class PetService {
             .toList();
     }
 
+    @Transactional
     public void sync(List<Pet> scrapedPets) {        
         // Group scraped pets by site so each site is synced independently
         // Map<Integer, List<Pet>> bySite = scrapedPets.stream()
@@ -234,46 +235,6 @@ public class PetService {
             } else if (hasChanges(existing, scraped)) {
                 // Otherwise, if it has sufficient changes in the fields that matter, 
                 // apply those changes and update the entry in the DB
-                applyUpdates(existing, scraped);
-                petRepository.save(existing);
-                log.info("Updated pet: {}", entry.getKey());
-            }
-        }
-
-        // In DB but not in scrape — deactivate
-        for (Map.Entry<String, Pet> entry : dbMap.entrySet()) {
-            if (!scrapedMap.containsKey(entry.getKey())) {
-                Pet missing = entry.getValue();
-                missing.setPetStatus("INACTIVE");
-                petRepository.save(missing);
-                log.info("Deactivated pet: {}", entry.getKey());
-            }
-        }
-    }
-
-    //Experimental...
-    @Transactional
-    public void syncBySite(Integer siteId, List<Pet> scrapedPets) {
-        AdoptionSite site = adoptionRepository.findById(siteId)
-            .orElseThrow(() -> new IllegalArgumentException("Site not found: " + siteId));
-
-        Map<String, Pet> scrapedMap = scrapedPets.stream()
-            .collect(Collectors.toMap(this::buildKey, p -> p));
-
-        Map<String, Pet> dbMap = petRepository.findBySite_SiteId(siteId)
-            .stream()
-            .collect(Collectors.toMap(this::buildKey, p -> p));
-
-        // In scrape — add or update
-        for (Map.Entry<String, Pet> entry : scrapedMap.entrySet()) {
-            Pet scraped = entry.getValue();
-            scraped.setSite(site);
-
-            Pet existing = dbMap.get(entry.getKey());
-            if (existing == null) {
-                petRepository.save(scraped);
-                log.info("Added new pet: {}", entry.getKey());
-            } else if (hasChanges(existing, scraped)) {
                 applyUpdates(existing, scraped);
                 petRepository.save(existing); 
                 log.info("Updated pet: {}", entry.getKey());
@@ -319,6 +280,10 @@ public class PetService {
         existing.setPrice(scraped.getPrice());
         existing.setPetStatus(scraped.getPetStatus());
         existing.setAge(scraped.getAge());
+
+        for (PetImage image : scraped.getSecondaryImages()) 
+            image.setPet(existing);
+        
         existing.setSecondaryImages(scraped.getSecondaryImages());
     }
 }
