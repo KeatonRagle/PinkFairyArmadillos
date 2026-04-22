@@ -136,11 +136,6 @@
 	transition: border-color 0.2s ease, box-shadow 0.2s ease;
 }
 
-.profile-input-group input:focus {
-	border-color: #b44b25;
-	box-shadow: 0 0 0 3px rgba(180, 75, 37, 0.14);
-}
-
 .profile-password-grid {
 	display: grid;
 	grid-template-columns: repeat(3, minmax(0, 1fr));
@@ -210,7 +205,7 @@
 /* The X button inside the read-only input */
 .pref-delete-x {
     position: absolute;
-    right: 12px;
+    right: 50px;
     background: none;
     border: none;
     color: #a39489;
@@ -301,10 +296,11 @@
 /* 1. Anchor the X to this box */
 .pref-input-container {
     position: relative;
-    display: flex;
+    display: block;
     align-items: center;
     width: 100%;
     margin-top: 8px; /* Match the spacing of your other form labels */
+	overflow: hidden;
 }
 
 /* 2. Style the input to make room for the X */
@@ -325,8 +321,10 @@
     position: absolute;
     right: 12px; /* Distance from the right inner edge */
     top: 50%; /* Move to middle */
-    transform: translateY(-50%); /* Perfectly center vertically */
-    background: none;
+	width: 30px;
+    transform: translate(40%, -50%);
+    background: rgb(255, 255, 255);;
+    border-radius: 10px;
     border: none;
     color: #a39489;
     font-size: 20px;

@@ -309,7 +309,8 @@ public class PetService {
         return !existing.getLocation().equals(scraped.getLocation())
             || existing.getPrice() != scraped.getPrice()
             || !existing.getPetStatus().equals(scraped.getPetStatus())
-            || existing.getAge() != scraped.getAge();
+            || existing.getAge() != scraped.getAge()
+            || existing.getSecondaryImages().size() != scraped.getSecondaryImages().size();
     }
 
     // Only update scraper-owned fields
@@ -318,5 +319,6 @@ public class PetService {
         existing.setPrice(scraped.getPrice());
         existing.setPetStatus(scraped.getPetStatus());
         existing.setAge(scraped.getAge());
+        existing.setSecondaryImages(scraped.getSecondaryImages());
     }
 }
