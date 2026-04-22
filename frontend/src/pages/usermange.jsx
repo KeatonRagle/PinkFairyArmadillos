@@ -35,7 +35,7 @@ function roleLabel(role) {
 
 export default function UserManage() {
 	const navigate = useNavigate()
-	const { username, role } = useAuth()
+	const { username, id, role } = useAuth()
 	const [activeFilter, setActiveFilter] = useState('WHITELISTED')
 	const [whitelistedUsers, setWhitelistedUsers] = useState([])
 	const [blacklistedUsers, setBlacklistedUsers] = useState([])
@@ -246,6 +246,7 @@ export default function UserManage() {
 													<select
 														value={entry.role}
 														onChange={(e) => handleRoleChange(entry, e.target.value)}
+														disabled={id === entry.id}
 													>
 														{ROLE_OPTIONS.map((option) => (
 															<option key={option.value} value={option.value}>
