@@ -105,11 +105,6 @@
 	border-radius: 20px;
 }
 
-.profile-settings-panel:last-of-type {
-    border-bottom: none;
-    margin-bottom: 0;
-}
-
 .profile-settings-panel h2 {
 	margin: 0;
 	color: #2f2520;

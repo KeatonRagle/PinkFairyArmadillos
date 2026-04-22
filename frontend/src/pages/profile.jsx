@@ -103,7 +103,7 @@ export default function Profile() {
 
 		try {
 			await deleteUserPref(prefID)
-			 setUserPreferences(userPreferences.filter(pref => pref.prefId !== prefID));
+			 setUserPreferences(userPreferences.filter(pref => pref.id !== prefID));
 		} catch (err) {
 			setErrorMessage('Failed to delete user preference: ' + err.message);
 		} finally {
@@ -276,50 +276,53 @@ export default function Profile() {
 							</div>
 							<button type="submit" className="profile-button profile-password-button">Change Password</button>
 						</form>
-					</div>
-					<section className="profile-settings-panel profile-settings-panel-wide">
-						<h2>Pet Preferences</h2>
-						<p className="profile-status" style={{ marginBottom: '20px', textAlign: 'left' }}>
-							Manage the traits you are looking for in a pet.
-						</p>
 
-						<div className="profile-grid">
-							{userPreferences.length > 0 ? (
-								userPreferences.map((pref) => (
-									<div key={pref.id} className="profile-input-group">
-										<span className="profile-label">
-											{traitMappings.get(pref.trait)}
-										</span>
-										<div className="pref-input-container"> 
-											<input
-												type="text"
-												value={pref.prefValue}
-												readOnly
-												className="profile-input-readonly"
-											/>
-											<button
-												type="button"
-												className="pref-delete-x"
-												onClick={() => handleDeletePref(pref.prefId)}
-											>
-												×
-											</button>
+						<section className="profile-settings-panel profile-settings-panel-wide">
+							<h2>Pet Preferences</h2>
+							<p className="profile-status" style={{ marginBottom: '20px', textAlign: 'left' }}>
+								Manage the traits you are looking for in a pet.
+							</p>
+
+							<div className="profile-grid">
+								{userPreferences.length > 0 ? (
+									userPreferences.map((pref) => (
+										<div key={pref.id} className="profile-input-group">
+											<span className="profile-label">
+												{traitMappings.get(pref.trait)}
+											</span>
+											<div className="pref-input-container"> 
+												<input
+													type="text"
+													value={pref.value}
+													readOnly
+													className="profile-input-readonly"
+												/>
+												<button
+													type="button"
+													className="pref-delete-x"
+													onClick={() => handleDeletePref(pref.id)}
+												>
+													×
+												</button>
+											</div>
 										</div>
-									</div>
-								))
-							) : (
-								<p className="no-prefs">No preferences added yet.</p>
-							)}
-						</div>
+									))
+								) : (
+									<p className="no-prefs">No preferences added yet.</p>
+								)}
+							</div>
 
-						<button 
-							type="button" 
-							className="profile-button add-pref-bottom-btn" 
-							onClick={() => setIsPopupOpen(true)}
-						>
-							+ Add New Preference
-						</button>
-					</section>
+							<button 
+								type="button" 
+								className="profile-button add-pref-bottom-btn" 
+								onClick={() => setIsPopupOpen(true)}
+							>
+								+ Add New Preference
+							</button>
+						</section>
+					</div>
+					
+					
 
 					<UserPrefsPopup 
 						isOpen={isPopupOpen}
