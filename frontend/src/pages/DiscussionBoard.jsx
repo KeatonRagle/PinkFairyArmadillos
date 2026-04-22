@@ -255,6 +255,7 @@ export default function DiscussionBoard() {
 						</article>
 					))}
 				</section>
+				{/*
 				<aside className="toppost-sidebar" aria-label="Top posts">
 					<h2>Top Post</h2>
 					<div className="toppost-timeframes" role="group" aria-label="Top post timeframe">
@@ -281,6 +282,7 @@ export default function DiscussionBoard() {
 						))}
 					</ol>
 				</aside>
+				*/}
 			</main>
 			
 			<HomeFooter />
