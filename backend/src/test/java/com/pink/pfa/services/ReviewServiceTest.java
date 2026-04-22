@@ -21,6 +21,7 @@ import com.pink.pfa.exceptions.ResourceNotFoundException;
 import com.pink.pfa.models.AdoptionSite;
 import com.pink.pfa.models.Reviews;
 import com.pink.pfa.models.User;
+import com.pink.pfa.models.datatransfer.ReviewDTO;
 import com.pink.pfa.repos.ReviewsRepository;
 
 /**
@@ -57,7 +58,7 @@ class ReviewServiceTest extends PfaBase {
     // -------------------------------------------------------------------------
 
     /** Creates a review for a random seeded user with the given rating and comment. */
-    private Reviews createReviewForRandUser(double rating, String comment) {
+    private ReviewDTO createReviewForRandUser(double rating, String comment) {
         SeededUser seededUser = getRandUserAndPassByRole(User.Role.ROLE_USER);
         return reviewService.submitNewReview(
             new ReviewRequest(seededUser.user().getUserId(), testSite.getSiteId(), rating, comment)
@@ -74,7 +75,7 @@ class ReviewServiceTest extends PfaBase {
     @Test
     @Transactional
     void findAll_ShouldReturnNonNullList() {
-        List<Reviews> reviews = reviewService.findAll(null);
+        List<ReviewDTO> reviews = reviewService.findAll(null);
         assertNotNull(reviews, "findAll should never return null");
     }
 
@@ -102,13 +103,12 @@ class ReviewServiceTest extends PfaBase {
     @Test
     @Transactional
     void findById_WithValidId_ShouldReturnCorrectReview() {
-        Reviews created = createReviewForRandUser(3.5, "Decent experience.");
-
-        Reviews found = reviewService.findById(created.getReviewId());
+        ReviewDTO created = createReviewForRandUser(3.5, "Decent experience.");
+        ReviewDTO found = reviewService.findById(created.id());
 
         assertNotNull(found, "Expected a review to be returned");
-        assertEquals(3.5, found.getRating(), "Rating should match");
-        assertEquals("Decent experience.", found.getRwComment(), "Comment should match");
+        assertEquals(3.5, found.rating(), "Rating should match");
+        assertEquals("Decent experience.", found.comment(), "Comment should match");
     }
 
     /**
@@ -132,9 +132,9 @@ class ReviewServiceTest extends PfaBase {
     @Test
     @Transactional
     void existsById_ShouldReturnTrueForExistingReview() {
-        Reviews created = createReviewForRandUser(5.0, "Amazing!");
+        ReviewDTO created = createReviewForRandUser(5.0, "Amazing!");
 
-        assertTrue(reviewService.existsById(created.getReviewId()),
+        assertTrue(reviewService.existsById(created.id()),
             "existsById should return true for a saved review");
     }
 
@@ -164,13 +164,13 @@ class ReviewServiceTest extends PfaBase {
             seededUser.user().getUserId(), testSite.getSiteId(), 4.0, "Good place."
         );
 
-        Reviews result = reviewService.submitNewReview(request);
+        ReviewDTO result = reviewService.submitNewReview(request);
 
         assertNotNull(result, "Submitted review should not be null");
-        assertNotNull(result.getReviewId(), "Saved review should have a generated ID");
-        assertEquals(4.0, result.getRating(), "Rating should match request");
-        assertEquals("Good place.", result.getRwComment(), "Comment should match request");
-        assertEquals(seededUser.user().getUserId(), result.getUser().getUserId(),
+        assertNotNull(result.id(), "Saved review should have a generated ID");
+        assertEquals(4.0, result.rating(), "Rating should match request");
+        assertEquals("Good place.", result.comment(), "Comment should match request");
+        assertEquals(seededUser.user().getUserId(), result.userId(),
             "Review should be linked to the correct user");
     }
 
@@ -198,12 +198,14 @@ class ReviewServiceTest extends PfaBase {
     @Test
     @Transactional
     void deleteReview_ShouldRemoveFromRepository() {
-        Reviews created = createReviewForRandUser(2.0, "Not great.");
+        ReviewDTO created = createReviewForRandUser(2.0, "Not great.");
 
-        mockSecurityContext(created.getUser());
-        reviewService.deleteReview(created.getReviewId());
+        mockSecurityContext(userRepository.findById(created.userId())
+            .orElseThrow(() -> new ResourceNotFoundException("User", created.userId()))
+        );
 
-        assertFalse(reviewService.existsById(created.getReviewId()),
+        reviewService.deleteReview(created.id());
+        assertFalse(reviewService.existsById(created.id()),
             "Review should no longer exist after deletion");
     }
 
@@ -213,13 +215,15 @@ class ReviewServiceTest extends PfaBase {
     @Test
     @Transactional
     void deleteReview_ShouldNotAffectOtherReviews() {
-        Reviews first  = createReviewForRandUser(4.0, "Good.");
-        Reviews second = createReviewForRandUser(5.0, "Great!");
+        ReviewDTO first  = createReviewForRandUser(4.0, "Good.");
+        ReviewDTO second = createReviewForRandUser(5.0, "Great!");
 
-        mockSecurityContext(first.getUser());
-        reviewService.deleteReview(first.getReviewId());
+        mockSecurityContext(userRepository.findById(first.userId())
+            .orElseThrow(() -> new ResourceNotFoundException("User", first.userId()))
+        );
+        reviewService.deleteReview(first.id());
 
-        assertTrue(reviewService.existsById(second.getReviewId()),
+        assertTrue(reviewService.existsById(second.id()),
             "Unrelated review should still exist after deleting another");
     }
 
