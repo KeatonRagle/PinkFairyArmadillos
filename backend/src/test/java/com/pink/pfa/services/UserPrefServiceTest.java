@@ -205,7 +205,17 @@ class UserPrefServiceTest extends PfaBase {
         );
 
         // User B tries to delete it
+        int tries = 10;
         SeededUser userB = getRandUserAndPassByRole(User.Role.ROLE_USER);
+        while (userA.equals(userB) && tries > 0) {
+            userB = getRandUserAndPassByRole(User.Role.ROLE_USER);
+            tries -= 1;
+        }
+
+        if (tries == 0) {
+            throw new RuntimeException("Only one user exists in seeded table");
+        }
+
         mockSecurityContext(userB.user());
 
         assertThrows(RuntimeException.class,
