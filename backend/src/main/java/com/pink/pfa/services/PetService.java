@@ -310,7 +310,7 @@ public class PetService {
             || existing.getPrice() != scraped.getPrice()
             || !existing.getPetStatus().equals(scraped.getPetStatus())
             || existing.getAge() != scraped.getAge()
-            || existing.getSecondaryImages().size() != existing.getSecondaryImages().size();
+            || existing.getSecondaryImages().size() != scraped.getSecondaryImages().size();
     }
 
     // Only update scraper-owned fields
