@@ -13,6 +13,7 @@ import com.pink.pfa.models.AdoptionSite;
 import com.pink.pfa.models.Pet;
 import com.pink.pfa.services.AdoptionSiteService;
 import com.pink.pfa.services.DatabaseBackupService;
+import com.pink.pfa.services.FeaturedPetService;
 import com.pink.pfa.services.PetService;
 import com.pink.pfa.services.WebScraperService;
 
@@ -41,17 +42,20 @@ public class WebScraperScheduler {
     private final PetService petService;
     private final DatabaseBackupService databaseBackupService;
     private final AdoptionSiteService adoptionSiteService;
+    private final FeaturedPetService featuredPetService;
     
     public WebScraperScheduler(
         WebScraperService webScraperService,
         PetService petService,
         DatabaseBackupService databaseBackupService,
-        AdoptionSiteService adoptionSiteService
+        AdoptionSiteService adoptionSiteService,
+        FeaturedPetService featuredPetService
     ) {
         this.webScraperService = webScraperService;
         this.petService = petService;
         this.databaseBackupService = databaseBackupService;
         this.adoptionSiteService = adoptionSiteService;
+        this.featuredPetService = featuredPetService;
     }
 
 
@@ -87,5 +91,8 @@ public class WebScraperScheduler {
         }
 
         databaseBackupService.backup("post_scrape");
+
+        // Set up featured pets...
+        featuredPetService.setupFeaturedByCount(1, 1);
     }
 }
