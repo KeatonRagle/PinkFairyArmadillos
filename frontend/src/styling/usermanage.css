@@ -234,6 +234,10 @@
 	outline: none;
 }
 
+.usermanage-control select:disabled {
+	background: #dddddd;
+}
+
 .usermanage-button,
 .usermanage-button.is-secondary {
 	display: inline-flex;
