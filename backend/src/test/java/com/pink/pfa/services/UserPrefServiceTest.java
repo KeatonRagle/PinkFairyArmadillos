@@ -76,8 +76,8 @@ class UserPrefServiceTest extends PfaBase {
 
         mockSecurityContext(user);
 
-        userPrefService.createNewPref(new UserPrefRequest(Preference.BREED, "Labrador"));
-        userPrefService.createNewPref(new UserPrefRequest(Preference.GENDER, "female"));
+        userPrefService.createNewPref(new UserPrefRequest("BREED", "Labrador"));
+        userPrefService.createNewPref(new UserPrefRequest("GENDER", "female"));
 
         List<UserPreferences> prefs = userPrefService.findAllByUserId(userId);
 
@@ -100,7 +100,7 @@ class UserPrefServiceTest extends PfaBase {
         mockSecurityContext(seededUser.user());
 
         UserPreferences created = userPrefService.createNewPref(
-            new UserPrefRequest(Preference.SIZE, "Medium")
+            new UserPrefRequest("SIZE", "Medium")
         );
 
         UserPreferences found = userPrefService.findById(created.getPrefId());
@@ -134,7 +134,7 @@ class UserPrefServiceTest extends PfaBase {
         mockSecurityContext(seededUser.user());
 
         UserPreferences result = userPrefService.createNewPref(
-            new UserPrefRequest(Preference.BREED, "Poodle")
+            new UserPrefRequest("BREED", "Poodle")
         );
 
         assertNotNull(result, "Created pref should not be null");
@@ -153,11 +153,11 @@ class UserPrefServiceTest extends PfaBase {
         SeededUser seededUser = getRandUserAndPassByRole(User.Role.ROLE_USER);
         mockSecurityContext(seededUser.user());
 
-        userPrefService.createNewPref(new UserPrefRequest(Preference.BREED,   "Labrador"));
-        userPrefService.createNewPref(new UserPrefRequest(Preference.GENDER,  "female"));
-        userPrefService.createNewPref(new UserPrefRequest(Preference.AGE_MIN, "1"));
-        userPrefService.createNewPref(new UserPrefRequest(Preference.AGE_MAX, "5"));
-        userPrefService.createNewPref(new UserPrefRequest(Preference.SIZE,    "Large"));
+        userPrefService.createNewPref(new UserPrefRequest("BREED",   "Labrador"));
+        userPrefService.createNewPref(new UserPrefRequest("GENDER",  "female"));
+        userPrefService.createNewPref(new UserPrefRequest("AGE_MIN", "1"));
+        userPrefService.createNewPref(new UserPrefRequest("AGE_MAX", "5"));
+        userPrefService.createNewPref(new UserPrefRequest("SIZE",    "Large"));
 
         List<UserPreferences> prefs = userPrefService.findAllByUserId(
             seededUser.user().getUserId()
@@ -181,7 +181,7 @@ class UserPrefServiceTest extends PfaBase {
         mockSecurityContext(seededUser.user());
 
         UserPreferences created = userPrefService.createNewPref(
-            new UserPrefRequest(Preference.GENDER, "male")
+            new UserPrefRequest("GENDER", "male")
         );
 
         userPrefService.deleteUserPref(created.getPrefId());
@@ -201,7 +201,7 @@ class UserPrefServiceTest extends PfaBase {
         SeededUser userA = getRandUserAndPassByRole(User.Role.ROLE_USER);
         mockSecurityContext(userA.user());
         UserPreferences created = userPrefService.createNewPref(
-            new UserPrefRequest(Preference.SIZE, "Small")
+            new UserPrefRequest("SIZE", "Small")
         );
 
         // User B tries to delete it
@@ -236,7 +236,7 @@ class UserPrefServiceTest extends PfaBase {
         SeededUser seededUser = getRandUserAndPassByRole(User.Role.ROLE_USER);
         mockSecurityContext(seededUser.user());
 
-        userPrefService.createNewPref(new UserPrefRequest(Preference.BREED, "Beagle"));
+        userPrefService.createNewPref(new UserPrefRequest("BREED", "Beagle"));
 
         List<UserPreferences> prefs = userPrefService.findAllByEmail(
             seededUser.user().getEmail()

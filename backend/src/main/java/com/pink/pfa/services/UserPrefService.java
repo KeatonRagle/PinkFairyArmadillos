@@ -7,6 +7,7 @@ import com.pink.pfa.controllers.requests.UserPrefRequest;
 import com.pink.pfa.exceptions.ResourceNotFoundException;
 import com.pink.pfa.models.User;
 import com.pink.pfa.models.UserPreferences;
+import com.pink.pfa.models.UserPreferences.Preference;
 import com.pink.pfa.models.datatransfer.UserDTO;
 import com.pink.pfa.repos.UserPreferencesRepository;
 import com.pink.pfa.repos.UserRepository;
@@ -54,7 +55,7 @@ public class UserPrefService {
 
     public UserPreferences createNewPref(UserPrefRequest prefRequest) {
         UserDTO user = userService.findByJWT();
-        UserPreferences UserPreferences = new UserPreferences(prefRequest.pref(), prefRequest.value());
+        UserPreferences UserPreferences = new UserPreferences(Preference.valueOf(prefRequest.pref()), prefRequest.value());
         UserPreferences.setUser(userRepository.findById(user.id())
             .orElseThrow(() -> new ResourceNotFoundException("User", user.id()))
         );

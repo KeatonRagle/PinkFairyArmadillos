@@ -185,6 +185,32 @@
 	background: #943b19;
 }
 
+.delete-icon-btn {
+    background: none !important;
+    border: none !important;
+    color: #9ca3af;
+    cursor: pointer;
+    
+    /* This is the fix for "Top-Centered" */
+    display: inline-flex !important;
+    align-items: center !important;      /* Vertical center */
+    justify-content: center !important;   /* Horizontal center */
+    
+    padding: 0 8px !important;            /* Remove top/bottom padding that causes offsets */
+    height: 32px !important;              /* Match the avatar height exactly */
+    width: 32px !important;               /* Make it a square hit area */
+    font-size: 1.1rem;
+    line-height: 1 !important;            /* Prevents text-line spacing from pushing the icon */
+    
+    transition: all 0.2s ease;
+    margin: 0 !important;                 /* Clear any inherited margins */
+}
+
+.delete-icon-btn:hover {
+    color: #ef4444;
+    transform: scale(1.1);
+}
+
 /* ── Add-review form ── */
 .reviews-add-form {
 	flex: 1;

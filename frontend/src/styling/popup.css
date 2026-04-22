@@ -24,6 +24,16 @@
     animation: modalFadeIn 0.3s ease-out;
 }
 
+.age-input-group select {
+    padding: 12px;
+    border-radius: 12px;
+    border: 1px solid rgba(201, 188, 177, 0.7);
+    background-color: white;
+    color: #4f3829;
+    font-size: 15px;
+    cursor: pointer;
+}
+
 /* Modal Form Layout */
 .popup-content form {
     display: flex;
@@ -82,6 +92,48 @@
     background: transparent;
     border: 1px solid #d1d5db;
     color: #7a7a7a;
+}
+
+.input-container {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    margin-bottom: 20px;
+}
+
+.popup-label {
+    font-size: 12px;
+    text-transform: uppercase;
+    font-weight: 600;
+    color: #6d5d51;
+    letter-spacing: 0.5px;
+}
+
+.trait-dropdown, 
+.popup-content input, 
+.popup-content select {
+    width: 100%;
+    padding: 12px;
+    border-radius: 12px;
+    border: 1px solid rgba(201, 188, 177, 0.7);
+    font-size: 16px;
+    background: #fff;
+    box-sizing: border-box; /* Crucial for padding */
+}
+
+.submit-btn {
+    background-color: #4f3829;
+    color: white;
+    border: none;
+    padding: 12px 20px;
+    border-radius: 12px;
+    font-weight: 600;
+    cursor: pointer;
+}
+
+.submit-btn:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
 }
 
 .popup-error {

@@ -15,6 +15,7 @@ import com.pink.pfa.controllers.requests.PetRequest;
 import com.pink.pfa.exceptions.ResourceNotFoundException;
 import com.pink.pfa.models.AdoptionSite;
 import com.pink.pfa.models.Pet;
+import com.pink.pfa.models.PetImage;
 import com.pink.pfa.models.UserPreferences;
 import com.pink.pfa.models.datatransfer.PetDTO;
 import com.pink.pfa.models.datatransfer.UserDTO;
@@ -132,11 +133,23 @@ public class PetService {
             boolean matches = switch (pref.getPrefTrait()) {
                 case BREED   -> pet.getBreed().toLowerCase().contains(val.toLowerCase());
                 case GENDER  -> String.valueOf(pet.getGender()).equalsIgnoreCase(val);
-                case AGE_MAX -> pet.getAge() <= Integer.valueOf(val);
-                case AGE_MIN -> pet.getAge() >= Integer.valueOf(val);
                 case SIZE    -> pet.getSize().equalsIgnoreCase(val);
                 case PET_TYPE-> pet.getPetType().equalsIgnoreCase(val);
+                default -> false;
             };
+
+            if (pref.getPrefTrait() == UserPreferences.Preference.AGE_MIN || pref.getPrefTrait() == UserPreferences.Preference.AGE_MAX) {
+                String[] ageComponents = val.split(" ");
+                int actualAge = switch (ageComponents[1]) {
+                    case "Weeks" -> Integer.parseInt(ageComponents[0]);
+                    case "Months" -> Integer.parseInt(ageComponents[0]) * 4;
+                    case "Years" -> Integer.parseInt(ageComponents[0]) * 52;
+                    default -> Integer.parseInt(ageComponents[0]);
+                };
+
+                matches = (pref.getPrefTrait() == UserPreferences.Preference.AGE_MAX && pet.getAge() <= actualAge) ||
+                          (pref.getPrefTrait() == UserPreferences.Preference.AGE_MIN && pet.getAge() >= actualAge);
+            }
 
             if (matches) {
                 score++;
@@ -159,7 +172,7 @@ public class PetService {
      * @param filterPrefs Flag that tells us if we're supposed to filter by preferences
      * @return list of {@link PetDTO} for the requested name
      */ 
-    public List<PetDTO> findByFilter(String petType, String gender, Integer startAge, Integer endAge, String breed, String size, Boolean filterPrefs) {
+    public List<PetDTO> findByFilter(String petType, String gender, Integer startAge, Integer endAge, String breed, String size, Boolean filterPrefs, Integer userId) {
         List<Pet> allPets = petRepository.findAll();
         allPets = allPets.stream()
             .filter(pet -> petType == null                  ||  pet.getPetType().equalsIgnoreCase(petType))
@@ -182,7 +195,7 @@ public class PetService {
         UserDTO authUserDTO;
         try {
             // user exists, try to filter
-            authUserDTO = userService.findByJWT();
+            authUserDTO = userService.findById(userId);
         } catch (Exception e) {
             // else we just return what we have
             return allPets.stream()
@@ -320,5 +333,8 @@ public class PetService {
         existing.setPetStatus(scraped.getPetStatus());
         existing.setAge(scraped.getAge());
         existing.setSecondaryImages(scraped.getSecondaryImages());
+        for (PetImage petImage : existing.getSecondaryImages()) {
+            petImage.setPet(existing);
+        }
     }
 }

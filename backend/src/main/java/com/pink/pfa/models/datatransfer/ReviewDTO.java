@@ -14,6 +14,7 @@ import com.pink.pfa.models.Reviews;
 public record ReviewDTO(
     Integer id,
     Integer userId,
+    String username,
     AdoptionSiteDTO site,
     Double rating,
     String comment,
@@ -29,6 +30,7 @@ public record ReviewDTO(
         return new ReviewDTO(
             review.getReviewId(),
             review.getUser().getUserId(),
+            review.getUser().getName(),
             AdoptionSiteDTO.fromEntity(review.getSite()),
             review.getRating(),
             review.getRwComment(),
