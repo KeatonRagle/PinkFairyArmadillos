@@ -4,6 +4,7 @@ import '../styling/popup.css'
 
 export default function UserPrefsPopup({isOpen, isLoading, errorMessage, title, onClose, onSubmit}) {
     const [value, setValue] = useState('')
+    const [ageUnit, setAgeUnit] = useState('Weeks')
     const [selectedTrait, setSelectedTrait] = useState('BREED')
 
     // Reset form when opened
@@ -22,7 +23,11 @@ export default function UserPrefsPopup({isOpen, isLoading, errorMessage, title, 
         e.preventDefault();
         if (value.toString().trim()) {
             // Returns both the type (e.g., 'size') and the choice (e.g., 'Large')
-            onSubmit(selectedTrait, value)
+            let finalValue = value
+            if (selectedTrait === 'AGE_MIN' || selectedTrait === 'AGE_MAX') {
+                finalValue = `${value} ${ageUnit}`
+            }
+            onSubmit(selectedTrait, finalValue)
             onClose()
         }
     }
@@ -55,7 +60,6 @@ export default function UserPrefsPopup({isOpen, isLoading, errorMessage, title, 
 
                     <div className="input-container">
                         <label className="popup-label">Value</label>
-                        {/* DYNAMIC INPUT FIELD */}
                         {selectedTrait === 'BREED' && (
                             <input 
                                 type="text" 
@@ -86,15 +90,26 @@ export default function UserPrefsPopup({isOpen, isLoading, errorMessage, title, 
                         )}
 
                         {(selectedTrait === 'AGE_MIN' || selectedTrait === 'AGE_MAX') && (
-                            <input 
-                                type="number" 
-                                min="0" 
-                                max="25"
-                                placeholder="Enter age in years"
-                                value={value}
-                                onChange={(e) => setValue(e.target.value)}
-                                required
-                            />
+                            <div className="age-input-group" style={{ display: 'flex', gap: '8px' }}>
+                                <input 
+                                    type="number" 
+                                    min="0" 
+                                    placeholder="0"
+                                    value={value}
+                                    onChange={(e) => setValue(e.target.value)}
+                                    required
+                                    style={{ flex: '2' }} // Gives the number more room
+                                />
+                                <select 
+                                    value={ageUnit} 
+                                    onChange={(e) => setAgeUnit(e.target.value)}
+                                    style={{ flex: '1' }}
+                                >
+                                    <option value="Weeks">Weeks</option>
+                                    <option value="Months">Months</option>
+                                    <option value="Years">Years</option>
+                                </select>
+                            </div>
                         )}
                     </div>
 

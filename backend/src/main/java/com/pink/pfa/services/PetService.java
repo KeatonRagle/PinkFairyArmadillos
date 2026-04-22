@@ -133,11 +133,23 @@ public class PetService {
             boolean matches = switch (pref.getPrefTrait()) {
                 case BREED   -> pet.getBreed().toLowerCase().contains(val.toLowerCase());
                 case GENDER  -> String.valueOf(pet.getGender()).equalsIgnoreCase(val);
-                case AGE_MAX -> pet.getAge() <= Integer.valueOf(val);
-                case AGE_MIN -> pet.getAge() >= Integer.valueOf(val);
                 case SIZE    -> pet.getSize().equalsIgnoreCase(val);
                 case PET_TYPE-> pet.getPetType().equalsIgnoreCase(val);
+                default -> false;
             };
+
+            if (pref.getPrefTrait() == UserPreferences.Preference.AGE_MIN || pref.getPrefTrait() == UserPreferences.Preference.AGE_MAX) {
+                String[] ageComponents = val.split(" ");
+                int actualAge = switch (ageComponents[1]) {
+                    case "Weeks" -> Integer.parseInt(ageComponents[0]);
+                    case "Months" -> Integer.parseInt(ageComponents[0]) * 4;
+                    case "Years" -> Integer.parseInt(ageComponents[0]) * 52;
+                    default -> Integer.parseInt(ageComponents[0]);
+                };
+
+                matches = (pref.getPrefTrait() == UserPreferences.Preference.AGE_MAX && pet.getAge() <= actualAge) ||
+                          (pref.getPrefTrait() == UserPreferences.Preference.AGE_MIN && pet.getAge() >= actualAge);
+            }
 
             if (matches) {
                 score++;

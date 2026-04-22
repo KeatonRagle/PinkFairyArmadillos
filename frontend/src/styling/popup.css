@@ -24,6 +24,16 @@
     animation: modalFadeIn 0.3s ease-out;
 }
 
+.age-input-group select {
+    padding: 12px;
+    border-radius: 12px;
+    border: 1px solid rgba(201, 188, 177, 0.7);
+    background-color: white;
+    color: #4f3829;
+    font-size: 15px;
+    cursor: pointer;
+}
+
 /* Modal Form Layout */
 .popup-content form {
     display: flex;
