@@ -3,7 +3,6 @@ package com.pink.pfa.services;
 import java.util.List;
 
 import org.springframework.security.authentication.AuthenticationManager;
-import org.springframework.security.authentication.LockedException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -12,7 +11,9 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.web.bind.annotation.RequestMapping;
 
+import com.pink.pfa.controllers.requests.UpdateUserEmailRequest;
 import com.pink.pfa.controllers.requests.UpdateUserNameRequest;
+import com.pink.pfa.controllers.requests.UpdateUserPasswordRequest;
 import com.pink.pfa.controllers.requests.UserRequest;
 import com.pink.pfa.exceptions.ActionNotAllowedException;
 import com.pink.pfa.exceptions.ResourceNotFoundException;
@@ -177,6 +178,35 @@ public class UserService {
         return UserDTO.fromEntity(user);
     }
 
+    @Transactional
+    public UserDTO updateEmailByJWT(UpdateUserEmailRequest updateRequest) {
+        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+        if (auth == null) throw new ResourceNotFoundException("User", "Token either unreadable or not provided");
+        String email = ((UserPrincipal) auth.getPrincipal()).getUsername();
+        User user = userRepository.findByEmail(email)
+                .orElseThrow(() -> new ResourceNotFoundException("User", email));
+
+        if (userRepository.existsByEmail(updateRequest.email())) {
+            throw new UserAlreadyExistsException(updateRequest.email());
+        }
+
+        user.setEmail(updateRequest.email().trim().toLowerCase());
+        return UserDTO.fromEntity(user);
+    }
+
+    @Transactional
+    public UserDTO updatePasswordByJWT(UpdateUserPasswordRequest updateRequest) {
+        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+        if (auth == null) throw new ResourceNotFoundException("User", "Token either unreadable or not provided");
+        String email = ((UserPrincipal) auth.getPrincipal()).getUsername();
+        User user = userRepository.findByEmail(email)
+                .orElseThrow(() -> new ResourceNotFoundException("User", email));
+
+        user.setPassword(
+            passwordEncoder.encode(updateRequest.password())
+        );
+        return UserDTO.fromEntity(user);
+    }
 
     /**
      * Creates a new user account from a {@link CreateUserRequest}.<br>

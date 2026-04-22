@@ -78,6 +78,20 @@ export function updateCurrentUsername(name) {
   });
 }
 
+export function updateCurrentEmail(email) {
+  return apiFetchAuthenticated(`/api/users/me/updateEmail`, {
+    method: "PATCH",
+    body: JSON.stringify({ email }),
+  });
+}
+
+export function updateCurrentPassword(password) {
+  return apiFetchAuthenticated(`/api/users/me/updatePassword`, {
+    method: "PATCH",
+    body: JSON.stringify({ password }),
+  });
+}
+
 export function getAllPets() {
   return apiFetchAuthenticated("/api/pets/getAll", {
     method: "GET"
@@ -271,3 +285,4 @@ export function demoteToUser(id) {
     method: "PATCH"
   });
 }
+
