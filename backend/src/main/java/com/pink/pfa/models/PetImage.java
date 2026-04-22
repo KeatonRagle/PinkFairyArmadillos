@@ -1,5 +1,6 @@
 package com.pink.pfa.models;
 
+import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
@@ -41,7 +42,7 @@ import lombok.ToString;
 	/** Foreign key identifier for the pet. */
 	@ToString.Exclude
     @EqualsAndHashCode.Exclude
-	@ManyToOne(fetch = FetchType.LAZY)
+	@ManyToOne(fetch = FetchType.LAZY, cascade = CascadeType.PERSIST)
 	@JoinColumn(name = "pet_id", nullable = false)
 	private Pet pet;
 	

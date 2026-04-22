@@ -15,6 +15,7 @@ import com.pink.pfa.controllers.requests.PetRequest;
 import com.pink.pfa.exceptions.ResourceNotFoundException;
 import com.pink.pfa.models.AdoptionSite;
 import com.pink.pfa.models.Pet;
+import com.pink.pfa.models.PetImage;
 import com.pink.pfa.models.UserPreferences;
 import com.pink.pfa.models.datatransfer.PetDTO;
 import com.pink.pfa.models.datatransfer.UserDTO;
@@ -159,7 +160,7 @@ public class PetService {
      * @param filterPrefs Flag that tells us if we're supposed to filter by preferences
      * @return list of {@link PetDTO} for the requested name
      */ 
-    public List<PetDTO> findByFilter(String petType, String gender, Integer startAge, Integer endAge, String breed, String size, Boolean filterPrefs) {
+    public List<PetDTO> findByFilter(String petType, String gender, Integer startAge, Integer endAge, String breed, String size, Boolean filterPrefs, Integer userId) {
         List<Pet> allPets = petRepository.findAll();
         allPets = allPets.stream()
             .filter(pet -> petType == null                  ||  pet.getPetType().equalsIgnoreCase(petType))
@@ -182,7 +183,7 @@ public class PetService {
         UserDTO authUserDTO;
         try {
             // user exists, try to filter
-            authUserDTO = userService.findByJWT();
+            authUserDTO = userService.findById(userId);
         } catch (Exception e) {
             // else we just return what we have
             return allPets.stream()
@@ -320,5 +321,8 @@ public class PetService {
         existing.setPetStatus(scraped.getPetStatus());
         existing.setAge(scraped.getAge());
         existing.setSecondaryImages(scraped.getSecondaryImages());
+        for (PetImage petImage : existing.getSecondaryImages()) {
+            petImage.setPet(existing);
+        }
     }
 }

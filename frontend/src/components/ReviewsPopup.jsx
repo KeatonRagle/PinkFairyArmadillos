@@ -1,7 +1,7 @@
 import { createPortal } from 'react-dom'
 import { useEffect, useState } from 'react'
 import { useAuth } from '../auth/AuthContext.jsx'
-import { getAllReviews, getApprovedSites, submitReview } from '../fetch/api'
+import { getAllReviews, getApprovedSites, submitReview, deleteReview } from '../fetch/api'
 import '../styling/ReviewsPopup.css'
 
 function StarRating({ value, onChange }) {
@@ -123,6 +123,7 @@ export default function ReviewsPopup({ isOpen, onClose, shelterName, siteInfo = 
 		return {
 			reviewId: review.reviewId ?? review.id ?? `${siteId || 'site'}-${index}`,
 			username: review.user?.name || review.username || 'Anonymous',
+			userId: review.userId,
 			rating: Number.isFinite(parsedRating) ? parsedRating : 0,
 			rwComment: String(review.rwComment || review.comment || ''),
 			rwDate: review.rwDate || review.date || null,
@@ -207,6 +208,34 @@ export default function ReviewsPopup({ isOpen, onClose, shelterName, siteInfo = 
 		}
 	}
 
+	const handleDeleteReview = async (reviewId) => {
+		if (!currentUserId) {
+			setReviewsError('Please log in to delete a review.')
+			return
+		}
+		if (!effectiveSiteId) {
+			setReviewsError('This pet is missing a site reference, so a review cannot be submitted yet.')
+			return
+		}
+
+		setIsSubmitting(true)
+		setReviewsError('')
+
+		try {
+			await deleteReview(reviewId)
+
+			await loadReviews()
+			setComment('')
+			setRating(0)
+			setActiveTab('reviews')
+			setView('list')
+		} catch {
+			setReviewsError('Failed to delete review.')
+		} finally {
+			setIsSubmitting(false)
+		}
+	}
+
 	const formatReviewDate = (rawDate) => {
 		if (!rawDate) return 'No date'
 
@@ -265,9 +294,14 @@ export default function ReviewsPopup({ isOpen, onClose, shelterName, siteInfo = 
 								reviews.map((r, index) => (
 									<div key={r.reviewId} className="reviews-item">
 										<div className="reviews-item-header">
-											<span className="reviews-item-username">{String(r?.username || `User ${index + 1}`)}</span>
+											<span className="reviews-item-username">{String(`${r?.username}` || `User ${index + 1}`)}</span>
 											<StarDisplay value={Number(r?.rating) || 0} />
 										</div>
+										{currentUserId == r.userId && (
+											<button className="delete-icon-btn" onClick={() => handleDeleteReview(r.reviewId)}>
+												<i className="fa-regular fa-trash-can"></i>
+											</button>
+										)}
 										<p className="reviews-item-comment">{String(r?.rwComment || '')}</p>
 										<span className="reviews-item-date">{formatReviewDate(r?.rwDate)}</span>
 									</div>

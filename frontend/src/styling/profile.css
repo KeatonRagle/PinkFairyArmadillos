@@ -322,7 +322,7 @@
     right: 12px; /* Distance from the right inner edge */
     top: 50%; /* Move to middle */
 	width: 30px;
-    transform: translate(40%, -50%);
+    transform: translate(25%, -50%);
     background: rgb(255, 255, 255);;
     border-radius: 10px;
     border: none;

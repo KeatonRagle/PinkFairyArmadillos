@@ -1,4 +1,5 @@
 import { useEffect, useRef, useState } from 'react'
+import { useAuth } from '../auth/AuthContext'
 import { Link, useLocation } from 'react-router-dom'
 import HomeHeader from '../components/header'
 import HomeFooter from '../components/footer'
@@ -96,6 +97,8 @@ function convertFromWeeks(rank, val) {
 }
 
 export default function AnimalFilter() {
+	const { id } = useAuth()
+
 	const filterPanelRef = useRef(null)
 	const location = useLocation()
 	const initialFilters = location.state?.filters ?? {}
@@ -115,6 +118,7 @@ export default function AnimalFilter() {
 	const [maxAgeEnabled, isMaxAgeEnabled] = useState(initialFilters.maxAgeEnabled ?? false)
 	const [maxAgeSelection, setMaxAgeSelection] = useState(initialFilters.maxAgeSelection ?? 1)
 	const [maxAgeValue, setMaxAgeValue] = useState(initialFilters.maxAgeValue ?? 0)
+	const [filterPrefs, setFilterPrefs] = useState(initialFilters.filterPrefs ?? false)
 
 	const [isLoading, setIsLoading] = useState(true)
 	const [hasLoaded, setHasLoaded] = useState(false)
@@ -230,6 +234,8 @@ export default function AnimalFilter() {
                     startAge: selectedAgeRange?.startAge,
                     endAge: selectedAgeRange?.endAge,
                     size: selectedSize,
+					filterPrefs: filterPrefs,
+					userId: id
                 })
 				const petsArray = Array.isArray(allPets) ? allPets : []
 
@@ -260,6 +266,7 @@ export default function AnimalFilter() {
 		selectedGender,
 		selectedPetType,
 		selectedSize,
+		filterPrefs
 	])
 
 	const genderLabel = selectedGender === 'M' ? 'Male' : selectedGender === 'F' ? 'Female' : null
@@ -277,6 +284,7 @@ export default function AnimalFilter() {
 		maxAgeSelection,
 		maxAgeValue,
 		maxAgeEnabled,
+		filterPrefs
 	}
 
 	return (
@@ -287,6 +295,20 @@ export default function AnimalFilter() {
 				<section className="animalfilter-panel" ref={filterPanelRef}>
 					<h1>Filters</h1>
 
+					{id && (
+						<div className="compatibility-sort-container">
+							<label className="compatibility-sort-label">
+								<input 
+									type="checkbox" 
+									className="compatibility-sort-checkbox"
+									checked={filterPrefs} 
+									onChange={(e) => setFilterPrefs(e.target.checked)} 
+								/>
+								<span>Sort by Compatibility</span>
+							</label>
+						</div>
+					)}
+					
 					<div className={`gender-filter-group ${openFilter === 'gender' ? 'open' : ''}`}>
 						<button
 							type="button"
