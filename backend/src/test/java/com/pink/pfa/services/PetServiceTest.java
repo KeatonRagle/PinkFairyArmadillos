@@ -264,7 +264,6 @@ class PetServiceTest extends PfaBase {
     void findByFilter_WithPrefs_ShouldSortResults() {
         // Mock authenticated user
         SeededUser mockUser = getRandUserAndPassByRole(User.Role.ROLE_USER);
-        mockSecurityContext(mockUser.user());
 
         // Preferences: prefer SMALL dogs
         List<UserPreferences> prefs = List.of(
@@ -272,7 +271,7 @@ class PetServiceTest extends PfaBase {
             new UserPreferences(UserPreferences.Preference.PET_TYPE, "Dog")
         );
 
-        List<PetDTO> result = petService.findByFilter(null, null, null, null, null, null, true, null);
+        List<PetDTO> result = petService.findByFilter(null, null, null, null, null, null, true, mockUser.user().getUserId());
 
         assertTrue(result.size() > 1);
 
