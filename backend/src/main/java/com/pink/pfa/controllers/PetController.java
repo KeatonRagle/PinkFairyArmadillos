@@ -67,10 +67,11 @@ public class PetController {
         @RequestParam(required = false) Integer endAge,
         @RequestParam(required = false) String breed,
         @RequestParam(required = false) String size,
-        @RequestParam(required = false) Boolean filterPrefs
+        @RequestParam(required = false) Boolean filterPrefs,
+        @RequestParam(required = false) Integer userId
     ) {
         try {
-            return ResponseEntity.ok().body(petService.findByFilter(petType, gender, startAge, endAge, breed, size, filterPrefs));
+            return ResponseEntity.ok().body(petService.findByFilter(petType, gender, startAge, endAge, breed, size, filterPrefs, userId));
         } catch (ResourceNotFoundException e) {
             return ResponseEntity.notFound().build();
         } catch (Exception e) {

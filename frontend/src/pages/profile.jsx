@@ -2,7 +2,8 @@ import { useEffect, useState } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
 import HomeHeader from '../components/header'
 import { useAuth } from '../auth/AuthContext'
-import { getCurrentUser, updateCurrentUsername, updateCurrentEmail, updateCurrentPassword } from '../fetch/api'
+import { getCurrentUser, updateCurrentUsername, updateCurrentEmail, updateCurrentPassword, getCurrentUserPrefs, addUserPref, deleteUserPref } from '../fetch/api'
+import UserPrefsPopup from '../components/UserPrefsPopup';
 import '../styling/profile.css'
 
 export default function Profile() {
@@ -19,6 +20,21 @@ export default function Profile() {
     const [isSavingEmail, setIsSavingEmail] = useState(false)
     const [isSavingPassword, setIsSavingPassword] = useState(false)
 
+	const [isLoading, setIsLoading] = useState(true)
+	const [hasLoaded, setHasLoaded] = useState(false)
+	const [errorMessage, setErrorMessage] = useState('')
+	const [userPreferences, setUserPreferences] = useState([])
+
+	const [isPopupOpen, setIsPopupOpen] = useState(false);
+
+	const traitMappings = new Map([
+		['BREED', 'Breed'],
+		['SIZE', 'Size'],
+		['GENDER', 'Gender'],
+		['AGE_MIN', 'Minimum Age'],
+		['AGE_MAX', 'Maximum Age']
+	])
+
 	useEffect(() => {
 		document.body.classList.add('profile-body')
 		return () => document.body.classList.remove('profile-body')
@@ -29,6 +45,72 @@ export default function Profile() {
 			navigate('/login')
 		}
 	}, [navigate, username])
+
+	useEffect(() => {
+		let isCancelled = false
+
+		const loadUserPrefs = async () => {
+			setIsLoading(true)
+			setErrorMessage('')
+
+			try {
+				const allPrefs = await getCurrentUserPrefs()
+				const prefsArray = Array.isArray(allPrefs) ? allPrefs : []
+
+				if (!isCancelled) {
+					setUserPreferences(prefsArray)
+				}
+			} catch {
+				if (!isCancelled) {
+					setUserPreferences([])
+					setErrorMessage('Unable to load user preferences right now.')
+				}
+			} finally {
+				if (!isCancelled) {
+					setIsLoading(false)
+					setHasLoaded(true)
+				}
+			}
+		}
+
+		loadUserPrefs()
+
+		return () => {
+			isCancelled = true
+		}
+	}, [])
+
+	const handleAddPref = async (trait, value) => {
+		setErrorMessage('');
+		setIsLoading(true);
+
+		try {
+			const newUserPref = await addUserPref({
+				pref: trait,
+				value: value
+			});
+
+			setUserPreferences([...userPreferences, newUserPref]);
+		} catch (err) {
+			setErrorMessage('Failed to add user pref: ' + err.message);
+		} finally {
+			setIsLoading(false);
+		}
+	}
+
+	const handleDeletePref = async (prefID) => {
+		setErrorMessage('')
+		setIsLoading(true)
+
+		try {
+			await deleteUserPref(prefID)
+			 setUserPreferences(userPreferences.filter(pref => pref.id !== prefID));
+		} catch (err) {
+			setErrorMessage('Failed to delete user preference: ' + err.message);
+		} finally {
+			setIsLoading(false);
+		}
+	}
 
 	useEffect(() => {
 		if (!token) {
@@ -255,7 +337,60 @@ export default function Profile() {
                                 {isSavingPassword ? 'Saving...' : 'Change Password'}
                             </button>
                         </form>
+
+						<section className="profile-settings-panel profile-settings-panel-wide">
+							<h2>Pet Preferences</h2>
+							<p className="profile-status" style={{ marginBottom: '20px', textAlign: 'left' }}>
+								Manage the traits you are looking for in a pet.
+							</p>
+
+							<div className="profile-grid">
+								{userPreferences.length > 0 ? (
+									userPreferences.map((pref) => (
+										<div key={pref.id} className="profile-input-group">
+											<span className="profile-label">
+												{traitMappings.get(pref.trait)}
+											</span>
+											<div className="pref-input-container"> 
+												<input
+													type="text"
+													value={pref.value}
+													readOnly
+													className="profile-input-readonly"
+												/>
+												<button
+													type="button"
+													className="pref-delete-x"
+													onClick={() => handleDeletePref(pref.id)}
+												>
+													×
+												</button>
+											</div>
+										</div>
+									))
+								) : (
+									<p className="no-prefs">No preferences added yet.</p>
+								)}
+							</div>
+
+							<button 
+								type="button" 
+								className="profile-button add-pref-bottom-btn" 
+								onClick={() => setIsPopupOpen(true)}
+							>
+								+ Add New Preference
+							</button>
+						</section>
 					</div>
+					
+					
+
+					<UserPrefsPopup 
+						isOpen={isPopupOpen}
+						title="Add Pet Preference"
+						onClose={() => setIsPopupOpen(false)}
+						onSubmit={handleAddPref}
+					/>
 
 					<div className="profile-actions">
 						<Link to="/home" className="profile-action-link">Back to Home</Link>

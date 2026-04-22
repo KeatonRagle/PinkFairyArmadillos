@@ -155,10 +155,10 @@ class PetServiceTest extends PfaBase {
     @Test
     @Transactional
     void findByFilter_ShouldReturnPetsByPetType() {
-        List<PetDTO> dogs = petService.findByFilter("Dog", null, null, null, null, null, null);
+        List<PetDTO> dogs = petService.findByFilter("Dog", null, null, null, null, null, null, null);
         assertTrue(dogs.size() >= 3, "Expected at least 3 seeded pets, got: " + dogs.size());
 
-        List<PetDTO> cats = petService.findByFilter("Cat", null, null, null, null, null, null);
+        List<PetDTO> cats = petService.findByFilter("Cat", null, null, null, null, null, null, null);
         assertTrue(cats.size() >= 2, "Expected at least 2 seeded pets, got: " + cats.size());
     }
 
@@ -168,10 +168,10 @@ class PetServiceTest extends PfaBase {
     @Test
     @Transactional
     void findByFilter_ShouldReturnPetsByGender() {
-        List<PetDTO> malePets = petService.findByFilter(null, "M", null, null, null, null, null);
+        List<PetDTO> malePets = petService.findByFilter(null, "M", null, null, null, null, null, null);
         assertTrue(malePets.size() >= 3, "Expected at least 3 seeded pets, got: " + malePets.size());
 
-        List<PetDTO> femalePets = petService.findByFilter(null, "F", null, null, null, null, null);
+        List<PetDTO> femalePets = petService.findByFilter(null, "F", null, null, null, null, null, null);
         assertTrue(femalePets.size() >= 2, "Expected at least 2 seeded pets, got: " + femalePets.size());
     }
 
@@ -181,13 +181,13 @@ class PetServiceTest extends PfaBase {
     @Test
     @Transactional
     void findByFilter_ShouldReturnPetsByAge() {
-        List<PetDTO> youngPets = petService.findByFilter(null, null, null, 40, null, null, null);
+        List<PetDTO> youngPets = petService.findByFilter(null, null, null, 40, null, null, null, null);
         assertTrue(youngPets.size() >= 3, "Expected at least 3 seeded pets, got: " + youngPets.size());
 
-        List<PetDTO> middlePets = petService.findByFilter(null, null, 20, 50, null, null, null);
+        List<PetDTO> middlePets = petService.findByFilter(null, null, 20, 50, null, null, null, null);
         assertTrue(middlePets.size() >= 3, "Expected at least 3 seeded pets, got: " + middlePets.size());
 
-        List<PetDTO> oldPets = petService.findByFilter(null, null, 30, null, null, null, null);
+        List<PetDTO> oldPets = petService.findByFilter(null, null, 30, null, null, null, null, null);
         assertTrue(oldPets.size() >= 3, "Expected at least 3 seeded pets, got: " + oldPets.size());
     }
 
@@ -197,10 +197,10 @@ class PetServiceTest extends PfaBase {
     @Test
     @Transactional
     void findByFilter_ShouldReturnPetsByBreed() {
-        List<PetDTO> goldenRetrievers = petService.findByFilter(null, null, null, null, "Golden Retriever", null, null);
+        List<PetDTO> goldenRetrievers = petService.findByFilter(null, null, null, null, "Golden Retriever", null, null, null);
         assertTrue(goldenRetrievers.size() >= 1, "Expected at least 1 seeded pets, got: " + goldenRetrievers.size());
 
-        List<PetDTO> domesticShorthairs = petService.findByFilter(null, null, null, null, "Domestic Shorthair", null, null);
+        List<PetDTO> domesticShorthairs = petService.findByFilter(null, null, null, null, "Domestic Shorthair", null, null, null);
         assertTrue(domesticShorthairs.size() >= 2, "Expected at least 2 seeded pets, got: " + domesticShorthairs.size());
     }
 
@@ -210,10 +210,10 @@ class PetServiceTest extends PfaBase {
     @Test
     @Transactional
     void findByFilter_ShouldReturnPetsBySize() {
-        List<PetDTO> mediumPets = petService.findByFilter(null, null, null, null, null, "Medium", null);
+        List<PetDTO> mediumPets = petService.findByFilter(null, null, null, null, null, "Medium", null, null);
         assertTrue(mediumPets.size() >= 2, "Expected at least 2 seeded pets, got: " + mediumPets.size());
 
-        List<PetDTO> largePets = petService.findByFilter(null, null, null, null, null, "Large", null);
+        List<PetDTO> largePets = petService.findByFilter(null, null, null, null, null, "Large", null, null);
         assertTrue(largePets.size() >= 2, "Expected at least 2 seeded pets, got: " + largePets.size());
     }
 
@@ -223,13 +223,13 @@ class PetServiceTest extends PfaBase {
     @Test
     @Transactional
     void findByFilter_ShouldReturnPetsByMixedFilters() {
-        List<PetDTO> youngCats = petService.findByFilter("Cat", null, null, 20, null, null, null);
+        List<PetDTO> youngCats = petService.findByFilter("Cat", null, null, 20, null, null, null, null);
         assertTrue(youngCats.size() >= 1, "Expected at least 1 seeded pets, got: " + youngCats.size());
 
-        List<PetDTO> mediumDogs = petService.findByFilter("Dog", null, null, null, null, "Medium", null);
+        List<PetDTO> mediumDogs = petService.findByFilter("Dog", null, null, null, null, "Medium", null, null);
         assertTrue(mediumDogs.size() >= 1, "Expected at least 1 seeded pets, got: " + mediumDogs.size());
 
-        List<PetDTO> femaleDomesticShorthair = petService.findByFilter(null, "F", null, null, "Domestic Shorthair", null, null);
+        List<PetDTO> femaleDomesticShorthair = petService.findByFilter(null, "F", null, null, "Domestic Shorthair", null, null, null);
         assertTrue(femaleDomesticShorthair.size() >= 1, "Expected at least 1 seeded pets, got: " + femaleDomesticShorthair.size());
     }
 
@@ -264,7 +264,6 @@ class PetServiceTest extends PfaBase {
     void findByFilter_WithPrefs_ShouldSortResults() {
         // Mock authenticated user
         SeededUser mockUser = getRandUserAndPassByRole(User.Role.ROLE_USER);
-        mockSecurityContext(mockUser.user());
 
         // Preferences: prefer SMALL dogs
         List<UserPreferences> prefs = List.of(
@@ -272,7 +271,7 @@ class PetServiceTest extends PfaBase {
             new UserPreferences(UserPreferences.Preference.PET_TYPE, "Dog")
         );
 
-        List<PetDTO> result = petService.findByFilter(null, null, null, null, null, null, true);
+        List<PetDTO> result = petService.findByFilter(null, null, null, null, null, null, true, mockUser.user().getUserId());
 
         assertTrue(result.size() > 1);
 
@@ -289,7 +288,7 @@ class PetServiceTest extends PfaBase {
     @Test
     @Transactional
     void findByFilter_NoUser_ShouldFallbackToUnsorted() {
-        List<PetDTO> result = petService.findByFilter(null, null, null, null, null, null, true);
+        List<PetDTO> result = petService.findByFilter(null, null, null, null, null, null, true, null);
 
         assertNotNull(result);
         assertTrue(!result.isEmpty());
