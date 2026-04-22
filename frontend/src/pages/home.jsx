@@ -28,6 +28,7 @@ function mapPetToAnimal(pet) {
     adoption_site_email: siteEmail,
     adoption_site_phone: sitePhone,
     image: pet.img_url || '/images/waveShort.png',
+		secondaryImages: pet.secondary_images || []
   }
 }
 
