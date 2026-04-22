@@ -2,7 +2,6 @@ package com.pink.pfa.models.datatransfer;
 
 import java.util.List;
 
-import com.pink.pfa.models.AdoptionSite;
 import com.pink.pfa.models.Pet;
 
 
@@ -14,7 +13,7 @@ import com.pink.pfa.models.Pet;
  */
 public record PetDTO(
         Integer id,
-        AdoptionSite site,
+        AdoptionSiteDTO site,
         String name,
         String breed,
         int age,
@@ -36,7 +35,7 @@ public record PetDTO(
     public static PetDTO fromEntity(Pet pet) {
         return new PetDTO(
             pet.getPetId(),
-            pet.getSite(),
+            AdoptionSiteDTO.fromEntity(pet.getSite()),
             pet.getName(),
             pet.getBreed(), 
             pet.getAge(), 

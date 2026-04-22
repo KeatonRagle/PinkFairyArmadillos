@@ -8,6 +8,7 @@ import org.springframework.stereotype.Service;
 import com.pink.pfa.controllers.requests.ReviewRequest;
 import com.pink.pfa.exceptions.ResourceNotFoundException;
 import com.pink.pfa.models.Reviews;
+import com.pink.pfa.models.datatransfer.ReviewDTO;
 import com.pink.pfa.models.datatransfer.UserDTO;
 import com.pink.pfa.repos.AdoptionSiteRepository;
 import com.pink.pfa.repos.ReviewsRepository;
@@ -21,39 +22,45 @@ public class ReviewService {
 
     @Autowired private UserService userService;
 
-    public List<Reviews> findAll(Double minRating) { 
+    public List<ReviewDTO> findAll(Double minRating) { 
         if (minRating != null) {
             return reviewRepository.findByRatingGreaterThanEqual(minRating)
                 .stream()
+                .map(ReviewDTO::fromEntity)
                 .toList();
         }
         
         return reviewRepository.findAll()
             .stream()
+            .map(ReviewDTO::fromEntity)
             .toList(); 
     } 
 
-    public List<Reviews> findAllByUserId(Integer userId) { 
+    public List<ReviewDTO> findAllByUserId(Integer userId) { 
         return reviewRepository.findByUser_UserId(userId)
             .stream()
+            .map(ReviewDTO::fromEntity)
             .toList(); 
     }
 
-    public List<Reviews> findBySiteId(Integer siteId) { 
+    public List<ReviewDTO> findBySiteId(Integer siteId) { 
         return reviewRepository.findBySite_SiteId(siteId)
             .stream()
+            .map(ReviewDTO::fromEntity)
             .toList(); 
     }
 
-    public List<Reviews> findByRatingGreaterThanEqual(Double rating) {
+    public List<ReviewDTO> findByRatingGreaterThanEqual(Double rating) {
         return reviewRepository.findByRatingGreaterThanEqual(rating)
             .stream()
+            .map(ReviewDTO::fromEntity)
             .toList();
     }
 
-    public Reviews findById(Integer id) { 
-        return reviewRepository.findById(id)
-            .orElseThrow(() -> new ResourceNotFoundException("Review", id));
+    public ReviewDTO findById(Integer id) { 
+        return ReviewDTO.fromEntity(reviewRepository.findById(id)
+            .orElseThrow(() -> new ResourceNotFoundException("Review", id))
+        );
     }
 
     public Boolean existsById(Integer id) { 
@@ -67,7 +74,7 @@ public class ReviewService {
         reviewRepository.delete(review);
     }
 
-    public Reviews submitNewReview(ReviewRequest request) {
+    public ReviewDTO submitNewReview(ReviewRequest request) {
         Reviews review = new Reviews(request.rating(), request.comment());
         review.setUser(userRepository.findById(request.userID())
             .orElseThrow(() -> new ResourceNotFoundException("User", request.userID()))
@@ -78,6 +85,6 @@ public class ReviewService {
         );
 
         Reviews savedPost = reviewRepository.save(review);
-        return savedPost;
+        return ReviewDTO.fromEntity(savedPost);
     }
 }
