@@ -18,6 +18,7 @@ import com.pink.pfa.controllers.requests.ReviewRequest;
 import com.pink.pfa.exceptions.ResourceNotFoundException;
 import com.pink.pfa.exceptions.SiteAlreadyExistsException;
 import com.pink.pfa.models.Reviews;
+import com.pink.pfa.models.datatransfer.ReviewDTO;
 import com.pink.pfa.services.ReviewService;
 
 /**
@@ -49,7 +50,7 @@ public class ReviewsController {
      * @return a map containing a {@code Comments} list and a {@code Timestamp} string
      */
     @GetMapping("/getAll")
-    public ResponseEntity<List<Reviews>> getAllReviews(
+    public ResponseEntity<List<ReviewDTO>> getAllReviews(
         @RequestParam(required = false) Double minRating
     ) {
         try {
@@ -66,7 +67,7 @@ public class ReviewsController {
      * @return a map containing the matched {@code review} and a {@code Timestamp} string
      */
     @GetMapping("/{id}")
-    public ResponseEntity<Reviews> getReviewById(
+    public ResponseEntity<ReviewDTO> getReviewById(
         @PathVariable Integer id
     ) {
         try {
@@ -85,7 +86,7 @@ public class ReviewsController {
      * @return a map containing the matched {@code review} and a {@code Timestamp} string
      */
     @PostMapping("/submitReview")
-    public ResponseEntity<Reviews> createReview(
+    public ResponseEntity<ReviewDTO> createReview(
         @RequestBody ReviewRequest review
     ) {
         try { 
