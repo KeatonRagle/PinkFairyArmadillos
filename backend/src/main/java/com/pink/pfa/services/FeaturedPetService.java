@@ -1,5 +1,6 @@
 package com.pink.pfa.services;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import org.slf4j.Logger;
@@ -77,6 +78,22 @@ public class FeaturedPetService {
 
         FeaturedPets savedFPet = featuredPetRepository.save(fPet);
         return FeaturedPetDTO.fromEntity(savedFPet);
+    }
+
+    public List<FeaturedPetDTO> setupFeaturedByCount(int dogCount, int catCount) {
+        featuredPetRepository.findAll()
+            .forEach(fPet -> featuredPetRepository.delete(fPet));
+
+        List<FeaturedPetDTO> newlyAdded = new ArrayList<>();
+
+        for (int i = 0; i < dogCount; i++) {
+            newlyAdded.add(addFRandomPetByType("Dog", "Chosen randomly"));
+        }
+        for (int i = 0; i < catCount; i++) {
+            newlyAdded.add(addFRandomPetByType("Cat", "Chosen randomly"));
+        }
+
+        return newlyAdded;
     }
 
     /**
