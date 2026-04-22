@@ -22,9 +22,32 @@
 .header-left {
   display: flex;
   align-items: center;
+  gap: 12px;
   position: relative;
   z-index: 1002;
   flex: 0 0 auto;
+}
+
+.header-nav-back-arrow {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 36px;
+  height: 36px;
+  border-radius: 999px;
+  text-decoration: none;
+  background: #b44b25;
+  color: #ffffff;
+  font-size: 1.1rem;
+  line-height: 1;
+  transition: background-color 0.2s ease, transform 0.2s ease;
+}
+
+.header-nav-back-arrow:hover,
+.header-nav-back-arrow:focus-visible {
+  background: #943b19;
+  transform: translateX(-1px);
+  outline: none;
 }
 
 .site-header .header-left .logo {
@@ -91,6 +114,13 @@
   font-weight: inherit;
   line-height: 1;
   white-space: nowrap;
+  transition: color 0.2s ease;
+}
+
+.header-link:hover,
+.header-link:focus-visible {
+  color: #b44b25;
+  outline: none;
 }
 
 .account-menu {

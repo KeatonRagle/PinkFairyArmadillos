@@ -58,7 +58,17 @@ export default function HomeHeader({ backLink = null }) {
 
       <nav className="header-nav">
         <div className="header-nav-links">
-          {backLink ? (
+          {backLink?.renderAsArrow ? (
+            <Link
+              to={backLink.to}
+              state={backLink.state}
+              className="header-nav-back-arrow"
+              aria-label={backLink.ariaLabel || backLink.label || 'Back'}
+            >
+              <span aria-hidden="true">←</span>
+            </Link>
+          ) : null}
+          {backLink && !backLink.renderAsArrow ? (
             <Link to={backLink.to} state={backLink.state} className="header-link">
               {backLink.label}
             </Link>
