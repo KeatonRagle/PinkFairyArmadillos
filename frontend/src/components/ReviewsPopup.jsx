@@ -37,8 +37,8 @@ function StarDisplay({ value }) {
 
 export default function ReviewsPopup({ isOpen, onClose, shelterName, siteInfo = {} }) {
 	const { id: currentUserId } = useAuth()
-	const [activeTab, setActiveTab] = useState('reviews') // 'reviews' | 'info'
-	const [view, setView] = useState('list') // 'list' | 'add'
+	const [activeTab, setActiveTab] = useState('reviews')
+	const [view, setView] = useState('list')
 	const [rating, setRating] = useState(0)
 	const [comment, setComment] = useState('')
 	const [isSubmitting, setIsSubmitting] = useState(false)
@@ -46,6 +46,32 @@ export default function ReviewsPopup({ isOpen, onClose, shelterName, siteInfo = 
 	const [loadingReviews, setLoadingReviews] = useState(false)
 	const [reviewsError, setReviewsError] = useState('')
 	const [resolvedSiteId, setResolvedSiteId] = useState(siteInfo.siteId || null)
+	const [siteRating, setSiteRating] = useState(null)
+
+	// ✅ Uses siteInfo.siteId directly — infoContent doesn't exist yet at hook call time
+	useEffect(() => {
+		let isMounted = true
+		const loadRating = async () => {
+			try {
+				const siteId = siteInfo.siteId
+				if (!siteId) return
+				const allReviews = await getAllReviews()
+				const filtered = Array.isArray(allReviews)
+					? allReviews.filter(r => String(r.siteId ?? r.site?.siteId) === String(siteId))
+					: []
+				if (filtered.length === 0) {
+					if (isMounted) setSiteRating(null)
+					return
+				}
+				const avg = filtered.reduce((sum, r) => sum + Number(r.rating || 0), 0) / filtered.length
+				if (isMounted) setSiteRating(avg)
+			} catch {
+				if (isMounted) setSiteRating(null)
+			}
+		}
+		loadRating()
+		return () => { isMounted = false }
+	}, [siteInfo.siteId]) // ✅ stable prop dependency
 
 	// Reset add-review form whenever popup opens/closes
 	useEffect(() => {
@@ -358,28 +384,32 @@ export default function ReviewsPopup({ isOpen, onClose, shelterName, siteInfo = 
 					</form>
 				)}
 
-				{activeTab === 'info' && (
-					<div className="reviews-info-panel">
-						<div className="reviews-info-row">
-							<span className="reviews-info-label">Name</span>
-							<span>{infoContent.name}</span>
-						</div>
-						<div className="reviews-info-row">
-							<span className="reviews-info-label">Link</span>
-							<a href={infoContent.url} target="_blank" rel="noreferrer" className="reviews-info-link">
-								{infoContent.url}
-							</a>
-						</div>
-						<div className="reviews-info-row">
-							<span className="reviews-info-label">Email</span>
-							<span>{infoContent.email}</span>
-						</div>
-						<div className="reviews-info-row">
-							<span className="reviews-info-label">Phone</span>
-							<span>{infoContent.phone}</span>
-						</div>
-					</div>
-				)}
+				   {activeTab === 'info' && (
+					   <div className="reviews-info-panel">
+						   <div className="reviews-info-row">
+							   <span className="reviews-info-label">Name</span>
+							   <span>{infoContent.name}</span>
+						   </div>
+						   <div className="reviews-info-row site-rating-row">
+							   <span className="reviews-info-label">Rating</span>
+							   <span>{siteRating !== null ? `${siteRating.toFixed(1)} / 5` : '0.0 / 5'}</span>
+						   </div>
+						   <div className="reviews-info-row">
+							   <span className="reviews-info-label">Link</span>
+							   <a href={infoContent.url} target="_blank" rel="noreferrer" className="reviews-info-link">
+								   {infoContent.url}
+							   </a>
+						   </div>
+						   <div className="reviews-info-row">
+							   <span className="reviews-info-label">Email</span>
+							   <span>{infoContent.email}</span>
+						   </div>
+						   <div className="reviews-info-row">
+							   <span className="reviews-info-label">Phone</span>
+							   <span>{infoContent.phone}</span>
+						   </div>
+					   </div>
+				   )}
 			</div>
 		</div>,
 		document.body
