@@ -89,22 +89,28 @@ export default function SpecificAnimal() {
 					<div className="specificanimal-about-card">
 						<h2>About, {animal.name}</h2>
 						<div className="specificanimal-detail-list">
-							<div className="specificanimal-detail-item">
-								<span className="specificanimal-detail-label">Location</span>
-								<span>{animal.location || 'Location coming soon.'}</span>
-							</div>
-							<div className="specificanimal-detail-item">
-								<span className="specificanimal-detail-label">Gender</span>
-								<span>{animal.gender || 'Unknown'}</span>
-							</div>
-							<div className="specificanimal-detail-item">
-								<span className="specificanimal-detail-label">Age</span>
-								<span>{animalAge().text ?? 'Unknown'}</span>
-							</div>
-							<div className="specificanimal-detail-item">
-								<span className="specificanimal-detail-label">Breed</span>
-								<span>{animal.breed || 'Unknown'}</span>
-							</div>
+						  <div className="specificanimal-detail-item">
+						    <span className="specificanimal-detail-label">Location</span>
+						    <span>{animal.location || 'Location coming soon.'}</span>
+						  </div>
+						  <div className="specificanimal-detail-item">
+						    <span className="specificanimal-detail-label">Gender</span>
+						    <span>{animal.gender || 'Unknown'}</span>
+						  </div>
+						  <div className="specificanimal-detail-item">
+						    <span className="specificanimal-detail-label">Age</span>
+						    <span>{animalAge().text ?? 'Unknown'}</span>
+						  </div>
+						  <div className="specificanimal-detail-item">
+						    <span className="specificanimal-detail-label">Breed</span>
+						    <span>{animal.breed || 'Unknown'}</span>
+						  </div>
+						  {animal.size && (
+						    <div className="specificanimal-detail-item">
+						      <span className="specificanimal-detail-label">Size</span>
+						      <span>{animal.size}</span>
+						    </div>
+						  )}
 						</div>
 					</div>
 				</section>

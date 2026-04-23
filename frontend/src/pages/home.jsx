@@ -19,6 +19,7 @@ function mapPetToAnimal(pet) {
     name: pet.name,
     breed: pet.breed,
     age: pet.age,
+    size: pet.size || pet.pet_size,
     gender: pet.gender === 'M' ? 'Male' : pet.gender === 'F' ? 'Female' : pet.gender,
     location: pet.location,
     misc: pet.pet_status || pet.pet_type || 'More details coming soon.',
