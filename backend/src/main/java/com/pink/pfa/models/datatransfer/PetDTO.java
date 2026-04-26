@@ -24,7 +24,8 @@ public record PetDTO(
         String pet_status,
         int compatibility_score,
         String img_url,
-        List<String> secondary_images
+        List<String> secondary_images,
+        String size
 ) {
     /**
      * Maps a {@link Pet} entity to a {@link PetDTO}.
@@ -48,7 +49,8 @@ public record PetDTO(
             pet.getImgUrl(),
             pet.getSecondaryImages()
                 .stream().map(image -> image.getImageUrl())
-                .toList()
+                .toList(),
+            pet.getSize()
         );
     }
 }

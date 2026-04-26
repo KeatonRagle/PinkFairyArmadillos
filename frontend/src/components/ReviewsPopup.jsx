@@ -35,10 +35,10 @@ function StarDisplay({ value }) {
 	)
 }
 
-export default function ReviewsPopup({ isOpen, onClose, shelterName, siteInfo = {} }) {
+export default function ReviewsPopup({ isOpen, onClose, shelterName, siteInfo = {}, hideInfoTab = false }) {
 	const { id: currentUserId } = useAuth()
-	const [activeTab, setActiveTab] = useState('reviews') // 'reviews' | 'info'
-	const [view, setView] = useState('list') // 'list' | 'add'
+	const [activeTab, setActiveTab] = useState('reviews')
+	const [view, setView] = useState('list')
 	const [rating, setRating] = useState(0)
 	const [comment, setComment] = useState('')
 	const [isSubmitting, setIsSubmitting] = useState(false)
@@ -46,6 +46,32 @@ export default function ReviewsPopup({ isOpen, onClose, shelterName, siteInfo = 
 	const [loadingReviews, setLoadingReviews] = useState(false)
 	const [reviewsError, setReviewsError] = useState('')
 	const [resolvedSiteId, setResolvedSiteId] = useState(siteInfo.siteId || null)
+	const [siteRating, setSiteRating] = useState(null)
+
+	// ✅ Uses siteInfo.siteId directly — infoContent doesn't exist yet at hook call time
+	useEffect(() => {
+		let isMounted = true
+		const loadRating = async () => {
+			try {
+				const siteId = siteInfo.siteId
+				if (!siteId) return
+				const allReviews = await getAllReviews()
+				const filtered = Array.isArray(allReviews)
+					? allReviews.filter(r => String(r.siteId ?? r.site?.siteId) === String(siteId))
+					: []
+				if (filtered.length === 0) {
+					if (isMounted) setSiteRating(null)
+					return
+				}
+				const avg = filtered.reduce((sum, r) => sum + Number(r.rating || 0), 0) / filtered.length
+				if (isMounted) setSiteRating(avg)
+			} catch {
+				if (isMounted) setSiteRating(null)
+			}
+		}
+		loadRating()
+		return () => { isMounted = false }
+	}, [siteInfo.siteId]) // ✅ stable prop dependency
 
 	// Reset add-review form whenever popup opens/closes
 	useEffect(() => {
@@ -249,37 +275,39 @@ export default function ReviewsPopup({ isOpen, onClose, shelterName, siteInfo = 
 		})
 	}
 
-	return createPortal(
-		<div className="reviews-overlay" onClick={onClose}>
-			<div className="reviews-modal" onClick={(e) => e.stopPropagation()}>
-				<div className="reviews-modal-header">
-					<h3>Reviews and Info</h3>
-					<button className="reviews-close-btn" onClick={onClose} aria-label="Close">✕</button>
-				</div>
+		       return createPortal(
+			       <div className="reviews-overlay" onClick={onClose}>
+				       <div className="reviews-modal" onClick={(e) => e.stopPropagation()}>
+					       <div className="reviews-modal-header">
+						       <h3>Reviews</h3>
+						       <button className="reviews-close-btn" onClick={onClose} aria-label="Close">✕</button>
+					       </div>
 
-				<div className="reviews-tab-row" role="tablist" aria-label="Reviews and information tabs">
-					<button
-						type="button"
-						className={`reviews-tab-btn ${activeTab === 'reviews' ? 'active' : ''}`}
-						onClick={() => {
-							setActiveTab('reviews')
-							setView('list')
-						}}
-						role="tab"
-						aria-selected={activeTab === 'reviews'}
-					>
-						Reviews
-					</button>
-					<button
-						type="button"
-						className={`reviews-tab-btn ${activeTab === 'info' ? 'active' : ''}`}
-						onClick={() => setActiveTab('info')}
-						role="tab"
-						aria-selected={activeTab === 'info'}
-					>
-						Info
-					</button>
-				</div>
+					       {!hideInfoTab && (
+						       <div className="reviews-tab-row" role="tablist" aria-label="Reviews tabs">
+							       <button
+								       type="button"
+								       className={`reviews-tab-btn ${activeTab === 'reviews' ? 'active' : ''}`}
+								       onClick={() => {
+									       setActiveTab('reviews')
+									       setView('list')
+								       }}
+								       role="tab"
+								       aria-selected={activeTab === 'reviews'}
+							       >
+								       Reviews
+							       </button>
+							       <button
+								       type="button"
+								       className={`reviews-tab-btn ${activeTab === 'info' ? 'active' : ''}`}
+								       onClick={() => setActiveTab('info')}
+								       role="tab"
+								       aria-selected={activeTab === 'info'}
+							       >
+								       Info
+							       </button>
+						       </div>
+					       )}
 
 				{activeTab === 'reviews' && view === 'list' && (
 					<>
@@ -358,28 +386,32 @@ export default function ReviewsPopup({ isOpen, onClose, shelterName, siteInfo = 
 					</form>
 				)}
 
-				{activeTab === 'info' && (
-					<div className="reviews-info-panel">
-						<div className="reviews-info-row">
-							<span className="reviews-info-label">Name</span>
-							<span>{infoContent.name}</span>
-						</div>
-						<div className="reviews-info-row">
-							<span className="reviews-info-label">Link</span>
-							<a href={infoContent.url} target="_blank" rel="noreferrer" className="reviews-info-link">
-								{infoContent.url}
-							</a>
-						</div>
-						<div className="reviews-info-row">
-							<span className="reviews-info-label">Email</span>
-							<span>{infoContent.email}</span>
-						</div>
-						<div className="reviews-info-row">
-							<span className="reviews-info-label">Phone</span>
-							<span>{infoContent.phone}</span>
-						</div>
-					</div>
-				)}
+				       {!hideInfoTab && activeTab === 'info' && (
+					      <div className="reviews-info-panel">
+						      <div className="reviews-info-row">
+							      <span className="reviews-info-label">Name</span>
+							      <span>{infoContent.name}</span>
+						      </div>
+						      <div className="reviews-info-row site-rating-row">
+							      <span className="reviews-info-label">Rating</span>
+							      <span>{siteRating !== null ? `${siteRating.toFixed(1)} / 5` : '0.0 / 5'}</span>
+						      </div>
+						      <div className="reviews-info-row">
+							      <span className="reviews-info-label">Link</span>
+							      <a href={infoContent.url} target="_blank" rel="noreferrer" className="reviews-info-link">
+								      {infoContent.url}
+							      </a>
+						      </div>
+						      <div className="reviews-info-row">
+							      <span className="reviews-info-label">Email</span>
+							      <span>{infoContent.email}</span>
+						      </div>
+						      <div className="reviews-info-row">
+							      <span className="reviews-info-label">Phone</span>
+							      <span>{infoContent.phone}</span>
+						      </div>
+					      </div>
+				      )}
 			</div>
 		</div>,
 		document.body

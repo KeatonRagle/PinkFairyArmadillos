@@ -1,8 +1,12 @@
+
 import { useEffect, useState } from 'react'
 import { getAllReviews, getApprovedSites } from '../fetch/api'
 import HomeHeader from '../components/header'
 import HomeFooter from '../components/footer'
+import ReviewsPopup from '../components/ReviewsPopup'
+import PopupErrorBoundary from '../components/PopupErrorBoundary'
 import '../styling/ShelterInfo.css'
+
 
 export default function ShelterInfo() {
 	const [approvedSites, setApprovedSites] = useState([])
@@ -10,6 +14,8 @@ export default function ShelterInfo() {
 	const [openSiteId, setOpenSiteId] = useState(null)
 	const [loading, setLoading] = useState(true)
 	const [error, setError] = useState('')
+	const [reviewsOpen, setReviewsOpen] = useState(false)
+	const [activeSiteInfo, setActiveSiteInfo] = useState(null)
 
 	useEffect(() => {
 		document.body.classList.add('shelterinfo-body')
@@ -125,28 +131,44 @@ export default function ShelterInfo() {
 											<span className="shelterinfo-site-icon" aria-hidden="true">{isOpen ? '−' : '+'}</span>
 										</button>
 
-										{isOpen ? (
-											<div className="shelterinfo-site-details">
-												<div className="shelterinfo-detail-row">
-													<span className="shelterinfo-detail-label">Website</span>
-													<a href={site.url} target="_blank" rel="noreferrer" className="shelterinfo-detail-link">
-														{site.url}
-													</a>
-												</div>
-												<div className="shelterinfo-detail-row">
-													<span className="shelterinfo-detail-label">Email</span>
-													<span>{site.email || 'Not provided'}</span>
-												</div>
-												<div className="shelterinfo-detail-row">
-													<span className="shelterinfo-detail-label">Phone</span>
-													<span>{formatPhone(site.phone)}</span>
-												</div>
-												<div className="shelterinfo-detail-row">
-													<span className="shelterinfo-detail-label">Rating</span>
-													<span>{formatOverallRating(site.siteId, site.rating)}</span>
-												</div>
-											</div>
-										) : null}
+										       {isOpen ? (
+											       <div className="shelterinfo-site-details">
+												       <div className="shelterinfo-detail-row">
+													       <span className="shelterinfo-detail-label">Website</span>
+													       <a href={site.url} target="_blank" rel="noreferrer" className="shelterinfo-detail-link">
+														       {site.url}
+													       </a>
+												       </div>
+												       <div className="shelterinfo-detail-row">
+													       <span className="shelterinfo-detail-label">Email</span>
+													       <span>{site.email || 'Not provided'}</span>
+												       </div>
+												       <div className="shelterinfo-detail-row">
+													       <span className="shelterinfo-detail-label">Phone</span>
+													       <span>{formatPhone(site.phone)}</span>
+												       </div>
+												       <div className="shelterinfo-detail-row">
+													       <span className="shelterinfo-detail-label">Rating</span>
+													       <span>{formatOverallRating(site.siteId, site.rating)}</span>
+												       </div>
+													       <button
+														       className="shelterinfo-reviews-btn"
+														       type="button"
+														       onClick={() => {
+															       setActiveSiteInfo({
+																       siteId: site.siteId ?? null,
+																       name: site.name || 'Adoption site name coming soon.',
+																       url: site.url || 'https://example-adoption-site.org',
+																       email: site.email || 'info@example-adoption-site.org',
+																       phone: site.phone || '(555) 123-4567',
+															       })
+															       setReviewsOpen(true)
+														       }}
+													       >
+														       Reviews
+													       </button>
+											       </div>
+										       ) : null}
 									</article>
 								)
 							})}
@@ -154,7 +176,18 @@ export default function ShelterInfo() {
 					) : null}
 				</section>
 			</main>
-			<HomeFooter />
-		</div>
-	)
-}
+			   <HomeFooter />
+
+			   {/* Reviews Popup for shelter site */}
+			   <PopupErrorBoundary resetKey={reviewsOpen ? (activeSiteInfo?.siteId || 'open') : 'closed'}>
+				   <ReviewsPopup
+					   isOpen={reviewsOpen}
+					   onClose={() => setReviewsOpen(false)}
+					   shelterName={activeSiteInfo?.name}
+					   siteInfo={activeSiteInfo || {}}
+					   hideInfoTab
+				   />
+			   </PopupErrorBoundary>
+		   </div>
+	   )
+	}

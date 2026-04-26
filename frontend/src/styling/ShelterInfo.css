@@ -1,3 +1,45 @@
+/* Reviews button for shelter info cards */
+.shelterinfo-reviews-btn {
+	border: 2px solid #b44b25;
+	border-radius: 999px;
+	padding: 0.4rem 1.1rem;
+	background: transparent;
+	color: #b44b25;
+	font-family: 'Hind Kochi', sans-serif;
+	font-size: 0.95rem;
+	cursor: pointer;
+	transition: background 0.2s, color 0.2s;
+	line-height: 1;
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+	margin-right: 8px;
+}
+.shelterinfo-reviews-btn:hover {
+	background: #b44b25;
+	color: #fff;
+}
+/* Reviews button for shelter info cards */
+.shelterinfo-reviews-btn {
+	border: 2px solid #b44b25;
+	border-radius: 999px;
+	padding: 0.4rem 1.1rem;
+	background: transparent;
+	color: #b44b25;
+	font-family: 'Hind Kochi', sans-serif;
+	font-size: 0.95rem;
+	cursor: pointer;
+	transition: background 0.2s, color 0.2s;
+	line-height: 1;
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+	margin-right: 8px;
+}
+.shelterinfo-reviews-btn:hover {
+	background: #b44b25;
+	color: #fff;
+}
 body.shelterinfo-body {
 	margin: 0;
 	background-color: #f8f8f8;
