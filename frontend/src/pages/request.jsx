@@ -24,6 +24,7 @@ const STATUS_SECTIONS = [
 	},
 ]
 
+// Request review page component
 export default function Request() {
 	// contributions: full list of submissions to review
 	// loading: controls initial and reload state while data is being read
@@ -34,6 +35,7 @@ export default function Request() {
 
 	// Apply/remove a page-specific body class so request-page styling
 	// is scoped to this route while the component is mounted.
+  // Set up body class for Request page
 	useEffect(() => {
 		document.body.classList.add('request-body')
 		return () => document.body.classList.remove('request-body')
@@ -41,6 +43,7 @@ export default function Request() {
 
 	// Loads contribution entries from localStorage and normalizes the
 	// value to an array so rendering logic has a consistent shape.
+  // Load contributions from API
 	const loadContributions = async () => {
 		setError('')
 		setLoading(true)
@@ -64,6 +67,7 @@ export default function Request() {
 
 	// Updates one contribution status (APPROVED or DENIED), then writes
 	// the updated list back to localStorage and syncs UI state.
+  // Handle status change for a contribution
 	const handleStatusChange = async (id, status) => {
 		try {
 			const updatedList = contributions.map((item) =>
@@ -76,6 +80,7 @@ export default function Request() {
 		}
 	}
 
+	// Handle approve action
     const handleApprove = async (id) => {
         try {
             await approveSite(id)

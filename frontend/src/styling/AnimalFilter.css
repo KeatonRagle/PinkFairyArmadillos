@@ -1,18 +1,18 @@
-/* Page body styles */
+/* Body background and font for Animal Filter page */
 body.animalfilter-body {
 	margin: 0;
 	font-family: 'Hind Kochi', sans-serif;
 	background: #F8F8F8;
 }
 
-/* Page wrapper */
+/* Main wrapper for Animal Filter page */
 .animalfilter-page {
 	min-height: 150vh;
 	position: relative;
 	padding-bottom: 180px;
 }
 
-/* Main layout: filter panel + results grid */
+/* Layout for filter panel and results grid */
 .animalfilter-main {
 	display: flex;
 	justify-content: flex-start;
@@ -23,7 +23,7 @@ body.animalfilter-body {
 	padding-right: 48px;
 }
 
-/* Left filter panel */
+/* Left filter panel for filters */
 .animalfilter-panel {
 	width: 300px;
 	background: #F8F8F8;
@@ -35,7 +35,7 @@ body.animalfilter-body {
 	gap: 14px;
 }
 
-/* Filter panel heading */
+/* Heading in filter panel */
 .animalfilter-panel h1 {
 	margin: 0;
 	font-size: 24px;
@@ -43,7 +43,7 @@ body.animalfilter-body {
 	color: #343434;
 }
 
-/* Results grid container */
+/* Grid for animal result cards */
 .animal-results {
 	flex: 1;
 	display: grid;
@@ -53,9 +53,9 @@ body.animalfilter-body {
 	min-height: calc(100vh - 260px);
 }
 
-/* ai added these comments, this is for the api stuff */
+
 /* Animal card container: keep this background orange for the theme card behind image + text. */
-/* Result card styles */
+/* Animal card styles */
 .animal-card {
 	background: #b44b25;
 	border-radius: 18px;
@@ -84,7 +84,7 @@ body.animalfilter-body {
 	box-shadow: 0 8px 24px rgba(0, 0, 0, 0.24);
 }
 
-/* Card image wrapper */
+/* Wrapper for animal card image */
 .animal-card-image-wrap {
 	width: 100%;
 	height: 170px;
@@ -96,14 +96,14 @@ body.animalfilter-body {
 	overflow: hidden;
 }
 
-/* Card image */
+/* Animal image in card */
 .animal-card-image {
 	width: 100%;
 	height: 100%;
 	object-fit: cover;
 }
 
-/* Card text block */
+/* Info block in animal card */
 .animal-card-info {
 	color: #f8f8f8;
 	display: flex;
@@ -111,7 +111,7 @@ body.animalfilter-body {
 	gap: 4px;
 }
 
-/* Card name */
+/* Animal name heading */
 .animal-card-info h2 {
 	margin: 0;
 	font-size: 22px;
@@ -119,7 +119,7 @@ body.animalfilter-body {
 	color: #f8f8f8;
 }
 
-/* Card metadata lines */
+/* Animal card metadata lines */
 .animal-card-info p {
 	margin: 0;
 	font-size: 16px;
@@ -137,22 +137,22 @@ body.animalfilter-body {
 	box-shadow: 0 2px 10px rgba(0, 0, 0, 0.08);
 }
 
-/* Placeholder card state */
+/* Placeholder card for loading state */
 .animal-card-placeholder {
 	opacity: 0.55;
 }
 
-/* Placeholder image block */
+/* Placeholder image for loading state */
 .animal-placeholder-image {
 	background: #e5e7eb;
 }
 
-/* Placeholder text block */
+/* Placeholder text for loading state */
 .animal-placeholder-info {
 	gap: 10px;
 }
 
-/* Placeholder line */
+/* Placeholder line for loading state */
 .animal-placeholder-line {
 	height: 14px;
 	width: 100%;
@@ -160,14 +160,14 @@ body.animalfilter-body {
 	background: rgba(248, 248, 248, 0.5);
 }
 
-/* Placeholder title line */
+/* Placeholder title for loading state */
 .animal-placeholder-title {
 	width: 70%;
 	height: 18px;
 }
 
 
-/* Shared dropdown button style */
+/* Shared dropdown button for filters */
 .filter-dropdown {
 	display: block;
 	width: 100%;
@@ -211,14 +211,14 @@ body.animalfilter-body {
     cursor: pointer;
 }
 
-/* Gender filter: toggle button */
+/* Gender filter toggle button */
 .gender-toggle {
 	position: relative;
 	text-align: left;
 	cursor: pointer;
 }
 
-/* Gender filter: group wrapper */
+/* Gender filter group wrapper */
 .gender-filter-group {
 	--gender-extend-height: 105px;
 	position: relative;
@@ -227,19 +227,19 @@ body.animalfilter-body {
 	gap: 0;
 }
 
-/* Gender filter: open state stacking */
+/* Gender filter open stacking */
 .gender-filter-group.open {
 	z-index: 20;
 }
 
-/* Gender filter: open-state toggle style */
+/* Gender filter open-state toggle style */
 .gender-filter-group.open .gender-toggle {
 	border-bottom-left-radius: 0;
 	border-bottom-right-radius: 0;
 	background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath d='M1 6l5-5 5 5' fill='none' stroke='%23b44b25' stroke-width='1.5' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E");
 }
 
-/* Gender filter: dropdown container extension */
+/* Gender filter dropdown extension */
 .gender-filter-group.open .gender-toggle::after {
 	content: '';
 	position: absolute;
@@ -258,7 +258,7 @@ body.animalfilter-body {
 
 
 
-/* Gender filter: options list */
+/* Gender filter options list */
 .gender-options {
 	position: absolute;
 	top: 46px;
@@ -272,7 +272,7 @@ body.animalfilter-body {
 	z-index: 2;
 }
 
-/* Gender filter: option button */
+/* Gender filter option button */
 .gender-option-button {
 	width: 85%;
 	height: 32px;
@@ -290,14 +290,14 @@ body.animalfilter-body {
 	cursor: pointer;
 }
 
-/* Breed filter: toggle button */
+/* Breed filter toggle button */
 .breed-toggle {
 	position: relative;
 	text-align: left;
 	cursor: pointer;
 }
 
-/* Breed filter: group wrapper */
+/* Breed filter group wrapper */
 .breed-filter-group {
 	--breed-extend-height: 55px;
 	position: relative;
@@ -306,19 +306,19 @@ body.animalfilter-body {
 	gap: 0;
 }
 
-/* Breed filter: open state stacking */
+/* Breed filter open stacking */
 .breed-filter-group.open {
 	z-index: 20;
 }
 
-/* Breed filter: open-state toggle style */
+/* Breed filter open-state toggle style */
 .breed-filter-group.open .breed-toggle {
 	border-bottom-left-radius: 0;
 	border-bottom-right-radius: 0;
 	background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath d='M1 6l5-5 5 5' fill='none' stroke='%23b44b25' stroke-width='1.5' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E");
 }
 
-/* Breed filter: dropdown container extension */
+/* Breed filter dropdown extension */
 .breed-filter-group.open .breed-toggle::after {
 	content: '';
 	position: absolute;
@@ -335,7 +335,7 @@ body.animalfilter-body {
 	z-index: 1;
 }
 
-/* Breed filter: options list */
+/* Breed filter options list */
 .breed-options {
 	position: absolute;
 	top: 46px;
@@ -350,7 +350,7 @@ body.animalfilter-body {
 	padding-top: 6px;
 }
 
-/* Shared text input styles for breed and shelter */
+/* Shared text input for breed/shelter */
 .breed-options .breed-search-input,
 .shelter-options .shelter-search-input {
 	width: 85%;
@@ -369,21 +369,21 @@ body.animalfilter-body {
 	outline: none;
 }
 
-/* Shared placeholder text styles */
+/* Shared placeholder text for breed/shelter */
 .breed-search-input::placeholder,
 .shelter-search-input::placeholder {
 	color: #b44b25;
 	opacity: 0.8;
 }
 
-/* Size filter: toggle button */
+/* Size filter toggle button */
 .size-toggle {
 	position: relative;
 	text-align: left;
 	cursor: pointer;
 }
 
-/* Size filter: group wrapper */
+/* Size filter group wrapper */
 .size-filter-group {
 	--size-extend-height: 160px;
 	position: relative;
@@ -392,19 +392,19 @@ body.animalfilter-body {
 	gap: 0;
 }
 
-/* Size filter: open state stacking */
+/* Size filter open stacking */
 .size-filter-group.open {
 	z-index: 20;
 }
 
-/* Size filter: open-state toggle style */
+/* Size filter open-state toggle style */
 .size-filter-group.open .size-toggle {
 	border-bottom-left-radius: 0;
 	border-bottom-right-radius: 0;
 	background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath d='M1 6l5-5 5 5' fill='none' stroke='%23b44b25' stroke-width='1.5' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E");
 }
 
-/* Size filter: dropdown container extension */
+/* Size filter dropdown extension */
 .size-filter-group.open .size-toggle::after {
 	content: '';
 	position: absolute;
@@ -421,7 +421,7 @@ body.animalfilter-body {
 	z-index: 1;
 }
 
-/* Size filter: options list */
+/* Size filter options list */
 .size-options {
 	position: absolute;
 	top: 46px;
@@ -435,7 +435,7 @@ body.animalfilter-body {
 	z-index: 2;
 }
 
-/* Size filter: option button */
+/* Size filter option button */
 .size-option-button {
 	width: 85%;
 	height: 32px;
@@ -453,14 +453,14 @@ body.animalfilter-body {
 	cursor: pointer;
 }
 
-/* Age filter: toggle button */
+/* Age filter toggle button */
 .age-toggle {
 	position: relative;
 	text-align: left;
 	cursor: pointer;
 }
 
-/* Age filter: group wrapper */
+/* Age filter group wrapper */
 .age-filter-group {
 	--age-extend-height: 245px;
 	position: relative;
@@ -469,19 +469,19 @@ body.animalfilter-body {
 	gap: 0;
 }
 
-/* Age filter: open state stacking */
+/* Age filter open stacking */
 .age-filter-group.open {
 	z-index: 20;
 }
 
-/* Age filter: open-state toggle style */
+/* Age filter open-state toggle style */
 .age-filter-group.open .age-toggle {
 	border-bottom-left-radius: 0;
 	border-bottom-right-radius: 0;
 	background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath d='M1 6l5-5 5 5' fill='none' stroke='%23b44b25' stroke-width='1.5' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E");
 }
 
-/* Age filter: dropdown container extension */
+/* Age filter dropdown extension */
 .age-filter-group.open .age-toggle::after {
 	content: '';
 	position: absolute;
@@ -498,7 +498,7 @@ body.animalfilter-body {
 	z-index: 1;
 }
 
-/* Age filter: options list */
+/* Age filter options list */
 .age-options {
 	position: absolute;
 	top: 46px;
@@ -512,7 +512,7 @@ body.animalfilter-body {
 	z-index: 2;
 }
 
-/* Age filter: option button */
+/* Age filter option button */
 .age-option-button {
 	width: 85%;
 	height: 32px;
@@ -631,14 +631,14 @@ body.animalfilter-body {
 	border-color: #b44b25;
 }
 
-/* Compatibility filter: toggle button */
+/* Compatibility filter toggle button */
 .compatibility-toggle {
 	position: relative;
 	text-align: left;
 	cursor: pointer;
 }
 
-/* Compatibility filter: group wrapper */
+/* Compatibility filter group wrapper */
 .compatibility-filter-group {
 	--compatibility-extend-height: 235px;
 	position: relative;
@@ -647,19 +647,19 @@ body.animalfilter-body {
 	gap: 0;
 }
 
-/* Compatibility filter: open state stacking */
+/* Compatibility filter open stacking */
 .compatibility-filter-group.open {
 	z-index: 20;
 }
 
-/* Compatibility filter: open-state toggle style */
+/* Compatibility filter open-state toggle style */
 .compatibility-filter-group.open .compatibility-toggle {
 	border-bottom-left-radius: 0;
 	border-bottom-right-radius: 0;
 	background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath d='M1 6l5-5 5 5' fill='none' stroke='%23b44b25' stroke-width='1.5' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E");
 }
 
-/* Compatibility filter: dropdown container extension */
+/* Compatibility filter dropdown extension */
 .compatibility-filter-group.open .compatibility-toggle::after {
 	content: '';
 	position: absolute;
@@ -676,7 +676,7 @@ body.animalfilter-body {
 	z-index: 1;
 }
 
-/* Compatibility filter: options list */
+/* Compatibility filter options list */
 .compatibility-options {
 	position: absolute;
 	top: 46px;
@@ -691,7 +691,7 @@ body.animalfilter-body {
 	padding-top: 6px;
 }
 
-/* Compatibility filter: option row */
+/* Compatibility filter option row */
 .compatibility-option-item {
 	width: 85%;
 	height: 32px;
@@ -711,7 +711,7 @@ body.animalfilter-body {
 	cursor: pointer;
 }
 
-/* Compatibility filter: checkbox style */
+/* Compatibility filter checkbox style */
 .compatibility-option-item input[type='checkbox'] {
 	accent-color: #b44b25;
 	width: 14px;
@@ -719,14 +719,14 @@ body.animalfilter-body {
 	margin: 0;
 }
 
-/* Shelter filter: toggle button */
+/* Shelter filter toggle button */
 .shelter-toggle {
 	position: relative;
 	text-align: left;
 	cursor: pointer;
 }
 
-/* Shelter filter: group wrapper */
+/* Shelter filter group wrapper */
 .shelter-filter-group {
 	--shelter-extend-height: 55px;
 	position: relative;
@@ -735,19 +735,19 @@ body.animalfilter-body {
 	gap: 0;
 }
 
-/* Shelter filter: open state stacking */
+/* Shelter filter open stacking */
 .shelter-filter-group.open {
 	z-index: 20;
 }
 
-/* Shelter filter: open-state toggle style */
+/* Shelter filter open-state toggle style */
 .shelter-filter-group.open .shelter-toggle {
 	border-bottom-left-radius: 0;
 	border-bottom-right-radius: 0;
 	background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath d='M1 6l5-5 5 5' fill='none' stroke='%23b44b25' stroke-width='1.5' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E");
 }
 
-/* Shelter filter: dropdown container extension */
+/* Shelter filter dropdown extension */
 .shelter-filter-group.open .shelter-toggle::after {
 	content: '';
 	position: absolute;
@@ -764,7 +764,7 @@ body.animalfilter-body {
 	z-index: 1;
 }
 
-/* Shelter filter: options list */
+/* Shelter filter options list */
 .shelter-options {
 	position: absolute;
 	top: 46px;
@@ -779,14 +779,14 @@ body.animalfilter-body {
 	padding-top: 6px;
 }
 
-/* Price filter: toggle button */
+/* Price filter toggle button */
 .price-toggle {
 	position: relative;
 	text-align: left;
 	cursor: pointer;
 }
 
-/* Price filter: group wrapper */
+/* Price filter group wrapper */
 .price-filter-group {
 	--price-extend-height: 160px;
 	position: relative;
@@ -795,19 +795,19 @@ body.animalfilter-body {
 	gap: 0;
 }
 
-/* Price filter: open state stacking */
+/* Price filter open stacking */
 .price-filter-group.open {
 	z-index: 20;
 }
 
-/* Price filter: open-state toggle style */
+/* Price filter open-state toggle style */
 .price-filter-group.open .price-toggle {
 	border-bottom-left-radius: 0;
 	border-bottom-right-radius: 0;
 	background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath d='M1 6l5-5 5 5' fill='none' stroke='%23b44b25' stroke-width='1.5' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E");
 }
 
-/* Price filter: dropdown container extension */
+/* Price filter dropdown extension */
 .price-filter-group.open .price-toggle::after {
 	content: '';
 	position: absolute;
@@ -824,7 +824,7 @@ body.animalfilter-body {
 	z-index: 1;
 }
 
-/* Price filter: options list */
+/* Price filter options list */
 .price-options {
 	position: absolute;
 	top: 46px;
@@ -838,7 +838,7 @@ body.animalfilter-body {
 	z-index: 2;
 }
 
-/* Price filter: option button */
+/* Price filter option button */
 .price-option-button {
 	width: 85%;
 	height: 32px;
@@ -864,7 +864,7 @@ body.animalfilter-body {
 	background: #e5e7eb;
 }
 
-/* Keep open dropdowns in normal document flow so lower filters move down. */
+/* Keep open dropdowns in normal document flow */
 .gender-filter-group.open,
 .breed-filter-group.open,
 .size-filter-group.open,

@@ -33,6 +33,7 @@ function mapPetToAnimal(pet) {
   }
 }
 
+// Home page component
 export default function Home() {
 
   const navigate = useNavigate()
@@ -40,11 +41,13 @@ export default function Home() {
   const [featuredError, setFeaturedError] = useState('')
   const [featuredLoading, setFeaturedLoading] = useState(true)
 
+    // Set up body class for Home page
   useEffect(() => {
     document.body.classList.add('home-body')
     return () => document.body.classList.remove('home-body')
   }, [])
 
+    // Load featured pets for homepage
   useEffect(() => {
     let isCancelled = false
 
@@ -97,6 +100,7 @@ export default function Home() {
     navigate('/select-animal')
   }
 
+    // Render Home page content
   return (
     <div className="home-page">
 

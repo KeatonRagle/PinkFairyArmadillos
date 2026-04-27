@@ -2,6 +2,7 @@ import { createPortal } from 'react-dom'
 import { useEffect, useState } from 'react'
 import '../styling/popup.css'
 
+// Popup modal component for forms and messages
 export default function Popup({index, isOpen, isLoading, errorMessage, placeholder, title, onClose, onSubmit}) {
     const [text, setText] = useState('')
 

@@ -4,6 +4,7 @@ import { Link, useNavigate } from 'react-router-dom'
 import { useEffect, useRef, useState } from 'react'
 import { useAuth } from '../auth/AuthContext.jsx'
 
+// Header component for the site
 export default function HomeHeader({ backLink = null }) {
   const navigate = useNavigate()
   const menuRef = useRef(null)

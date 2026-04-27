@@ -1,3 +1,4 @@
+// Button component with consistent styling
 export function Button({ children, className = '', ...props }) {
   return (
     <button

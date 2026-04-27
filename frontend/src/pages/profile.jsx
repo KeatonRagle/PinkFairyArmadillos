@@ -6,6 +6,7 @@ import { getCurrentUser, updateCurrentUsername, updateCurrentEmail, updateCurren
 import UserPrefsPopup from '../components/UserPrefsPopup';
 import '../styling/profile.css'
 
+// Profile page component
 export default function Profile() {
 	const navigate = useNavigate()
 	const { token, username, role, setAuth } = useAuth()
@@ -35,17 +36,20 @@ export default function Profile() {
 		['AGE_MAX', 'Maximum Age']
 	])
 
+  // Set up body class for Profile page
 	useEffect(() => {
 		document.body.classList.add('profile-body')
 		return () => document.body.classList.remove('profile-body')
 	}, [])
 
+  // Redirect to login if not authenticated
 	useEffect(() => {
 		if (!username) {
 			navigate('/login')
 		}
 	}, [navigate, username])
 
+  // Load user preferences
 	useEffect(() => {
 		let isCancelled = false
 
@@ -234,6 +238,7 @@ export default function Profile() {
 		}
 	}
 
+  // Render Profile page content
 	return (
 		<div className="profile-page">
 			<HomeHeader />

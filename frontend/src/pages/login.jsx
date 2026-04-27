@@ -12,6 +12,7 @@ import { useEffect, useState } from 'react'
 import { login } from '../fetch/api'
 import { useAuth } from "../auth/AuthContext";
 
+// Login page component
 export default function Login() {
 
   const navigate = useNavigate()
@@ -23,11 +24,13 @@ export default function Login() {
   const [loading, setLoading] = useState(false)
 
 
+    // Set up body class for Login page
   useEffect(() => {
     document.body.classList.add('login-body')
     return () => document.body.classList.remove('login-body')
   }, [])
 
+    // Handle login form submission
   const handleSubmit = async (e) => {
     e.preventDefault()
     setError("")
@@ -59,6 +62,7 @@ export default function Login() {
     }
   }
 
+    // Render Login page content
   return (
     <AuthLayout>
 

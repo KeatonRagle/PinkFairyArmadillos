@@ -1,3 +1,4 @@
+// Heading component for section titles
 export function Heading({ children, className = '', ...props }) {
   return (
     <h2

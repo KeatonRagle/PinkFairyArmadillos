@@ -4,12 +4,14 @@
   padding: 0;
   box-sizing: border-box;
 }
+/* Reset box sizing and margin/padding */
 
 body.login-body {
   font-family: 'Hind Kochi', sans-serif;
   display: flex;
   justify-content: center;
   align-items: center;
+/* Body background and layout for Login page */
   min-height: 100vh;
   background: #F8F8F8;
 }
@@ -19,6 +21,7 @@ body.login-body .auth-layout {
   min-height: 367px;
   padding: 40px;
   background: white;
+/* Login form layout container */
   border-radius: 50px;
   box-shadow: 0 0 20px rgba(0,0,0,0.1);
 
@@ -32,26 +35,31 @@ input::placeholder {
   color: #999;
   font-size: 14px;
   padding-left: 0px; 
+/* Placeholder text style for inputs */
 }
 
 
 .login-form {
   margin-top: -43px;
 }
+/* Login form container */
 
 
 .logo-container {
   text-align: center;
+/* Logo container above login form */
   margin-bottom: 10px;
   width: 260px;
 }
 
 .field {
   margin-bottom: 15px;
+/* Field wrapper for input fields */
 }
 
 button {
   width: 262px;
+/* Login button style */
   height: 34px;
   border-radius: 50px;
   background-color: #b44b25;
@@ -71,6 +79,7 @@ button {
 }
 
 
+/* Input fields for login form */
 
 
 input[type="text"],
@@ -84,11 +93,13 @@ input[type="password"] {
   display: block;
   margin: 0 auto;
   box-shadow: 0 0 5px rgba(0,0,0,0.1);
+/* Logo image inside .logo container */
 }
 
 .logo img {
   width: 120px;
   height: auto;
+/* Fixed logo in page corner */
 }
 
 .page-logo {
@@ -96,11 +107,13 @@ input[type="password"] {
   top: 0px;
   left: 20px;
   z-index: 1000;
+/* Image for fixed page logo */
 }
 
 .page-logo img {
   width: 100px;
   height: auto;
+/* Logo container in card */
 }
 
 .card-logo {
@@ -108,24 +121,28 @@ input[type="password"] {
   justify-content: center;
   margin-bottom: 5px;
   margin-top: 10px;
+/* Checkbox field wrapper */
 }
 
 .checkbox-field {
   display: flex;
   align-items: center;
   gap: 8px; 
+/* Checkbox input style */
 }
 
 input[type="checkbox"] {
   width: 16px;
   height: 16px;
   cursor: pointer;
+/* Label for checkbox and other fields */
 }
 
 label {
   font-size: 14px;
   color: #333;
   white-space: nowrap;
+/* Centered headings and signup text */
 }
 
 
@@ -133,12 +150,14 @@ label {
 
 h2,
 p,
+/* Heading style for login form */
 
 .signup-text {
   text-align: center;
   margin-top: 2px;
 
 }
+/* Paragraph style for login form */
 
 
 
@@ -146,10 +165,12 @@ h2 {
   margin-bottom: 20px;
   font-weight: 300;
   font-size: 20px;
+/* Section for remember/forgot links */
 }
 p{
     padding-bottom: 5;
     font-size: 15px;
+/* Link style for login form */
     font-weight: 300;
     color: gray;
 

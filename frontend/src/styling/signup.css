@@ -1,4 +1,5 @@
 
+/* Main body for signup page */
 body.signup-body {
   margin: 0;
   font-family: 'Hind Kochi', sans-serif;
@@ -11,6 +12,7 @@ body.signup-body {
 }
 
 
+/* Layout container for signup form */
 body.signup-body .auth-layout {
   width: 367px;
   min-height: 450px;
@@ -21,6 +23,7 @@ body.signup-body .auth-layout {
 }
 
 
+/* Form container for signup */
 body.signup-body .auth-form {
   display: flex;
   flex-direction: column;
@@ -30,11 +33,13 @@ body.signup-body .auth-form {
 }
 
 
+/* Heading for signup form */
 body.signup-body h2 {
   font-size: 20px;
   font-weight: 300;
 }
 
+/* Input fields in signup form */
 body.signup-body input {
   width: 262px;
   height: 34px;
@@ -45,6 +50,7 @@ body.signup-body input {
 }
 
 
+/* Button in signup form */
 body.signup-body button {
   width: 262px;
   height: 34px;
@@ -57,12 +63,14 @@ body.signup-body button {
   margin-top: 10px;
 }
 
+/* Logo inside signup card */
 body.signup-body .card-logo {
   display: flex;
   justify-content: center;
   height: 20px;
 }
 
+/* Fixed logo on signup page */
 body.signup-body .page-logo {
   position: fixed;
   top: 20px;
@@ -70,15 +78,18 @@ body.signup-body .page-logo {
   z-index: 1000;
 }
 
+/* Image inside fixed logo */
 body.signup-body .page-logo img {
   width: 100px;
 }
 
 
+/* Text for sign-in link */
 body.signup-body .signin-text {
   font-size: 14px;
 }
 
+/* Link inside sign-in text */
 body.signup-body .signin-text a {
   text-decoration: none;
   color: #b44b25;
