@@ -12,6 +12,7 @@ import { registerUser } from '../fetch/api'
 import { useAuth } from "../auth/AuthContext";
 
 
+// Signup page component
 export default function Signup() {
   const navigate = useNavigate()
   const { setAuth } = useAuth();
@@ -23,11 +24,13 @@ export default function Signup() {
     const [error, setError] = useState("")
     const [loading, setLoading] = useState(false)
 
+    // Set up body class for Signup page
   useEffect(() => {
     document.body.classList.add('login-body')
     return () => document.body.classList.remove('login-body')
   }, [])
 
+    // Handle signup form submission
   const handleSubmit = async (e) => {
     e.preventDefault()
     setError("")
@@ -59,6 +62,7 @@ export default function Signup() {
     }
   }
 
+    // Render Signup page content
   return (
     <div className="signup-page">
     <AuthLayout>

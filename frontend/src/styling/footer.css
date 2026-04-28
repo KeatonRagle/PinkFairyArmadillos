@@ -1,3 +1,4 @@
+/* Main footer container */
 .site-footer {
   width: 100%;
   min-height: 80px;
@@ -13,6 +14,7 @@
   box-sizing: border-box;
 }
 
+/* Row for footer buttons */
 .footer-button-row {
   display: flex;
   align-items: center;
@@ -20,6 +22,7 @@
   gap: 12px;
 }
 
+/* Content area in footer */
 .footer-content {
   display: flex;
   flex-direction: column;
@@ -28,6 +31,7 @@
   gap: 8px;
 }
 
+/* Footer text style */
 .footer-text {
   color: rgb(56, 56, 56);
   font-family: 'Hind Kochi', sans-serif;
@@ -36,6 +40,7 @@
   font-weight: 500;
 }
 
+/* Footer button style */
 .footer-button {
   display: inline-block;
   background-color: #F8F8F8;
@@ -52,6 +57,7 @@
   text-decoration: none;
 }
 
+/* Hover effect for footer button */
 .footer-button:hover {
   transform: scale(1.05);
 }

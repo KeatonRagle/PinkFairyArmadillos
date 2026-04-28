@@ -1,6 +1,7 @@
 import '../styling/footer.css'
 import { Link } from 'react-router-dom'
 
+// Footer component for the site
 export default function HomeFooter() {
   return (
     <footer className="site-footer">

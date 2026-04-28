@@ -4,6 +4,7 @@ import { useAuth } from '../auth/AuthContext.jsx'
 import { getAllReviews, getApprovedSites, submitReview, deleteReview } from '../fetch/api'
 import '../styling/ReviewsPopup.css'
 
+// Star rating input component
 function StarRating({ value, onChange }) {
 	const [hovered, setHovered] = useState(0)
 	return (
@@ -25,6 +26,7 @@ function StarRating({ value, onChange }) {
 	)
 }
 
+// Star display component for ratings
 function StarDisplay({ value }) {
 	return (
 		<span className="reviews-star-display" aria-label={`${value} out of 5 stars`}>
@@ -35,6 +37,7 @@ function StarDisplay({ value }) {
 	)
 }
 
+// Reviews popup modal for displaying and submitting reviews
 export default function ReviewsPopup({ isOpen, onClose, shelterName, siteInfo = {}, hideInfoTab = false }) {
 	const { id: currentUserId } = useAuth()
 	const [activeTab, setActiveTab] = useState('reviews')

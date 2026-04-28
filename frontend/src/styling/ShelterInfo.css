@@ -1,4 +1,5 @@
 /* Reviews button for shelter info cards */
+/* Reviews button for shelter info cards */
 .shelterinfo-reviews-btn {
 	border: 2px solid #b44b25;
 	border-radius: 999px;
@@ -15,6 +16,7 @@
 	justify-content: center;
 	margin-right: 8px;
 }
+/* Hover state for reviews button */
 .shelterinfo-reviews-btn:hover {
 	background: #b44b25;
 	color: #fff;
@@ -40,17 +42,20 @@
 	background: #b44b25;
 	color: #fff;
 }
+/* Main body for shelter info page */
 body.shelterinfo-body {
 	margin: 0;
 	background-color: #f8f8f8;
 }
 
+/* Container for the shelter info page */
 .shelterinfo-page {
 	display: flex;
 	flex-direction: column;
 	min-height: 100vh;
 }
 
+/* Main content area of the shelter info page */
 .shelterinfo-main {
 	flex: 1;
 	width: 100%;
@@ -60,10 +65,12 @@ body.shelterinfo-body {
 	box-sizing: border-box;
 }
 
+/* Hero section at the top */
 .shelterinfo-hero {
 	padding: 20px 0 28px;
 }
 
+/* Eyebrow label in hero section */
 .shelterinfo-eyebrow {
 	margin: 0 0 12px;
 	color: #b44b25;
@@ -74,6 +81,7 @@ body.shelterinfo-body {
 	text-transform: uppercase;
 }
 
+/* Heading in hero section */
 .shelterinfo-hero h1 {
 	margin: 0;
 	color: #2f2f2f;
@@ -82,6 +90,7 @@ body.shelterinfo-body {
 	font-weight: 400;
 }
 
+/* Intro text under hero heading */
 .shelterinfo-intro {
 	max-width: 700px;
 	margin: 16px 0 0;
@@ -91,10 +100,12 @@ body.shelterinfo-body {
 	line-height: 1.7;
 }
 
+/* Section for shelter list */
 .shelterinfo-list-section {
 	padding-top: 8px;
 }
 
+/* Status message box */
 .shelterinfo-status {
 	margin: 0;
 	padding: 18px 22px;
@@ -105,10 +116,12 @@ body.shelterinfo-body {
 	font-family: 'Hind Kochi', sans-serif;
 }
 
+/* Error state for status message */
 .shelterinfo-status-error {
 	color: #a52828;
 }
 
+/* List of shelter sites */
 .shelterinfo-site-list {
 	display: flex;
 	flex-direction: column;
@@ -116,6 +129,7 @@ body.shelterinfo-body {
 	margin-top: 12px;
 }
 
+/* Card for each shelter site */
 .shelterinfo-site-card {
 	background: #ffffff;
 	border: 1px solid #efe4de;
@@ -124,6 +138,7 @@ body.shelterinfo-body {
 	overflow: hidden;
 }
 
+/* Toggle button for site details */
 .shelterinfo-site-toggle {
 	width: 100%;
 	border: none;
@@ -136,6 +151,7 @@ body.shelterinfo-body {
 	cursor: pointer;
 }
 
+/* Summary section in site toggle */
 .shelterinfo-site-summary {
 	grid-column: 2;
 	justify-self: center;
@@ -147,6 +163,7 @@ body.shelterinfo-body {
 	flex-wrap: wrap;
 }
 
+/* Name of the shelter site */
 .shelterinfo-site-name {
 	margin: 0;
 	display: inline;
@@ -156,6 +173,7 @@ body.shelterinfo-body {
 	font-weight: 500;
 }
 
+/* URL of the shelter site */
 .shelterinfo-site-url {
 	margin: 0;
 	display: inline;
@@ -166,6 +184,7 @@ body.shelterinfo-body {
 	word-break: break-word;
 }
 
+/* Icon for the shelter site */
 .shelterinfo-site-icon {
 	grid-column: 3;
 	justify-self: end;
@@ -181,12 +200,14 @@ body.shelterinfo-body {
 	line-height: 1;
 }
 
+/* Details section for shelter site */
 .shelterinfo-site-details {
 	padding: 0 26px 24px;
 	display: grid;
 	gap: 14px;
 }
 
+/* Row for each detail in site details */
 .shelterinfo-detail-row {
 	display: grid;
 	grid-template-columns: 120px 1fr;
@@ -199,22 +220,26 @@ body.shelterinfo-body {
 	word-break: break-word;
 }
 
+/* Label for detail row */
 .shelterinfo-detail-label {
 	color: #b44b25;
 	font-weight: 600;
 }
 
+/* Link in detail row */
 .shelterinfo-detail-link {
 	color: #b44b25;
 	text-decoration: none;
 }
 
+/* Hover/focus state for detail link */
 .shelterinfo-detail-link:hover,
 .shelterinfo-detail-link:focus-visible {
 	text-decoration: underline;
 	outline: none;
 }
 
+/* Responsive adjustments for mobile screens */
 @media (max-width: 700px) {
 	.shelterinfo-main {
 		padding: 36px 16px 120px;

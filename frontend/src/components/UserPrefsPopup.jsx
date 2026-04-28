@@ -2,6 +2,7 @@ import { createPortal } from 'react-dom'
 import { useEffect, useState } from 'react'
 import '../styling/popup.css'
 
+// Popup modal for user preference selection
 export default function UserPrefsPopup({isOpen, isLoading, errorMessage, title, onClose, onSubmit}) {
     const [value, setValue] = useState('')
     const [ageUnit, setAgeUnit] = useState('Weeks')

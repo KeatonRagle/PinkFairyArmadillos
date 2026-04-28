@@ -4,14 +4,17 @@ import { useNavigate } from 'react-router-dom'
 import HomeHeader from "../components/header"
 import HomeFooter from "../components/footer"
 
+// Select animal page component
 export default function SelectAnimal() {
   const navigate = useNavigate()
 
+    // Set up body class for Select Animal page
   useEffect(() => {
     document.body.classList.add('selectanimal-body')
     return () => document.body.classList.remove('selectanimal-body')
   }, [])
 
+    // Render Select Animal page content
   return (
     <div className="selectanimal-page">
 

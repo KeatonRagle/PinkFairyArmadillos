@@ -18,6 +18,7 @@ const previewAnimal = {
 	breed: 'Terrier Mix',
 }
 
+// Specific animal details page component
 export default function SpecificAnimal() {
 	const location = useLocation()
 	const animal = location.state?.animal ?? previewAnimal
@@ -40,12 +41,14 @@ export default function SpecificAnimal() {
 	const isPreview = !location.state?.animal
 	const [reviewsOpen, setReviewsOpen] = useState(false)
 
+  // Set up body class for Specific Animal page
 	useEffect(() => {
 		document.body.classList.add('specificanimal-body')
 		return () => document.body.classList.remove('specificanimal-body')
 	}, [])
 
 	// Load and compute shelter rating
+  // Load and compute shelter rating
 	useLayoutEffect(() => {
 		let isMounted = true
 		const loadRating = async () => {
@@ -70,6 +73,7 @@ export default function SpecificAnimal() {
 		return () => { isMounted = false }
 	}, [animal.site_id, animal.siteId])
 
+  // Render Specific Animal page content
 	return (
 		<div className="specificanimal-page">
 			<HomeHeader

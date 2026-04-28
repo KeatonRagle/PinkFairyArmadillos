@@ -1,3 +1,4 @@
+// Field wrapper component for form fields
 export function Field({ children, className = '' }) {
   return (
     <div className={`field ${className}`}>
@@ -6,6 +7,7 @@ export function Field({ children, className = '' }) {
   )
 }
 
+// Label component for form fields
 export function Label({ children, className = '', ...props }) {
   return (
     <label

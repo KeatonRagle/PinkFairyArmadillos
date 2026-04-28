@@ -1,3 +1,4 @@
+/* Sets the background and layout for the About Us page body */
 body.about-body {
   margin: 0;
   padding: 0;
@@ -5,6 +6,7 @@ body.about-body {
   overflow-x: hidden;
 }
 
+/* Main flex container for the About Us page */
 .about-page {
   display: flex;
   flex-direction: column;
@@ -14,6 +16,7 @@ body.about-body {
 
 
 
+/* Top colored section with title and intro text */
 .section-bar {
   background-color: #b44b25;
   width: 100%;
@@ -23,6 +26,7 @@ body.about-body {
   color: white;
 }
 
+/* Main heading in the section bar */
 .section-bar h1 {
   font-size: 36px;
   font-family: 'Hind Kochi', sans-serif;
@@ -30,6 +34,7 @@ body.about-body {
 
 }
 
+/* Description paragraph in the section bar */
 .section-bar p {
   color: #ffffff;
   font-size: 18px;
@@ -41,6 +46,7 @@ body.about-body {
 
 
 
+/* Main content container for About Us details */
 .about-content {
   max-width: 800px;
   margin: 40px auto;
@@ -51,10 +57,12 @@ body.about-body {
   color: #333;
 }
 
+/* Container for the vision section and additional info */
 .the-rest {
   position: relative;
 }
 
+/* Vision section heading */
 .the-rest h2 {
   font-size: 36px;
   font-family: 'Hind Kochi', sans-serif;
@@ -65,6 +73,7 @@ body.about-body {
   padding-top: 50px;
 }
 
+/* Vision section paragraph */
 .the-rest p {
   max-width: 1200px;
   margin: 40px auto;
@@ -75,6 +84,7 @@ body.about-body {
   padding-left: 600px;
 }
 
+/* Image styling for About Us page */
 .aboutpic { 
   width: 350px; 
   height: auto; 

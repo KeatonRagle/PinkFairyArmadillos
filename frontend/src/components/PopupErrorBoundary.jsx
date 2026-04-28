@@ -1,5 +1,6 @@
 import { Component } from 'react'
 
+// Error boundary for popup modals
 export default class PopupErrorBoundary extends Component {
 	constructor(props) {
 		super(props)

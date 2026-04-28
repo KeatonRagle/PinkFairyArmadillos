@@ -8,6 +8,7 @@ import PopupErrorBoundary from '../components/PopupErrorBoundary'
 import '../styling/ShelterInfo.css'
 
 
+// Shelter info page component
 export default function ShelterInfo() {
 	const [approvedSites, setApprovedSites] = useState([])
 	const [siteRatings, setSiteRatings] = useState({})
@@ -17,11 +18,13 @@ export default function ShelterInfo() {
 	const [reviewsOpen, setReviewsOpen] = useState(false)
 	const [activeSiteInfo, setActiveSiteInfo] = useState(null)
 
+  // Set up body class for Shelter Info page
 	useEffect(() => {
 		document.body.classList.add('shelterinfo-body')
 		return () => document.body.classList.remove('shelterinfo-body')
 	}, [])
 
+  // Load approved sites and reviews
 	useEffect(() => {
 		const loadApprovedSites = async () => {
 			setLoading(true)
@@ -71,10 +74,12 @@ export default function ShelterInfo() {
 		loadApprovedSites()
 	}, [])
 
+  // Toggle open/close for site details
 	const toggleSite = (siteId) => {
 		setOpenSiteId((currentSiteId) => (currentSiteId === siteId ? null : siteId))
 	}
 
+  // Format phone number for display
 	const formatPhone = (phone) => {
 		const digitsOnly = String(phone || '').replace(/\D/g, '')
 
