@@ -5,6 +5,7 @@ import { submitSite } from '../fetch/api'
 import '../styling/contribute.css'
 
 
+// Contribute page component
 export default function Contribute() {
 
 	const [formData, setFormData] = useState({
@@ -17,12 +18,14 @@ export default function Contribute() {
 	const [error, setError] = useState('')
 	const [success, setSuccess] = useState('')
 
+  // Set up body class for Contribute page
 	useEffect(() => {
 		document.body.classList.add('contribute-body')
 		return () => document.body.classList.remove('contribute-body')
 	}, [])
 
 
+  // Format phone number for input
 	const formatPhoneNumber = (value) => {
 		// Remove all non-digit characters
 		const digitsOnly = value.replace(/\D/g, '')
@@ -37,6 +40,7 @@ export default function Contribute() {
 		return `(${limitedDigits.slice(0, 3)}) ${limitedDigits.slice(3, 6)}-${limitedDigits.slice(6)}`
 	}
 
+  // Handle input changes in form
 	const handleChange = (event) => {
 		const { name, value } = event.target
 		if (name === 'phone') {
@@ -47,6 +51,7 @@ export default function Contribute() {
 		}
 	}
 
+  // Handle form submission
 	const handleSubmit = async (event) => {
 		event.preventDefault()
 		setError('')
@@ -72,6 +77,7 @@ export default function Contribute() {
 		}
 	}
 
+  // Render Contribute page content
 	return (
 		<div className="contribute-page">
 			<HomeHeader />

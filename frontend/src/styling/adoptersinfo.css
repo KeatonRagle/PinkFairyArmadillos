@@ -1,13 +1,16 @@
+/* Sets the background for the Adopters Info page */
 .adoptersinfo-body {
 	background: #f8f8f8;
 }
 
+/* Main container for the Adopters Info page layout */
 .adoptersinfo-page {
 	min-height: 100vh;
 	position: relative;
 	padding-bottom: 170px;
 }
 
+/* Main content area for Adopters Info */
 .adoptersinfo-main {
 	max-width: 960px;
 	margin: 2rem auto;
@@ -18,6 +21,7 @@
     font-family: 'Hind Kochi', sans-serif;
 }
 
+/* Hero section with background and shadow */
 .adoptersinfo-hero {
 	background: #ffffff;
 	border-radius: 18px;
@@ -25,6 +29,7 @@
 	box-shadow: 0 4px 24px rgba(0, 0, 0, 0.08);
 }
 
+/* Heading in the hero section */
 .adoptersinfo-hero h1 {
 	margin: 0 0 0.6rem 0;
 	font-family: 'Hind Kochi', sans-serif;
@@ -32,6 +37,7 @@
 	text-align: center;
 }
 
+/* Description paragraph in the hero section */
 .adoptersinfo-hero p {
 	margin: 0;
 	line-height: 1.5;
@@ -39,6 +45,7 @@
 	text-align: center;
 }
 
+/* Card container for adopter info sections */
 .adoptersinfo-card {
 	background: #ffffff;
 	border-radius: 18px;
@@ -46,6 +53,7 @@
 	box-shadow: 0 4px 24px rgba(0, 0, 0, 0.08);
 }
 
+/* Section heading inside adopter info card */
 .adoptersinfo-card h2 {
 	margin: 0 0 0.8rem 0;
 	font-family: 'Hind Kochi', sans-serif;
@@ -53,24 +61,28 @@
 	font-weight: 700;
 }
 
+/* Subheading inside adopter info card */
 .adoptersinfo-card h3 {
 	margin: 1rem 0 0.45rem 0;
 	color: #b44b25;
 	font-weight: 400;
 }
 
+/* Paragraph text inside adopter info card */
 .adoptersinfo-card p {
 	margin: 0;
 	line-height: 1.6;
 	color: #3f3f3f;
 }
 
+/* Aligns text left for paragraphs, lists, and list items in card */
 .adoptersinfo-card p,
 .adoptersinfo-card ul,
 .adoptersinfo-card li {
 	text-align: left;
 }
 
+/* Unordered list styling inside adopter info card */
 .adoptersinfo-card ul {
 	margin: 0;
 	padding-left: 1.3rem;
@@ -78,28 +90,33 @@
 	line-height: 1.6;
 }
 
+/* Adds spacing between list items in adopter info card */
 .adoptersinfo-card li + li {
 	margin-top: 0.45rem;
 }
 
+/* Grid layout for rules section */
 .rule-grid {
 	display: grid;
 	grid-template-columns: repeat(3, minmax(0, 1fr));
 	gap: 0.8rem;
 }
 
+/* Individual rule card in the grid */
 .rule-grid article {
 	background: #f8f8f8;
 	border-radius: 14px;
 	padding: 0.9rem;
 }
 
+/* Rule card heading */
 .rule-grid h3 {
 	margin-top: 0;
 	color: #b44b25;
 	font-weight: 400;
 }
 
+/* Responsive: stack rule cards on small screens */
 @media (max-width: 860px) {
 	.rule-grid {
 		grid-template-columns: 1fr;

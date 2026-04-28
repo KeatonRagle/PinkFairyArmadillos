@@ -6,6 +6,7 @@ import { useAuth } from '../auth/AuthContext.jsx'
 import { submitPost, getAllPosts, deletePost, getCommentsByPost, submitComment, deleteComment } from '../fetch/api'
 import '../styling/DiscussionBoard.css'
 
+// Discussion board page component
 export default function DiscussionBoard() {
 	const [selectedTimeframe, setSelectedTimeframe] = useState('week')
 
@@ -25,6 +26,7 @@ export default function DiscussionBoard() {
 
 	const visibleTopComments = topCommentPlaceholdersByTimeframe[selectedTimeframe]
 
+  // Set up body class for Discussion Board page
 	useEffect(() => {
 		document.body.classList.add('discussionboard-body')
 		return () => document.body.classList.remove('discussionboard-body')
@@ -61,6 +63,7 @@ export default function DiscussionBoard() {
 		loadPosts()
 	}, [])
 
+  // Toggle comments for a post
 	const toggleComments = async (index) => {
 		const updatedPosts = [...posts];
 		const post = updatedPosts[index];

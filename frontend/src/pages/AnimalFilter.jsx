@@ -24,11 +24,13 @@ const advancedAgeOptions = [
 	{ rank: 3, value: 'years' },
 ]
 
+// Animal filter/search page component
 function normalize(value) {
 	if (value === null || value === undefined) return ''
 	return String(value).trim().toLowerCase()
 }
 
+// Filter pets client-side by criteria
 function filterPetsClientSide(pets, filters) {
 	const { petType, gender, startAge, endAge, breed, size } = filters
 	const normPetType = normalize(petType)
@@ -50,6 +52,7 @@ function filterPetsClientSide(pets, filters) {
 	})
 }
 
+// Map API pet object to UI animal object
 function mapPetToAnimal(pet) {
 	const site = pet.site || {}
 	const siteId = pet.site_id ?? pet.siteId ?? site.siteId ?? null
@@ -77,6 +80,7 @@ function mapPetToAnimal(pet) {
 	}
 }
 
+// Convert age to weeks for filtering
 function convertToWeeks(rank, val) {
 	let result = val
 	if (rank == 2) 

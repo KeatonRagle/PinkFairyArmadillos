@@ -1,4 +1,4 @@
-/* Body styling ONLY for Help page */
+/* Body background and layout for Help page */
 body.help-body {
   margin: 0;
   padding: 0;
@@ -6,7 +6,7 @@ body.help-body {
   overflow-x: hidden;
 }
 
-/* Page wrapper */
+/* Main wrapper for Help page */
 .help-page {
   display: flex;
   flex-direction: column;
@@ -14,12 +14,12 @@ body.help-body {
   position: relative;
 }
 
-/* Main grows and pushes footer down */
+/* Main content area for Help page */
 .help-main {
   flex: 1;
 }
 
-/* Hero / header section */
+/* Hero/header section for Help page */
 .help-hero {
   background-color: #b44b25;
   color: white;
@@ -27,12 +27,14 @@ body.help-body {
   padding: 30px 20px;
 }
 
+/* Main heading in Help hero */
 .help-hero h1 {
   font-size: 36px;
   font-family: 'Hind Kochi', sans-serif;
   margin-bottom: 15px;
 }
 
+/* Subheading in Help hero */
 .help-hero h2 {
   color: white;
   font-family: 'Hind Kochi', sans-serif;
@@ -42,7 +44,7 @@ body.help-body {
 }
 
 
-/* Main content */
+/* Main content container for Help page */
 .help-content {
   max-width: 900px;
   margin: 50px auto;
@@ -51,6 +53,7 @@ body.help-body {
   line-height: 1.6;
 }
 
+/* Section heading in Help content */
 .help-content h2 {
   color: #b44b25;
   margin-bottom: 20px;

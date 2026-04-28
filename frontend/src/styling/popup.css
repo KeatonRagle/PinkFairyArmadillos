@@ -1,4 +1,5 @@
 /* The background overlay */
+/* Overlay background for popup modals */
 .popup-overlay {
     position: fixed;
     top: 0;
@@ -14,6 +15,7 @@
     padding: 20px; /* Space for mobile screens */
 }
 
+/* Main popup content container */
 .popup-content {
     width: 100%;
     max-width: 550px;
@@ -24,6 +26,7 @@
     animation: modalFadeIn 0.3s ease-out;
 }
 
+/* Age input dropdown in popup */
 .age-input-group select {
     padding: 12px;
     border-radius: 12px;
@@ -35,12 +38,14 @@
 }
 
 /* Modal Form Layout */
+/* Form layout inside popup */
 .popup-content form {
     display: flex;
     flex-direction: column;
     gap: 20px;
 }
 
+/* Heading in popup content */
 .popup-content h3 {
     font-family: 'Hind Kochi', sans-serif;
     font-weight: 500;
@@ -50,6 +55,7 @@
     color: #343434;
 }
 
+/* Textarea in popup content */
 .popup-content textarea {
     width: 100%; /* Spans full width of the padding */
     box-sizing: border-box; /* Crucial for width: 100% to work with padding */
@@ -62,12 +68,14 @@
 }
 
 /* Button Grouping */
+/* Button group in popup */
 .popup-actions {
     display: flex;
     gap: 12px;
     justify-content: flex-end; /* Buttons on the right */
 }
 
+/* Button style in popup */
 .popup-content button {
     padding: 10px 24px;
     border-radius: 8px;
@@ -77,23 +85,27 @@
     transition: opacity 0.2s;
 }
 
+/* Submit button in popup */
 .popup-content button[type="submit"] {
     background: #b44b25;
     color: white;
     border: none;
 }
 
+/* Disabled submit button in popup */
 .popup-content button[type="submit"]:disabled {
     background: #ccc;
     cursor: not-allowed;
 }
 
+/* Cancel button in popup */
 .popup-content .cancel-btn {
     background: transparent;
     border: 1px solid #d1d5db;
     color: #7a7a7a;
 }
 
+/* Input container in popup */
 .input-container {
     display: flex;
     flex-direction: column;
@@ -101,6 +113,7 @@
     margin-bottom: 20px;
 }
 
+/* Label for popup input */
 .popup-label {
     font-size: 12px;
     text-transform: uppercase;
@@ -109,6 +122,7 @@
     letter-spacing: 0.5px;
 }
 
+/* Dropdowns and inputs in popup */
 .trait-dropdown, 
 .popup-content input, 
 .popup-content select {
@@ -121,6 +135,7 @@
     box-sizing: border-box; /* Crucial for padding */
 }
 
+/* Submit button style */
 .submit-btn {
     background-color: #4f3829;
     color: white;
@@ -131,11 +146,13 @@
     cursor: pointer;
 }
 
+/* Disabled submit button style */
 .submit-btn:disabled {
     opacity: 0.5;
     cursor: not-allowed;
 }
 
+/* Error message in popup */
 .popup-error {
     color: #b44b25;
     font-size: 0.9rem;
@@ -144,6 +161,7 @@
 }
 
 /* Animation */
+/* Animation for popup fade-in */
 @keyframes modalFadeIn {
     from { opacity: 0; transform: translateY(-10px); }
     to { opacity: 1; transform: translateY(0); }

@@ -1,8 +1,10 @@
+/* Main request page body background */
 .request-body {
 	background: #f8f8f8;
 	margin: 0;
 }
 
+/* Container for the entire request page */
 .request-page {
 	min-height: 100vh;
 	background: #f8f8f8;
@@ -11,6 +13,7 @@
 	color: #343434;
 }
 
+/* Main content area of the request page */
 .request-main {
 	width: min(1100px, calc(100% - 3rem));
 	margin: 2rem auto 0;
@@ -18,6 +21,7 @@
 	box-sizing: border-box;
 }
 
+/* Heading container for the request page */
 .request-heading {
 	width: fit-content;
 	padding: 0.5rem 0.75rem;
@@ -28,6 +32,7 @@
 	box-shadow: 0 10px 24px rgba(0, 0, 0, 0.08);
 }
 
+/* Heading text inside request heading */
 .request-heading h1 {
 	margin: 0;
 	font: inherit;
@@ -37,6 +42,7 @@
 	color: #b44b25;
 }
 
+/* Grid layout for request sections */
 .request-sections {
 	display: grid;
 	grid-template-columns: repeat(3, minmax(0, 1fr));
@@ -44,6 +50,7 @@
 	align-items: start;
 }
 
+/* Individual request section box */
 .request-section {
 	background: #ffffff;
 	border: 1px solid rgba(52, 52, 52, 0.08);
@@ -53,6 +60,7 @@
 	min-height: 320px;
 }
 
+/* Header for each request section */
 .request-section-header {
 	display: flex;
 	justify-content: space-between;
@@ -61,6 +69,7 @@
 	margin-bottom: 1rem;
 }
 
+/* Heading in section header */
 .request-section-header h2 {
 	margin: 0;
 	font: inherit;
@@ -70,6 +79,7 @@
 	color: #343434;
 }
 
+/* Badge or icon in section header */
 .request-section-header span {
 	display: inline-flex;
 	align-items: center;
@@ -84,12 +94,14 @@
 	line-height: 1;
 }
 
+/* List of request cards */
 .request-list {
 	display: grid;
 	grid-template-columns: 1fr;
 	gap: 1rem;
 }
 
+/* Card for each request item */
 .request-card {
 	border: 1px solid #e3e3e3;
 	border-radius: 18px;
@@ -98,6 +110,7 @@
 	box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
 }
 
+/* Paragraphs inside request card */
 .request-card p {
 	margin: 0 0 0.65rem;
 	line-height: 1.45;
@@ -105,14 +118,17 @@
 	text-align: left;
 }
 
+/* Last paragraph in request card */
 .request-card p:last-of-type {
 	margin-bottom: 0;
 }
 
+/* Links inside request card */
 .request-card a {
 	color: #b44b25;
 }
 
+/* Container for request action buttons */
 .request-actions {
 	display: flex;
 	flex-wrap: wrap;
@@ -120,6 +136,7 @@
 	margin-top: 1rem;
 }
 
+/* Action buttons inside request actions */
 .request-actions button {
 	border: 1px solid #b44b25;
 	border-radius: 999px;
@@ -132,33 +149,39 @@
 	transition: background-color 0.2s ease, color 0.2s ease, transform 0.2s ease;
 }
 
+/* Hover state for action buttons */
 .request-actions button:hover {
 	background: #b44b25;
 	color: #ffffff;
 	transform: translateY(-1px);
 }
 
+/* Delete button for requests */
 .request-delete-btn {
 	border-color: #d32f2f !important;
 	color: #d32f2f !important;
 	background: #ffebee !important;
 }
 
+/* Hover state for delete button */
 .request-delete-btn:hover {
 	background: #d32f2f !important;
 	color: #ffffff !important;
 }
 
+/* Message when no requests are present */
 .request-empty {
 	margin: 0;
 	color: #6b6b6b;
 }
 
+/* Error message styling */
 .request-error {
 	margin: 0 0 1rem;
 	color: #b00020;
 }
 
+/* Responsive adjustments for tablets */
 @media (max-width: 960px) {
 	.request-sections {
 		grid-template-columns: 1fr;
@@ -174,6 +197,7 @@
 	}
 }
 
+/* Responsive adjustments for mobile screens */
 @media (max-width: 640px) {
 	.request-main {
 		width: calc(100% - 1.5rem);

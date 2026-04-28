@@ -1,4 +1,4 @@
-/* Global Body Overrides */
+/* Body background and font for Discussion Board */
 body.discussionboard-body {
     margin: 0;
     background-color: #F8F8F8;
@@ -6,6 +6,7 @@ body.discussionboard-body {
     font-family: 'Hind Kochi', sans-serif;
 }
 
+/* Main wrapper for Discussion Board page */
 .discussionboard-page {
     display: flex;
     flex-direction: column;
@@ -13,6 +14,7 @@ body.discussionboard-body {
     position: relative;
 }
 
+/* Main content container for Discussion Board */
 .discussionboard-main {
     flex: 1 0 auto;
     display: flex;
@@ -27,6 +29,7 @@ body.discussionboard-body {
     padding-bottom: 120px;
 }
 
+/* Panel for displaying discussion posts */
 .discussionposts-panel {
     display: flex;
     flex-direction: column;
@@ -34,6 +37,7 @@ body.discussionboard-body {
     width: 100%;
 }
 
+/* Heading for posts panel */
 .discussionposts-panel h1 {
     font-weight: 300;
     text-transform: uppercase;
@@ -41,6 +45,7 @@ body.discussionboard-body {
     font-size: 2rem;
 }
 
+/* Card for individual post */
 .post-card {
     background: white;
     border-radius: 12px;
@@ -53,6 +58,7 @@ body.discussionboard-body {
     align-items: flex-start; 
 }
 
+/* Content area for post text */
 .post-content {
     font-size: 1.1rem;
     line-height: 1.6;
@@ -66,6 +72,7 @@ body.discussionboard-body {
 }
 
 /* Unified Header Style for both Posts and Comments */
+/* Header grid for posts and comments */
 .post-header-grid, 
 .comment-header-grid {
     display: flex !important;
@@ -76,12 +83,14 @@ body.discussionboard-body {
 }
 
 /* Author info (Avatar + Name) stays grouped on the left */
+/* User info section (avatar + name) */
 .user-info-side {
     display: flex !important;
     align-items: center !important;
     gap: 12px !important;
 }
 
+/* Tiny avatar for user */
 .user-avatar-tiny {
     width: 32px;
     height: 32px;
@@ -94,18 +103,21 @@ body.discussionboard-body {
     flex-shrink: 0;
 }
 
+/* Username styling */
 .username {
     font-weight: 700;
     color: #b44b25;
     font-size: 0.9rem;
 }
 
+/* Wrapper for username and extras */
 .username-wrapper {
     display: flex;
     align-items: center;
     gap: 10px;
 }
 
+/* Container for all comments */
 .comments-container {
     margin-top: 15px;
     padding-left: 15px;
@@ -116,6 +128,7 @@ body.discussionboard-body {
     gap: 12px;
 }
 
+/* Individual comment item */
 .comment-item {
     background: #f9f9f9;
     padding: 16px;
@@ -128,6 +141,7 @@ body.discussionboard-body {
     align-items: flex-start;
 }
 
+/* Content area for comment text */
 .comment-content {
     margin: 0;
     font-size: 0.95rem;
@@ -139,7 +153,7 @@ body.discussionboard-body {
     word-break: break-word;
 }
 
-/* Comments Toggle Button (The Dropdown bar) */
+/* Toggle button for showing/hiding comments */
 .post-comments-toggle {
     width: 100%;
     padding: 12px 16px;
@@ -155,6 +169,7 @@ body.discussionboard-body {
     transition: all 0.2s ease;
 }
 
+/* Button to add a comment */
 .add-comment-btn {
     background-color: transparent;
     color: #b44b25;
@@ -187,6 +202,7 @@ body.discussionboard-body {
     border-color: #b44b25;
 }
 
+/* Button to create a new post */
 .create-post-trigger {
     background: #b44b25;
     color: white;
@@ -236,6 +252,7 @@ body.discussionboard-body {
 }
 
 /* Sidebar Styles */
+/* Sidebar for top posts */
 .toppost-sidebar {
     background: white;
     border-radius: 16px;
@@ -256,6 +273,7 @@ body.discussionboard-body {
 	box-sizing: border-box;
 }
 
+/* Heading in top posts sidebar */
 .toppost-sidebar h2 {
 	margin: 0;
 	color: #343434;
@@ -264,6 +282,7 @@ body.discussionboard-body {
 	font-size: 24px;
 }
 
+/* Timeframe button row in sidebar */
 .toppost-timeframes {
 	display: flex;
 	gap: 14px;
@@ -271,6 +290,7 @@ body.discussionboard-body {
 	margin-bottom: 16px;
 }
 
+/* Timeframe button style */
 .toppost-timeframe-button {
 	border: none;
 	background: transparent;
@@ -281,11 +301,13 @@ body.discussionboard-body {
 	cursor: pointer;
 }
 
+/* Active timeframe button style */
 .toppost-timeframe-button.active {
 	color: #b44b25;
 	font-weight: 600;
 }
 
+/* List of top posts */
 .toppost-list {
 	list-style: none;
 	padding: 0;
@@ -295,6 +317,7 @@ body.discussionboard-body {
 	gap: 10px;
 }
 
+/* Individual item in top posts list */
 .toppost-list-item {
 	display: flex;
 	align-items: center;
@@ -304,6 +327,7 @@ body.discussionboard-body {
 	padding: 8px 6px;
 }
 
+/* Rank number in top posts */
 .toppost-rank {
 	width: 26px;
 	color: #343434;
@@ -313,6 +337,7 @@ body.discussionboard-body {
 	flex-shrink: 0;
 }
 
+/* Avatar in top posts list */
 .toppost-avatar {
 	width: 30px;
 	height: 30px;
@@ -322,6 +347,7 @@ body.discussionboard-body {
 	flex-shrink: 0;
 }
 
+/* Placeholder for top post comment */
 .toppost-comment-placeholder {
 	height: 14px;
 	width: 100%;

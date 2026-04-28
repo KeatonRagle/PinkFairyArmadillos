@@ -5,6 +5,7 @@ import { useAuth } from '../auth/AuthContext'
 import { requestContributor, getCurrentUser } from '../fetch/api'
 import '../styling/contributorapp.css'
 
+// Contributor application page component
 export default function ContributorApp() {
 	const navigate = useNavigate()
 	const { username, role } = useAuth()
@@ -13,11 +14,13 @@ export default function ContributorApp() {
 	const [loading, setLoading] = useState(true)
 	const [error, setError] = useState(null)
 
+  // Set up body class for Contributor App page
 	useEffect(() => {
 		document.body.classList.add('contributorapp-body')
 		return () => document.body.classList.remove('contributorapp-body')
 	}, [])
 
+  // Load contributor application status
 	useEffect(() => {
 		if (!username) { navigate('/login'); return }
 		if (role !== 'ROLE_USER') { navigate('/profile'); return }
@@ -31,6 +34,7 @@ export default function ContributorApp() {
 			.finally(() => setLoading(false))
 	}, [navigate, role, username])
 
+  // Handle contributor application submission
 	const handleSubmit = async (event) => {
 		event.preventDefault()
 		setLoading(true)
@@ -49,6 +53,7 @@ export default function ContributorApp() {
 		}
 	}
 
+  // Compute status copy for contributor application
 	const statusCopy = useMemo(() => {
 		if (submitted) {
 			return {
@@ -70,6 +75,7 @@ export default function ContributorApp() {
 		}
 	}, [submitted, denied])
 
+  // Render Contributor App page content
 	return (
 		<div className="contributorapp-page">
 			<HomeHeader />

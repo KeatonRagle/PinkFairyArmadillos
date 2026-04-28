@@ -3,12 +3,15 @@ import HomeHeader from '../components/header'
 import HomeFooter from '../components/footer'
 import '../styling/adoptersinfo.css'
 
+// Adopters info page component
 export default function AdoptersInfo() {
+  // Set up body class for Adopters Info page
 	useEffect(() => {
 		document.body.classList.add('adoptersinfo-body')
 		return () => document.body.classList.remove('adoptersinfo-body')
 	}, [])
 
+  // Render Adopters Info page content
 	return (
 		<div className="adoptersinfo-page">
 			<HomeHeader />

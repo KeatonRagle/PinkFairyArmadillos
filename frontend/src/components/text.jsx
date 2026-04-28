@@ -1,5 +1,6 @@
 import { Link } from 'react-router-dom'
 
+// Paragraph text component
 export function Text({ children, className = '', ...props }) {
   return (
     <p
@@ -11,6 +12,7 @@ export function Text({ children, className = '', ...props }) {
   )
 }
 
+// Link styled as text
 export function TextLink({ children, href, className = '', ...props }) {
   return (
     <Link
@@ -24,6 +26,7 @@ export function TextLink({ children, href, className = '', ...props }) {
 }
 
 
+// Strong/bold text component
 export function Strong({ children, className = '' }) {
   return (
     <strong className={`font-semibold ${className}`}>

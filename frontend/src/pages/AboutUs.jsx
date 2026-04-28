@@ -1,15 +1,24 @@
+//there was a time when this was its own page. its in the home page now 
+//RIP
+
 import '../styling/AboutUs.css'
 import HomeHeader from '../components/header'
 import HomeFooter from '../components/footer'
 import { useEffect } from 'react'
 
+// About page component for the site
+// About page component for the site
 export default function About() {
 
+    // Set up body class for About page on mount/unmount
+    // Set up body class for About page on mount/unmount
   useEffect(() => {
     document.body.classList.add('about-body')
     return () => document.body.classList.remove('about-body')
   }, [])
 
+    // Render About page content
+    // Render About page content
   return (
     <div className="about-page">
 

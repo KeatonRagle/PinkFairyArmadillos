@@ -1,3 +1,4 @@
+/* Body background and font for contributor app */
 .contributorapp-body {
 	margin: 0;
 	background:
@@ -7,12 +8,14 @@
 	font-family: 'Hind Kochi', sans-serif;
 }
 
+/* Main wrapper for contributor app page */
 .contributorapp-page {
 	min-height: 100vh;
 	display: flex;
 	flex-direction: column;
 }
 
+/* Main content container for contributor app */
 .contributorapp-main {
 	flex: 1;
 	display: flex;
@@ -21,6 +24,7 @@
 	box-sizing: border-box;
 }
 
+/* Card container for contributor app */
 .contributorapp-card {
 	width: min(960px, 100%);
 	display: flex;
@@ -34,12 +38,14 @@
 	box-sizing: border-box;
 }
 
+/* Heading section for contributor app */
 .contributorapp-heading {
 	display: grid;
 	gap: 10px;
 	justify-items: center;
 }
 
+/* Main heading in contributor app */
 .contributorapp-heading h1 {
 	margin: 0;
 	color: #2f2520;
@@ -48,12 +54,14 @@
 	text-align: center;
 }
 
+/* Grid layout for contributor app */
 .contributorapp-grid {
 	display: grid;
 	grid-template-columns: 1fr;
 	gap: 18px;
 }
 
+/* Panel and form containers in contributor app */
 .contributorapp-panel,
 .contributorapp-form {
 	padding: 26px;
@@ -62,6 +70,7 @@
 	border: 1px solid #eadccf;
 }
 
+/* Section headings in panel and form */
 .contributorapp-panel h2,
 .contributorapp-form h2 {
 	margin: 0 0 12px;
@@ -70,6 +79,7 @@
 	font-weight: 500;
 }
 
+/* Paragraphs in panel and form */
 .contributorapp-panel p,
 .contributorapp-form p {
 	margin: 0;
@@ -77,15 +87,18 @@
 	line-height: 1.6;
 }
 
+/* Status panel for contributor app */
 .contributorapp-status-panel {
 	display: grid;
 	gap: 12px;
 }
 
+/* Heading in status panel */
 .contributorapp-status-panel h2 {
 	text-align: center;
 }
 
+/* Status box in status panel */
 .contributorapp-status {
 	display: grid;
 	gap: 10px;
@@ -97,42 +110,50 @@
 	text-align: center;
 }
 
+/* Idle status style */
 .contributorapp-status.is-idle {
 	background: #fffbf8;
 	border-color: #ecdccf;
 }
 
+/* Pending status style */
 .contributorapp-status.is-pending {
 	background: #fff4df;
 	border-color: #efc979;
 }
 
+/* Denied status style */
 .contributorapp-status.is-denied {
 	background: #fff0ec;
 	border-color: #ebb1a0;
 }
 
+/* Label for status */
 .contributorapp-status-label {
 	color: #2f2520;
 	font-size: 16px;
 	font-weight: 600;
 }
 
+/* Form container for contributor app */
 .contributorapp-form {
 	display: grid;
 	gap: 18px;
 }
 
+/* Header for contributor form */
 .contributorapp-form-header {
 	display: grid;
 	gap: 8px;
 }
 
+/* Field group in contributor form */
 .contributorapp-field {
 	display: grid;
 	gap: 10px;
 }
 
+/* Label in contributor form field */
 .contributorapp-field span {
 	color: #8a7669;
 	font-size: 12px;
@@ -140,6 +161,7 @@
 	text-transform: uppercase;
 }
 
+/* Textarea in contributor form field */
 .contributorapp-field textarea {
 	width: 100%;
 	padding: 16px;
@@ -156,17 +178,20 @@
 	transition: border-color 0.2s ease, box-shadow 0.2s ease;
 }
 
+/* Focus style for textarea */
 .contributorapp-field textarea:focus {
 	border-color: #b44b25;
 	box-shadow: 0 0 0 3px rgba(180, 75, 37, 0.14);
 }
 
+/* Disabled textarea style */
 .contributorapp-field textarea:disabled {
 	background: #f7f1ea;
 	color: #7e6e62;
 	resize: none;
 }
 
+/* Action button row in contributor form */
 .contributorapp-actions {
 	display: flex;
 	align-items: center;
@@ -175,6 +200,7 @@
 	flex-wrap: wrap;
 }
 
+/* Main button style for contributor app */
 .contributorapp-button {
 	display: inline-flex;
 	align-items: center;
@@ -189,6 +215,7 @@
 	transition: background-color 0.2s ease, transform 0.2s ease;
 }
 
+/* Main button style for contributor app (duplicate for specificity) */
 .contributorapp-button {
 	border: none;
 	background: #b44b25;
@@ -196,17 +223,20 @@
 	cursor: pointer;
 }
 
+/* Hover style for main button */
 .contributorapp-button:hover {
 	background: #973a18;
 	transform: translateY(-1px);
 }
 
+/* Disabled style for main button */
 .contributorapp-button:disabled {
 	background: #d9b5a6;
 	cursor: not-allowed;
 	transform: none;
 }
 
+/* Responsive styles for mobile */
 @media (max-width: 760px) {
 	.contributorapp-main {
 		padding: 32px 16px 64px;
