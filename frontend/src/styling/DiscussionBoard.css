@@ -192,6 +192,11 @@ body.discussionboard-body {
     background-color: rgba(180, 75, 37, 0.05);
 }
 
+.add-comment-btn:disabled {
+	color: #3f3f3f;
+    border: 1px dashed #3f3f3f;
+}
+
 .post-comments-toggle:hover {
     background: #f9f9f9;
     border-color: #b44b25;
@@ -215,7 +220,11 @@ body.discussionboard-body {
     width: fit-content;
 }
 
-/* Delete icon button for posts/comments */
+.create-post-trigger:disabled {
+	background: #dddddd;
+	color: #3f3f3f;
+}
+
 .delete-icon-btn {
     background: none !important;
     border: none !important;

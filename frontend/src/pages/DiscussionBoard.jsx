@@ -187,8 +187,9 @@ export default function DiscussionBoard() {
 					<button 
 						className="create-post-trigger" 
 						onClick={() => setActivePopupIndex(0)}
+						disabled={!id}
 					>
-						Start a New Discussion
+						{id ? "Start a New Discussion" : "Log in to Start a New Discussion!"} 
 					</button>
 					{posts.map((post, index) => (
 						<article key={post.postID || index} className="post-card">
@@ -239,8 +240,9 @@ export default function DiscussionBoard() {
 									<button 
 										className="add-comment-btn" 
 										onClick={() => setActivePopupIndex(index + 1)}
+										disabled={!id}
 									>
-										+ Leave a Comment
+										{id ? "+ Leave a Comment" : "Log in to Leave a Comment!"}
 									</button>
 									
 									<Popup 

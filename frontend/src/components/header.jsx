@@ -75,9 +75,9 @@ export default function HomeHeader({ backLink = null }) {
             </Link>
           ) : null}
           <Link to="/home" className="header-link">HOME</Link>
-          <Link to="/help" className="header-link">HELP</Link>
-          <Link to="/discussion-board" className="header-link">DISCUSSION BOARD</Link>
           <Link to="/select-animal" className="header-link">FIND A PET</Link>
+          <Link to="/shelter-info" className="header-link">ADOPTION SITES</Link>
+          <Link to="/discussion-board" className="header-link">DISCUSSION BOARD</Link>
           {!username && (
             <Link to="/login" className="header-link">LOG IN</Link>
           )}
