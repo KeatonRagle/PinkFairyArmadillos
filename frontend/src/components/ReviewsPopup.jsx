@@ -338,14 +338,17 @@ export default function ReviewsPopup({ isOpen, onClose, shelterName, siteInfo = 
 						</div>
 
 						<div className="reviews-modal-footer">
-							<button
-								className="reviews-add-btn"
-								type="button"
-								onClick={() => setView('add')}
-								disabled={!currentUserId}
-							>
-								+ Add a Review
-							</button>
+							
+								<button
+									className="reviews-add-btn"
+									type="button"
+									onClick={() => setView('add')}
+									disabled={!currentUserId}
+								>
+									{currentUserId ? "+ Add a Review" : "Log in to Add a Review!"}
+								</button>
+								
+							
 						</div>
 					</>
 				)}

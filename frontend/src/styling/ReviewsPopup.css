@@ -186,6 +186,11 @@
 	background: #943b19;
 }
 
+.reviews-add-btn:disabled {
+	background: #dddddd;
+	color: #3f3f3f;
+}
+
 .delete-icon-btn {
     background: none !important;
     border: none !important;
