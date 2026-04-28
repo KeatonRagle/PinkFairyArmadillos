@@ -162,7 +162,7 @@ export function getAllReviews(minRating) {
     ? `?minRating=${encodeURIComponent(minRating)}`
     : '';
 
-  return apiFetchAuthenticated(`/api/reviews/getAll${query}`, {
+  return apiFetchUnauthenicated(`/api/reviews/getAll${query}`, {
     method: "GET",
   });
 }
@@ -192,7 +192,7 @@ export function submitSite(contribution) {
 
 // Get all approved adoption sites
 export function getApprovedSites() {
-  return apiFetchAuthenticated("/api/adoptionSite/getApprovedSites", { 
+  return apiFetchUnauthenicated("/api/adoptionSite/getApprovedSites", { 
     method: "GET" 
   });
 }
@@ -242,7 +242,7 @@ export function deletePost(id) {
 
 // Get all posts
 export function getAllPosts() {
-  return apiFetchAuthenticated("/api/posts/getAll", {
+  return apiFetchUnauthenicated("/api/posts/getAll", {
     method: "GET"
   });
 }
@@ -257,7 +257,7 @@ export function submitComment(comment) {
 
 // Get comments for a specific post
 export function getCommentsByPost(postId) {
-  return apiFetchAuthenticated(`/api/comments/getByPost/${postId}`, {
+  return apiFetchUnauthenicated(`/api/comments/getByPost/${postId}`, {
     method: "GET"
   });
 }
