@@ -9,7 +9,6 @@ export default function HomeFooter() {
         <p className="footer-text">ARE YOU A NEW ADOPTER? CHECK OUT OUR NEW ADOPTERS GUIDE.</p>
         <div className="footer-button-row">
           <Link to="/adopters-info" className="footer-button">ADOPTER INFO</Link>
-          <Link to="/shelter-info" className="footer-button">SHELTER INFO</Link>
         </div>
       </div>
     </footer>

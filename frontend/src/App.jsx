@@ -5,7 +5,6 @@ import Home from './pages/home.jsx'
 import SelectAnimal from './pages/SelectAnimal.jsx'
 import AnimalFilter from './pages/AnimalFilter.jsx'
 import AboutUs from './pages/AboutUs.jsx'
-import Help from './pages/help.jsx'
 import DiscussionBoard from './pages/DiscussionBoard.jsx'
 import ShelterInfo from './pages/ShelterInfo.jsx'
 import Contribute from './pages/contribute.jsx'
@@ -29,7 +28,6 @@ function App() {
         <Route path="/discussion-board" element={<DiscussionBoard />} />
         <Route path="/shelter-info" element={<ShelterInfo />} />
         <Route path="/About" element={<AboutUs />} />
-        <Route path="/help" element={<Help />} />
         <Route path="/contribute" element={<Contribute />} />
         <Route path="/contributor-application" element={<ContributorApp />} />
         <Route path="/profile" element={<Profile />} />
