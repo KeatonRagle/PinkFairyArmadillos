@@ -15,7 +15,6 @@ public record AdoptionSiteDTO(
     String name,
     String email,
     String phone,
-    Double rating,
     char status
 ) {
     /**
@@ -31,7 +30,6 @@ public record AdoptionSiteDTO(
             site.getName(),
             site.getEmail(),
             site.getPhone(),
-            site.getRating(),
             site.getStatus()
         );
     }

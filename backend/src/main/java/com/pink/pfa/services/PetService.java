@@ -85,7 +85,7 @@ public class PetService {
     public PetDTO addPet(PetRequest request) {
         Pet pet = new Pet(request.name(), request.breed(), request.age(), request.gender(), 
             request.petType(), request.location(), request.price(), request.size(), 
-            request.petStatus(), request.compatibilityScore(), request.imgUrl(), LocalDate.now()
+            request.petStatus(), request.imgUrl(), LocalDate.now()
         );
 
         pet.setSite(adoptionRepository.findById(request.siteId())

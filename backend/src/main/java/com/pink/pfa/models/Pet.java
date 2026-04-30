@@ -105,11 +105,7 @@ import lombok.ToString;
 	/** Pet's status. */
 	@Column(name = "pet_status", nullable = false)
 	private String petStatus;
-	
-	
-	/** Pet's compatability score with User. */
-	@Column(name = "compatibility_score", nullable = true)
-	private int compatibilityScore;
+
 
 	/** Pet's image url. */
 	@Column(name = "img_url", nullable = true)
@@ -143,14 +139,13 @@ import lombok.ToString;
 	 * @param price pet's listed price
      * @param pet_size pet's size
      * @param pet_status pet's adoption status
-     * @param compatability_score pet's listed compatability score
 	 * @param imgUrl pet's accompanying image/s
 	 * @param size pet's listed size
 	 * @param createdAt pet's time of listing
      */
 	public Pet(String name, String breed, int age, char gender, 
 		String pet_type, String location, double price, 
-		String petSize, String petStatus, int compatibilityScore,
+		String petSize, String petStatus,
 		String imgUrl, LocalDate createdAt
 	) {
 		this.name = name;
@@ -162,7 +157,6 @@ import lombok.ToString;
 		this.price = price;
 		this.size = petSize;
 		this.petStatus = petStatus;
-		this.compatibilityScore = compatibilityScore;
 		this.imgUrl = imgUrl;
 		this.createdAt = createdAt;
 	}

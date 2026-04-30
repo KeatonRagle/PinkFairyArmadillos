@@ -53,22 +53,6 @@ public class FeaturedPets {
 	private LocalDate endDate = LocalDate.now().plusDays(1);
 	
 	
-	/** Featured pet's reason for being featured. */
-	@Column(name = "reason", nullable = false)
-	private String reason;
-	
-	
 	/** Default constructor required by JPA. */
 	public FeaturedPets() {}
-	
-	/**
-     * Constructs a fully initialized FeaturedPets entity.
-     *
-     * @param startDate pet's feature start date
-     * @param endDate pet's feature end date
-     * @param reason admin/contributor added reason
-     */
-	public FeaturedPets(String reason) {
-		this.reason = reason;
-	}
 }

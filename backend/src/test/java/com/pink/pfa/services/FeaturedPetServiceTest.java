@@ -64,7 +64,7 @@ class FeaturedPetServiceTest extends PfaBase {
     @Transactional
     void findAll_ShouldReflectNewlyAddedFeaturedPet() {
         Pet pet = getRandPet();
-        featuredPetService.addFPet(new FeaturedPetRequest(pet.getPetId(), "Test reason"));
+        featuredPetService.addFPet(new FeaturedPetRequest(pet.getPetId()));
 
         List<FeaturedPetDTO> result = featuredPetService.findAll();
 
@@ -84,7 +84,7 @@ class FeaturedPetServiceTest extends PfaBase {
     void findById_WithValidId_ShouldReturnCorrectFeaturedPet() {
         Pet pet = getRandPet();
         FeaturedPetDTO created = featuredPetService.addFPet(
-            new FeaturedPetRequest(pet.getPetId(), "Test reason")
+            new FeaturedPetRequest(pet.getPetId())
         );
 
         FeaturedPetDTO found = featuredPetService.findByPetId(created.id());
@@ -115,7 +115,7 @@ class FeaturedPetServiceTest extends PfaBase {
     @Transactional
     void addFPet_ShouldPersistAndReturnFeaturedPet() {
         Pet pet = getRandPet();
-        FeaturedPetRequest request = new FeaturedPetRequest(pet.getPetId(), "Chosen manually");
+        FeaturedPetRequest request = new FeaturedPetRequest(pet.getPetId());
 
         FeaturedPetDTO result = featuredPetService.addFPet(request);
 
@@ -131,7 +131,7 @@ class FeaturedPetServiceTest extends PfaBase {
     @Test
     @Transactional
     void addFPet_ShouldThrowForUnknownPetId() {
-        FeaturedPetRequest request = new FeaturedPetRequest(999999, "Broken by design");
+        FeaturedPetRequest request = new FeaturedPetRequest(999999);
 
         assertThrows(ResourceNotFoundException.class,
             () -> featuredPetService.addFPet(request),
@@ -148,7 +148,7 @@ class FeaturedPetServiceTest extends PfaBase {
     @Test
     @Transactional
     void addFRandomPetByType_ShouldReturnFeaturedPetOfCorrectType() {
-        FeaturedPetDTO result = featuredPetService.addFRandomPetByType("Dog", "Chosen randomly");
+        FeaturedPetDTO result = featuredPetService.addFRandomPetByType("Dog");
 
         assertNotNull(result, "Result should not be null");
         assertEquals("Dog", petService.findById(result.petId()).pet_type(),
@@ -163,7 +163,7 @@ class FeaturedPetServiceTest extends PfaBase {
     @Transactional
     void addFRandomPetByType_ShouldThrowWhenNoActivePetsOfTypeExist() {
         assertThrows(ResourceNotFoundException.class,
-            () -> featuredPetService.addFRandomPetByType("Dragon", "No such type"),
+            () -> featuredPetService.addFRandomPetByType("Dragon"),
             "Expected exception when no active pets of given type exist");
     }
 
@@ -179,7 +179,7 @@ class FeaturedPetServiceTest extends PfaBase {
     @Transactional
     void deleteByPetId_ShouldRemoveFeaturedPet() {
         Pet pet = getRandPet();
-        FeaturedPetDTO fPet = featuredPetService.addFPet(new FeaturedPetRequest(pet.getPetId(), "To be deleted"));
+        FeaturedPetDTO fPet = featuredPetService.addFPet(new FeaturedPetRequest(pet.getPetId()));
 
         int size = featuredPetService.findAll().size();
         featuredPetService.deleteByPetId(fPet.id());

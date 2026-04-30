@@ -59,11 +59,6 @@ public class AdoptionSite {
 	private String email;
 	
 	
-	/** Site's user-determined rating. */
-	@Column(name = "rating", nullable = true)
-	private Double rating;
-	
-	
 	/** Site's url. */
 	@Column(name = "url", nullable = false)
     private String url;
@@ -89,18 +84,16 @@ public class AdoptionSite {
      * @param name site's display name
      * @param phone site's phone number
 	 * @param email site's email address
-     * @param rating user-determined rating
      * @param url optional site metadata
 	 * @param status site's approval status
 	 * @param submittedAt site's submission date
      */
 	public AdoptionSite(String name, String phone, String email,
-		double rating, String url, char status, LocalDate submittedAt
+		String url, char status, LocalDate submittedAt
 	) {
 		this.name = name;
 		this.phone = phone;
         this.email = email;
-		this.rating = rating;
 		this.url = url;
 		this.status = status;
 		this.submittedAt = submittedAt;
