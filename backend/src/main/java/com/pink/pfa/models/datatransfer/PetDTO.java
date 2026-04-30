@@ -22,7 +22,6 @@ public record PetDTO(
         String location,
         double price,
         String pet_status,
-        int compatibility_score,
         String img_url,
         List<String> secondary_images,
         String size
@@ -45,7 +44,6 @@ public record PetDTO(
             pet.getLocation(), 
             pet.getPrice(), 
             pet.getPetStatus(), 
-            pet.getCompatibilityScore(),
             pet.getImgUrl(),
             pet.getSecondaryImages()
                 .stream().map(image -> image.getImageUrl())

@@ -59,7 +59,7 @@ public class FeaturedPetService {
     }
 
     public FeaturedPetDTO addFPet(FeaturedPetRequest request) {
-        FeaturedPets fPet = new FeaturedPets (request.reason());
+        FeaturedPets fPet = new FeaturedPets ();
 
         fPet.setPet(petRepository.findById(request.petId())
             .orElseThrow(() -> new ResourceNotFoundException("Pet", request.petId()))
@@ -69,8 +69,8 @@ public class FeaturedPetService {
         return FeaturedPetDTO.fromEntity(savedFPet);
     }
 
-    public FeaturedPetDTO addFRandomPetByType(String type, String reason) {
-        FeaturedPets fPet = new FeaturedPets(reason);
+    public FeaturedPetDTO addFRandomPetByType(String type) {
+        FeaturedPets fPet = new FeaturedPets();
 
         fPet.setPet(petRepository.findByPetStatusNotAndTypeRand(type, "INACTIVE")
             .orElseThrow(() -> new ResourceNotFoundException("No active pets found", 0))
@@ -87,10 +87,10 @@ public class FeaturedPetService {
         List<FeaturedPetDTO> newlyAdded = new ArrayList<>();
 
         for (int i = 0; i < dogCount; i++) {
-            newlyAdded.add(addFRandomPetByType("Dog", "Chosen randomly"));
+            newlyAdded.add(addFRandomPetByType("Dog"));
         }
         for (int i = 0; i < catCount; i++) {
-            newlyAdded.add(addFRandomPetByType("Cat", "Chosen randomly"));
+            newlyAdded.add(addFRandomPetByType("Cat"));
         }
 
         return newlyAdded;
