@@ -1,6 +1,7 @@
 package com.pink.pfa.services;
 
 import java.util.List;
+import java.util.Map;
 
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -195,7 +196,7 @@ public class UserService {
     }
 
     @Transactional
-    public UserDTO updatePasswordByJWT(UpdateUserPasswordRequest updateRequest) {
+    public Map<String, Object> updatePasswordByJWT(UpdateUserPasswordRequest updateRequest) {
         Authentication auth = SecurityContextHolder.getContext().getAuthentication();
         if (auth == null) throw new ResourceNotFoundException("User", "Token either unreadable or not provided");
         String email = ((UserPrincipal) auth.getPrincipal()).getUsername();
@@ -205,7 +206,10 @@ public class UserService {
         user.setPassword(
             passwordEncoder.encode(updateRequest.password())
         );
-        return UserDTO.fromEntity(user);
+        return Map.of(
+            "user", UserDTO.fromEntity(user),
+            "token", jwtService.generateToken(email)
+        );
     }
 
     /**
