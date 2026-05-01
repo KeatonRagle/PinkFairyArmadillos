@@ -201,7 +201,14 @@ export default function Profile() {
     setStatusMessage('')
 
     try {
-        await updateCurrentPassword(newPasswordDraft)
+        const data = await updateCurrentPassword(newPasswordDraft)
+		const token = data.token
+       	const userObj = data.user
+      	const displayName = userObj.name ?? userObj.email;
+     	const role = userObj.role;
+      	const id = userObj.id;
+
+      	setAuth(token, displayName, role, id);
         setCurrentPasswordDraft('')
         setNewPasswordDraft('')
         setConfirmPasswordDraft('')

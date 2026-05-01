@@ -208,7 +208,7 @@ public class UserController {
     }
 
     @PatchMapping("/me/updatePassword") 
-    public ResponseEntity<UserDTO> updateMyPassword(@Valid @RequestBody UpdateUserPasswordRequest updateRequest) {
+    public ResponseEntity<Map<String, Object>> updateMyPassword(@Valid @RequestBody UpdateUserPasswordRequest updateRequest) {
         try {
             return ResponseEntity.ok().body(userService.updatePasswordByJWT(updateRequest));
         } catch (ResourceNotFoundException e) {
