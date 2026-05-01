@@ -17,7 +17,7 @@ For families looking to adopt a pet, PFA is a centralized adoption hub that aggr
 
 How to Run Locally:
 
-_This section is a placeholder and will be updated as development progresses._
+Please refer to the Developer Environment Setup Guide located in the docs folder. It will show you all that you need to know for standing up both a local development environment as well as a production ready environment that would be hosted on a server.
 
 **UI Mockup**:
 
