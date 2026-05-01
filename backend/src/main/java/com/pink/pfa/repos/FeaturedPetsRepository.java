@@ -28,9 +28,7 @@ import com.pink.pfa.models.FeaturedPets;
  * conventions, allowing query logic to be derived directly from method names.
  */
 @Repository
-public interface FeaturedPetsRepository extends JpaRepository<FeaturedPets, Integer> {
-
-    
+public interface FeaturedPetsRepository extends JpaRepository<FeaturedPets, Integer> {   
 	/** Finds all featured pets whose feature window falls between two dates */
 	List<FeaturedPets> findByStartDateBetween(LocalDate start, LocalDate end);
     

@@ -1,4 +1,6 @@
+
 /* ── Overlay ── */
+/* Overlay for reviews popup modal */
 .reviews-overlay {
 	position: fixed;
 	inset: 0;
@@ -12,6 +14,7 @@
 }
 
 /* ── Modal box ── */
+/* Modal box for reviews popup */
 .reviews-modal {
 	width: 100%;
 	max-width: 540px;
@@ -25,18 +28,21 @@
 	overflow: hidden;
 }
 
+/* Fade-in animation for modal */
 @keyframes reviewsFadeIn {
 	from { opacity: 0; transform: translateY(-10px); }
 	to   { opacity: 1; transform: translateY(0); }
 }
 
 /* ── Header ── */
+/* Header section of reviews modal */
 .reviews-modal-header {
 	position: relative;
 	padding: 20px 52px 16px 24px;
 	border-bottom: 1px solid #ead6cc;
 }
 
+/* Heading in modal header */
 .reviews-modal-header h3 {
 	margin: 0;
 	font-family: 'Hind Kochi', sans-serif;
@@ -46,25 +52,62 @@
 	text-transform: uppercase;
 }
 
+/* Close button for reviews modal */
 .reviews-close-btn {
 	position: absolute;
-	top: 14px;
-	right: 16px;
+	top: 8px;
+	right: 8px;
 	background: none;
 	border: none;
-	font-size: 1.1rem;
+	font-size: 1.2rem;
+	line-height: 1;
 	color: #7a7a7a;
 	cursor: pointer;
-	padding: 4px 8px;
+	width: 32px;
+	height: 32px;
+	padding: 0;
 	border-radius: 6px;
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
 }
 
+/* Hover state for close button */
 .reviews-close-btn:hover {
 	background: #f0e6df;
 	color: #b44b25;
 }
 
+/* Tab row for switching review tabs */
+.reviews-tab-row {
+	display: flex;
+	gap: 8px;
+	padding: 12px 24px;
+	border-bottom: 1px solid #ead6cc;
+	background: #f8f4f1;
+}
+
+/* Tab button for reviews */
+.reviews-tab-btn {
+	border: 1px solid #decfc7;
+	background: #ffffff;
+	color: #7a6d66;
+	border-radius: 999px;
+	padding: 0.35rem 0.9rem;
+	font-family: 'Hind Kochi', sans-serif;
+	font-size: 0.85rem;
+	cursor: pointer;
+}
+
+/* Active state for tab button */
+.reviews-tab-btn.active {
+	border-color: #b44b25;
+	color: #b44b25;
+	background: #fff7f3;
+}
+
 /* ── Review list ── */
+/* List of reviews */
 .reviews-list {
 	flex: 1;
 	overflow-y: auto;
@@ -74,6 +117,7 @@
 	gap: 14px;
 }
 
+/* Message when no reviews are present */
 .reviews-empty {
 	text-align: center;
 	color: #7a7a7a;
@@ -81,6 +125,7 @@
 	margin: 24px 0;
 }
 
+/* Individual review item */
 .reviews-item {
 	background: #ffffff;
 	border-radius: 12px;
@@ -91,6 +136,7 @@
 	gap: 6px;
 }
 
+/* Header for each review item */
 .reviews-item-header {
 	display: flex;
 	align-items: center;
@@ -98,21 +144,25 @@
 	gap: 8px;
 }
 
+/* Username in review item */
 .reviews-item-username {
 	font-weight: 600;
 	font-size: 0.95rem;
 	color: #3f3f3f;
 }
 
+/* Star display in review item */
 .reviews-star-display span {
 	font-size: 1.05rem;
 	color: #ddd;
 }
 
+/* Filled star in star display */
 .reviews-star-display span.filled {
 	color: #b44b25;
 }
 
+/* Comment text in review item */
 .reviews-item-comment {
 	margin: 0;
 	font-size: 0.9rem;
@@ -120,19 +170,23 @@
 	line-height: 1.55;
 }
 
+/* Date in review item */
 .reviews-item-date {
 	font-size: 0.78rem;
 	color: #9a9a9a;
 }
 
 /* ── Footer (Add Review button) ── */
+/* Footer section of reviews modal */
 .reviews-modal-footer {
-	padding: 14px 24px;
+	padding: 20px 24px 10px;
 	border-top: 1px solid #ead6cc;
 	display: flex;
 	justify-content: flex-end;
+	align-items: center;
 }
 
+/* Add review button in footer */
 .reviews-add-btn {
 	background: #b44b25;
 	color: #fff;
@@ -149,11 +203,46 @@
 	justify-content: center;
 }
 
+/* Hover state for add review button */
 .reviews-add-btn:hover {
 	background: #943b19;
 }
 
+.reviews-add-btn:disabled {
+	background: #dddddd;
+	color: #3f3f3f;
+}
+
+/* Delete icon button in review item */
+.delete-icon-btn {
+    background: none !important;
+    border: none !important;
+    color: #9ca3af;
+    cursor: pointer;
+    
+    /* This is the fix for "Top-Centered" */
+    display: inline-flex !important;
+    align-items: center !important;      /* Vertical center */
+    justify-content: center !important;   /* Horizontal center */
+    
+    padding: 0 8px !important;            /* Remove top/bottom padding that causes offsets */
+    height: 32px !important;              /* Match the avatar height exactly */
+    width: 32px !important;               /* Make it a square hit area */
+    font-size: 1.1rem;
+    line-height: 1 !important;            /* Prevents text-line spacing from pushing the icon */
+    
+    transition: all 0.2s ease;
+    margin: 0 !important;                 /* Clear any inherited margins */
+}
+
+/* Hover state for delete icon button */
+.delete-icon-btn:hover {
+    color: #ef4444;
+    transform: scale(1.1);
+}
+
 /* ── Add-review form ── */
+/* Form for adding a review */
 .reviews-add-form {
 	flex: 1;
 	padding: 20px 24px;
@@ -163,6 +252,7 @@
 	overflow-y: auto;
 }
 
+/* Label for review form fields */
 .reviews-form-label {
 	font-size: 0.85rem;
 	font-weight: 600;
@@ -172,11 +262,13 @@
 }
 
 /* ── Star input ── */
+/* Star input group in review form */
 .reviews-star-input {
 	display: flex;
 	gap: 4px;
 }
 
+/* Star button for rating input */
 .reviews-star-btn {
 	background: none;
 	border: none;
@@ -188,6 +280,7 @@
 	transition: color 0.1s, transform 0.1s;
 }
 
+/* Filled or hovered star button */
 .reviews-star-btn.filled,
 .reviews-star-btn:hover {
 	color: #b44b25;
@@ -198,6 +291,7 @@
 }
 
 /* ── Textarea ── */
+/* Textarea for review comment */
 .reviews-textarea {
 	width: 100%;
 	box-sizing: border-box;
@@ -211,18 +305,21 @@
 	background: #fff;
 }
 
+/* Focus state for textarea */
 .reviews-textarea:focus {
 	outline: 2px solid #b44b25;
 	border-color: transparent;
 }
 
 /* ── Form action buttons ── */
+/* Action buttons in review form */
 .reviews-form-actions {
 	display: flex;
 	gap: 12px;
 	justify-content: flex-end;
 }
 
+/* Cancel button in review form */
 .reviews-cancel-btn {
 	background: transparent;
 	border: 1px solid #d1d5db;
@@ -234,11 +331,13 @@
 	cursor: pointer;
 }
 
+/* Hover state for cancel button */
 .reviews-cancel-btn:hover {
 	border-color: #b44b25;
 	color: #b44b25;
 }
 
+/* Submit button in review form */
 .reviews-submit-btn {
 	background: #b44b25;
 	color: #fff;
@@ -252,16 +351,59 @@
 	transition: background 0.2s;
 }
 
+/* Hover state for submit button */
 .reviews-submit-btn:hover:not(:disabled) {
 	background: #943b19;
 }
 
+/* Disabled state for submit button */
 .reviews-submit-btn:disabled {
 	background: #ccc;
 	cursor: not-allowed;
 }
 
+/* Info panel in reviews modal */
+.reviews-info-panel {
+	padding: 20px 24px 24px;
+	display: grid;
+	gap: 12px;
+	overflow-y: auto;
+}
+
+/* Row in reviews info panel */
+.reviews-info-row {
+	display: grid;
+	grid-template-columns: 80px 1fr;
+	gap: 12px;
+	padding: 12px;
+	border-radius: 10px;
+	background: #ffffff;
+	box-shadow: 0 1px 6px rgba(0, 0, 0, 0.05);
+	word-break: break-word;
+	color: #4b4b4b;
+}
+
+/* Label in reviews info panel */
+.reviews-info-label {
+	font-weight: 600;
+	color: #b44b25;
+}
+
+/* Link in reviews info panel */
+.reviews-info-link {
+	color: #b44b25;
+	text-decoration: none;
+}
+
+/* Hover/focus state for info link */
+.reviews-info-link:hover,
+.reviews-info-link:focus-visible {
+	text-decoration: underline;
+	outline: none;
+}
+
 /* ── Reviews button on pet page ── */
+/* Reviews button on specific animal page */
 .specificanimal-reviews-btn {
 	margin-top: 1rem;
 	border: 2px solid #b44b25;
@@ -279,6 +421,7 @@
 	justify-content: center;
 }
 
+/* Hover state for reviews button */
 .specificanimal-reviews-btn:hover {
 	background: #b44b25;
 	color: #fff;

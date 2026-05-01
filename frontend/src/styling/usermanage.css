@@ -1,3 +1,6 @@
+/* this is supposed to be usermanage but i misspelled it so we go with it */
+
+/* Main body for user management page */
 .usermanage-body {
 	margin: 0;
 	background: #f8f8f8;
@@ -7,6 +10,7 @@
 	color: #343434;
 }
 
+/* Container for the user management page */
 .usermanage-page {
 	min-height: 100vh;
 	display: flex;
@@ -14,6 +18,7 @@
 	background: #f8f8f8;
 }
 
+/* Main content area of the user management page */
 .usermanage-main {
 	flex: 1;
 	width: min(1100px, calc(100% - 3rem));
@@ -22,6 +27,7 @@
 	box-sizing: border-box;
 }
 
+/* Card container for user management */
 .usermanage-card {
 	width: 100%;
 	display: flex;
@@ -31,6 +37,7 @@
 	box-sizing: border-box;
 }
 
+/* Heading container for user management */
 .usermanage-heading {
 	width: fit-content;
 	padding: 0.5rem 0.75rem;
@@ -41,6 +48,7 @@
 	box-shadow: 0 10px 24px rgba(0, 0, 0, 0.08);
 }
 
+/* Heading text in user management */
 .usermanage-heading h1 {
 	margin: 0;
 	font: inherit;
@@ -50,6 +58,7 @@
 	color: #b44b25;
 }
 
+/* Filters grid for user management */
 .usermanage-filters {
 	display: grid;
 	grid-template-columns: repeat(4, minmax(0, 1fr));
@@ -57,6 +66,7 @@
 	align-items: start;
 }
 
+/* Individual filter box */
 .usermanage-filter {
 	display: grid;
 	align-content: start;
@@ -77,6 +87,7 @@
 	text-align: center;
 }
 
+/* Badge/strong element in filter */
 .usermanage-filter strong {
 	display: inline-flex;
 	align-items: center;
@@ -92,6 +103,7 @@
 	justify-self: start;
 }
 
+/* Active or hovered filter state */
 .usermanage-filter.is-active,
 .usermanage-filter:hover {
 	border-color: #b44b25;
@@ -100,23 +112,27 @@
 	box-shadow: 0 12px 28px rgba(0, 0, 0, 0.1);
 }
 
+/* Section for user list */
 .usermanage-list-section {
 	display: grid;
 	gap: 1rem;
 	margin-top: 1.5rem;
 }
 
+/* Message when no users are present */
 .usermanage-empty {
 	margin: 0;
 	color: #6b6b6b;
 }
 
+/* List of user entries */
 .usermanage-list {
 	display: grid;
 	grid-template-columns: 1fr;
 	gap: 1rem;
 }
 
+/* Individual user entry card */
 .usermanage-entry {
 	display: grid;
 	gap: 18px;
@@ -127,6 +143,7 @@
 	box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
 }
 
+/* Header for user entry */
 .usermanage-entry-header {
 	display: flex;
 	justify-content: space-between;
@@ -134,6 +151,7 @@
 	align-items: flex-start;
 }
 
+/* Heading in entry header */
 .usermanage-entry-header h2 {
 	margin: 0;
 	font: inherit;
@@ -143,12 +161,14 @@
 	color: #343434;
 }
 
+/* Paragraph in entry header */
 .usermanage-entry-header p {
 	margin: 0.35rem 0 0;
 	color: #6b6b6b;
 	font-size: 14px;
 }
 
+/* Badges container in entry */
 .usermanage-badges {
 	display: flex;
 	gap: 10px;
@@ -156,6 +176,7 @@
 	justify-content: flex-end;
 }
 
+/* Badge for user status/role */
 .usermanage-badge {
 	display: inline-flex;
 	align-items: center;
@@ -168,36 +189,43 @@
 	color: #5d5651;
 }
 
+/* Whitelisted badge */
 .usermanage-badge.is-whitelisted {
 	background: #eaf6eb;
 	color: #2f6b3b;
 }
 
+/* Blacklisted badge */
 .usermanage-badge.is-blacklisted {
 	background: #fff0ec;
 	color: #9b4020;
 }
 
+/* Role badge */
 .usermanage-badge.is-role {
 	background: #ececec;
 	color: #4f4a46;
 }
 
+/* Pending badge */
 .usermanage-badge.is-pending {
 	background: #fff3dc;
 	color: #8b6410;
 }
 
+/* Denied badge */
 .usermanage-badge.is-denied {
 	background: #ffeae5;
 	color: #9d4121;
 }
 
+/* Approved badge */
 .usermanage-badge.is-approved {
 	background: #eaf6eb;
 	color: #2f6b3b;
 }
 
+/* Controls grid for user management */
 .usermanage-controls {
 	display: grid;
 	grid-template-columns: minmax(220px, 260px) auto;
@@ -205,16 +233,19 @@
 	align-items: end;
 }
 
+/* Stack for user roles */
 .usermanage-role-stack {
 	display: grid;
 	gap: 20px;
 }
 
+/* Individual control group */
 .usermanage-control {
 	display: grid;
 	gap: 8px;
 }
 
+/* Label for control group */
 .usermanage-control span {
 	font-size: 12px;
 	letter-spacing: 0.12em;
@@ -222,6 +253,7 @@
 	color: #8a7669;
 }
 
+/* Select dropdown in control group */
 .usermanage-control select {
 	height: 44px;
 	padding: 0 14px;
@@ -234,6 +266,12 @@
 	outline: none;
 }
 
+/* Disabled state for select */
+.usermanage-control select:disabled {
+	background: #dddddd;
+}
+
+/* Button styles for user management */
 .usermanage-button,
 .usermanage-button.is-secondary {
 	display: inline-flex;
@@ -249,48 +287,57 @@
 	transition: background-color 0.2s ease, transform 0.2s ease;
 }
 
+/* Primary button style */
 .usermanage-button {
 	background: #fff4ef;
 	color: #b44b25;
 }
 
+/* Secondary button style */
 .usermanage-button.is-secondary {
 	background: #fffaf7;
 	border-color: #d3c0b5;
 	color: #7a6354;
 }
 
+/* List button style */
 .usermanage-list-button {
 	justify-self: start;
 	background: #b44b25;
 	color: #ffffff;
 }
 
+/* Hover state for buttons */
 .usermanage-button:hover,
 .usermanage-button.is-secondary:hover {
 	transform: translateY(-1px);
 }
 
+/* Hover state for primary button */
 .usermanage-button:hover {
 	background: #973a18;
 	color: #ffffff;
 }
 
+/* Hover state for secondary button */
 .usermanage-button.is-secondary:hover {
 	background: #f1e4dc;
 }
 
+/* Hover state for list button */
 .usermanage-list-button:hover {
 	background: #973a18;
 	color: #ffffff;
 }
 
+/* Actions container for applications */
 .usermanage-application-actions {
 	display: flex;
 	gap: 12px;
 	flex-wrap: wrap;
 }
 
+/* Reason/message box in user management */
 .usermanage-reason {
 	margin: 0;
 	padding: 1rem;
@@ -301,6 +348,7 @@
 	line-height: 1.45;
 }
 
+/* Responsive adjustments for tablets */
 @media (max-width: 900px) {
 	.usermanage-filters {
 		grid-template-columns: repeat(2, minmax(0, 1fr));
@@ -319,6 +367,7 @@
 	}
 }
 
+/* Responsive adjustments for mobile screens */
 @media (max-width: 640px) {
 	.usermanage-main {
 		width: calc(100% - 1.5rem);

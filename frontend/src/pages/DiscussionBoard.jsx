@@ -6,6 +6,7 @@ import { useAuth } from '../auth/AuthContext.jsx'
 import { submitPost, getAllPosts, deletePost, getCommentsByPost, submitComment, deleteComment } from '../fetch/api'
 import '../styling/DiscussionBoard.css'
 
+// Discussion board page component
 export default function DiscussionBoard() {
 	const [selectedTimeframe, setSelectedTimeframe] = useState('week')
 
@@ -25,6 +26,7 @@ export default function DiscussionBoard() {
 
 	const visibleTopComments = topCommentPlaceholdersByTimeframe[selectedTimeframe]
 
+  // Set up body class for Discussion Board page
 	useEffect(() => {
 		document.body.classList.add('discussionboard-body')
 		return () => document.body.classList.remove('discussionboard-body')
@@ -61,6 +63,7 @@ export default function DiscussionBoard() {
 		loadPosts()
 	}, [])
 
+  // Toggle comments for a post
 	const toggleComments = async (index) => {
 		const updatedPosts = [...posts];
 		const post = updatedPosts[index];
@@ -184,8 +187,9 @@ export default function DiscussionBoard() {
 					<button 
 						className="create-post-trigger" 
 						onClick={() => setActivePopupIndex(0)}
+						disabled={!id}
 					>
-						Start a New Discussion
+						{id ? "Start a New Discussion" : "Log in to Start a New Discussion!"} 
 					</button>
 					{posts.map((post, index) => (
 						<article key={post.postID || index} className="post-card">
@@ -236,8 +240,9 @@ export default function DiscussionBoard() {
 									<button 
 										className="add-comment-btn" 
 										onClick={() => setActivePopupIndex(index + 1)}
+										disabled={!id}
 									>
-										+ Leave a Comment
+										{id ? "+ Leave a Comment" : "Log in to Leave a Comment!"}
 									</button>
 									
 									<Popup 
@@ -255,6 +260,7 @@ export default function DiscussionBoard() {
 						</article>
 					))}
 				</section>
+				{/*
 				<aside className="toppost-sidebar" aria-label="Top posts">
 					<h2>Top Post</h2>
 					<div className="toppost-timeframes" role="group" aria-label="Top post timeframe">
@@ -281,6 +287,7 @@ export default function DiscussionBoard() {
 						))}
 					</ol>
 				</aside>
+				*/}
 			</main>
 			
 			<HomeFooter />

@@ -41,5 +41,8 @@ public interface UserPreferencesRepository extends JpaRepository<UserPreferences
 	List<UserPreferences> findByUser_UserIdAndPrefValue(Integer userId, String prefValue);
     
 	/** Here to prevent duplicate columns. */
-	void deleteByUserAndPrefTrait(Integer userId, String prefTrait);
+	void deleteByUser_UserIdAndPrefTrait(Integer userId, String prefTrait);
+
+	/** Finds a given trait using the user foreign key */
+	Optional<UserPreferences> findByUser_UserIdAndPrefId(Integer userId, Integer prefId);
 }

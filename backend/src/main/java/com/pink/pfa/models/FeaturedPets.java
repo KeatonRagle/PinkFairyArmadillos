@@ -34,7 +34,7 @@ public class FeaturedPets {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
 	@Column(name = "pet_id")
-    private Integer featuredPetId;
+    private Integer petId;
 	
 	
 	/** Foreign key identifier for the pet. */
@@ -45,32 +45,14 @@ public class FeaturedPets {
 	
 	/** Featured pet's listed start date. */
 	@Column(name = "start_date", nullable = false)
-	private LocalDate startDate;
+	private LocalDate startDate = LocalDate.now();
 	
 	
 	/** Featured pet's listed end date. */
 	@Column(name = "end_date", nullable = false)
-	private LocalDate endDate;
-	
-	
-	/** Featured pet's reason for being featured. */
-	@Column(name = "reason", nullable = false)
-	private String reason;
+	private LocalDate endDate = LocalDate.now().plusDays(1);
 	
 	
 	/** Default constructor required by JPA. */
 	public FeaturedPets() {}
-	
-	/**
-     * Constructs a fully initialized FeaturedPets entity.
-     *
-     * @param startDate pet's feature start date
-     * @param endDate pet's feature end date
-     * @param reason admin/contributor added reason
-     */
-	public FeaturedPets(LocalDate startDate, LocalDate endDate, String reason) {
-		this.startDate = startDate;
-		this.startDate = endDate;
-		this.reason = reason;
-	}
 }

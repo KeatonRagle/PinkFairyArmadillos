@@ -5,18 +5,22 @@ import { useAuth } from '../auth/AuthContext'
 import { requestContributor, getCurrentUser } from '../fetch/api'
 import '../styling/contributorapp.css'
 
+// Contributor application page component
 export default function ContributorApp() {
 	const navigate = useNavigate()
 	const { username, role } = useAuth()
 	const [submitted, setSubmitted] = useState(false)
+    const [denied, setDenied] = useState(false)
 	const [loading, setLoading] = useState(true)
 	const [error, setError] = useState(null)
 
+  // Set up body class for Contributor App page
 	useEffect(() => {
 		document.body.classList.add('contributorapp-body')
 		return () => document.body.classList.remove('contributorapp-body')
 	}, [])
 
+  // Load contributor application status
 	useEffect(() => {
 		if (!username) { navigate('/login'); return }
 		if (role !== 'ROLE_USER') { navigate('/profile'); return }
@@ -24,11 +28,13 @@ export default function ContributorApp() {
 		getCurrentUser()
 			.then((user) => {
 				if (user.requestedContributor == 'P') setSubmitted(true)
+				if (user.requestedContributor == 'D') setDenied(true)
 			})
 			.catch(() => setError('Failed to load user data.'))
 			.finally(() => setLoading(false))
 	}, [navigate, role, username])
 
+  // Handle contributor application submission
 	const handleSubmit = async (event) => {
 		event.preventDefault()
 		setLoading(true)
@@ -47,6 +53,7 @@ export default function ContributorApp() {
 		}
 	}
 
+  // Compute status copy for contributor application
 	const statusCopy = useMemo(() => {
 		if (submitted) {
 			return {
@@ -54,14 +61,21 @@ export default function ContributorApp() {
 				description: 'Your contributor application is pending review.',
 				className: 'is-pending',
 			}
-		}
+		} else if (denied) {
+            return {
+                label: 'Denied',
+                description: 'Your contributor application has been denied.',
+                className: 'is-denied',
+            }
+        }
 		return {
 			label: 'Not Submitted',
 			description: 'You have not requested contributor access yet.',
 			className: 'is-idle',
 		}
-	}, [submitted])
+	}, [submitted, denied])
 
+  // Render Contributor App page content
 	return (
 		<div className="contributorapp-page">
 			<HomeHeader />
@@ -84,7 +98,7 @@ export default function ContributorApp() {
 						<form className="contributorapp-form" onSubmit={handleSubmit}>
 							{error ? <p className="contributorapp-error">{error}</p> : null}
 							<div className="contributorapp-actions">
-								{!submitted ? (
+								{!submitted && !denied ? (
 									<button type="submit" className="contributorapp-button" disabled={loading}>
 										Submit Application
 									</button>

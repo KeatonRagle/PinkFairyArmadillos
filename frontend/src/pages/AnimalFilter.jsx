@@ -1,4 +1,5 @@
 import { useEffect, useRef, useState } from 'react'
+import { useAuth } from '../auth/AuthContext'
 import { Link, useLocation } from 'react-router-dom'
 import HomeHeader from '../components/header'
 import HomeFooter from '../components/footer'
@@ -23,11 +24,13 @@ const advancedAgeOptions = [
 	{ rank: 3, value: 'years' },
 ]
 
+// Animal filter/search page component
 function normalize(value) {
 	if (value === null || value === undefined) return ''
 	return String(value).trim().toLowerCase()
 }
 
+// Filter pets client-side by criteria
 function filterPetsClientSide(pets, filters) {
 	const { petType, gender, startAge, endAge, breed, size } = filters
 	const normPetType = normalize(petType)
@@ -49,21 +52,35 @@ function filterPetsClientSide(pets, filters) {
 	})
 }
 
+// Map API pet object to UI animal object
 function mapPetToAnimal(pet) {
+	const site = pet.site || {}
+	const siteId = pet.site_id ?? pet.siteId ?? site.siteId ?? null
+	const siteName = pet.adoption_site_name || pet.adoptionSite || site.name || null
+	const siteUrl = pet.adoption_site_url || pet.adoptionSiteUrl || site.url || null
+	const siteEmail = pet.adoption_site_email || pet.adoptionSiteEmail || site.email || null
+	const sitePhone = pet.adoption_site_phone || pet.adoptionSitePhone || site.phone || null
+
 	return {
 		id: pet.id,
 		name: pet.name,
 		breed: pet.breed,
 		age: pet.age,
+		size: pet.size || pet.pet_size,
 		gender: pet.gender === 'M' ? 'Male' : pet.gender === 'F' ? 'Female' : pet.gender,
 		location: pet.location,
 		misc: pet.pet_status || pet.pet_type || 'More details coming soon.',
-		adoptionSite: 'Adoption site information coming soon.',
+		adoptionSite: siteName || 'Adoption site information coming soon.',
+		site_id: siteId,
+		adoption_site_url: siteUrl,
+		adoption_site_email: siteEmail,
+		adoption_site_phone: sitePhone,
 		image: pet.img_url || '/images/waveShort.png',
 		secondaryImages: pet.secondary_images || []
 	}
 }
 
+// Convert age to weeks for filtering
 function convertToWeeks(rank, val) {
 	let result = val
 	if (rank == 2) 
@@ -85,6 +102,8 @@ function convertFromWeeks(rank, val) {
 }
 
 export default function AnimalFilter() {
+	const { id } = useAuth()
+
 	const filterPanelRef = useRef(null)
 	const location = useLocation()
 	const initialFilters = location.state?.filters ?? {}
@@ -104,6 +123,7 @@ export default function AnimalFilter() {
 	const [maxAgeEnabled, isMaxAgeEnabled] = useState(initialFilters.maxAgeEnabled ?? false)
 	const [maxAgeSelection, setMaxAgeSelection] = useState(initialFilters.maxAgeSelection ?? 1)
 	const [maxAgeValue, setMaxAgeValue] = useState(initialFilters.maxAgeValue ?? 0)
+	const [filterPrefs, setFilterPrefs] = useState(initialFilters.filterPrefs ?? false)
 
 	const [isLoading, setIsLoading] = useState(true)
 	const [hasLoaded, setHasLoaded] = useState(false)
@@ -219,6 +239,8 @@ export default function AnimalFilter() {
                     startAge: selectedAgeRange?.startAge,
                     endAge: selectedAgeRange?.endAge,
                     size: selectedSize,
+					filterPrefs: filterPrefs,
+					userId: id
                 })
 				const petsArray = Array.isArray(allPets) ? allPets : []
 
@@ -249,6 +271,7 @@ export default function AnimalFilter() {
 		selectedGender,
 		selectedPetType,
 		selectedSize,
+		filterPrefs
 	])
 
 	const genderLabel = selectedGender === 'M' ? 'Male' : selectedGender === 'F' ? 'Female' : null
@@ -266,6 +289,7 @@ export default function AnimalFilter() {
 		maxAgeSelection,
 		maxAgeValue,
 		maxAgeEnabled,
+		filterPrefs
 	}
 
 	return (
@@ -276,6 +300,20 @@ export default function AnimalFilter() {
 				<section className="animalfilter-panel" ref={filterPanelRef}>
 					<h1>Filters</h1>
 
+					{id && (
+						<div className="compatibility-sort-container">
+							<label className="compatibility-sort-label">
+								<input 
+									type="checkbox" 
+									className="compatibility-sort-checkbox"
+									checked={filterPrefs} 
+									onChange={(e) => setFilterPrefs(e.target.checked)} 
+								/>
+								<span>Sort by Compatibility</span>
+							</label>
+						</div>
+					)}
+					
 					<div className={`gender-filter-group ${openFilter === 'gender' ? 'open' : ''}`}>
 						<button
 							type="button"

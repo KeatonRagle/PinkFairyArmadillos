@@ -19,6 +19,8 @@ import com.pink.pfa.config.TestDataConfig;
 import com.pink.pfa.context.PfaBase;
 import com.pink.pfa.models.AdoptionSite;
 import com.pink.pfa.models.Pet;
+import com.pink.pfa.models.User;
+import com.pink.pfa.models.UserPreferences;
 import com.pink.pfa.models.datatransfer.PetDTO;
 import com.pink.pfa.repos.AdoptionSiteRepository;
 import com.pink.pfa.repos.PetRepository;
@@ -42,16 +44,24 @@ class PetServiceTest extends PfaBase {
     @Mock
     private final WebScraperService webScraperService;
 
+    @Mock
+    private UserService userService;
+
+    @Mock
+    private final UserPrefService userPrefService;
+
     @Autowired
     public PetServiceTest(PetService petService, 
         PetRepository petRepository,
         WebScraperService webScraperService,
-        AdoptionSiteRepository adoptionSiteRepository
+        AdoptionSiteRepository adoptionSiteRepository,
+        UserPrefService userPrefService
     ) {
         this.petService = petService;
         this.petRepository = petRepository;
         this.webScraperService = webScraperService;
         this.adoptionSiteRepository = adoptionSiteRepository;
+        this.userPrefService = userPrefService;
     }
 
     // -------------------------------------------------------------------------
@@ -145,10 +155,10 @@ class PetServiceTest extends PfaBase {
     @Test
     @Transactional
     void findByFilter_ShouldReturnPetsByPetType() {
-        List<PetDTO> dogs = petService.findByFilter("Dog", null, null, null, null, null);
+        List<PetDTO> dogs = petService.findByFilter("Dog", null, null, null, null, null, null, null);
         assertTrue(dogs.size() >= 3, "Expected at least 3 seeded pets, got: " + dogs.size());
 
-        List<PetDTO> cats = petService.findByFilter("Cat", null, null, null, null, null);
+        List<PetDTO> cats = petService.findByFilter("Cat", null, null, null, null, null, null, null);
         assertTrue(cats.size() >= 2, "Expected at least 2 seeded pets, got: " + cats.size());
     }
 
@@ -158,10 +168,10 @@ class PetServiceTest extends PfaBase {
     @Test
     @Transactional
     void findByFilter_ShouldReturnPetsByGender() {
-        List<PetDTO> malePets = petService.findByFilter(null, "M", null, null, null, null);
+        List<PetDTO> malePets = petService.findByFilter(null, "M", null, null, null, null, null, null);
         assertTrue(malePets.size() >= 3, "Expected at least 3 seeded pets, got: " + malePets.size());
 
-        List<PetDTO> femalePets = petService.findByFilter(null, "F", null, null, null, null);
+        List<PetDTO> femalePets = petService.findByFilter(null, "F", null, null, null, null, null, null);
         assertTrue(femalePets.size() >= 2, "Expected at least 2 seeded pets, got: " + femalePets.size());
     }
 
@@ -171,13 +181,13 @@ class PetServiceTest extends PfaBase {
     @Test
     @Transactional
     void findByFilter_ShouldReturnPetsByAge() {
-        List<PetDTO> youngPets = petService.findByFilter(null, null, null, 40, null, null);
+        List<PetDTO> youngPets = petService.findByFilter(null, null, null, 40, null, null, null, null);
         assertTrue(youngPets.size() >= 3, "Expected at least 3 seeded pets, got: " + youngPets.size());
 
-        List<PetDTO> middlePets = petService.findByFilter(null, null, 20, 50, null, null);
+        List<PetDTO> middlePets = petService.findByFilter(null, null, 20, 50, null, null, null, null);
         assertTrue(middlePets.size() >= 3, "Expected at least 3 seeded pets, got: " + middlePets.size());
 
-        List<PetDTO> oldPets = petService.findByFilter(null, null, 30, null, null, null);
+        List<PetDTO> oldPets = petService.findByFilter(null, null, 30, null, null, null, null, null);
         assertTrue(oldPets.size() >= 3, "Expected at least 3 seeded pets, got: " + oldPets.size());
     }
 
@@ -187,10 +197,10 @@ class PetServiceTest extends PfaBase {
     @Test
     @Transactional
     void findByFilter_ShouldReturnPetsByBreed() {
-        List<PetDTO> goldenRetrievers = petService.findByFilter(null, null, null, null, "Golden Retriever", null);
+        List<PetDTO> goldenRetrievers = petService.findByFilter(null, null, null, null, "Golden Retriever", null, null, null);
         assertTrue(goldenRetrievers.size() >= 1, "Expected at least 1 seeded pets, got: " + goldenRetrievers.size());
 
-        List<PetDTO> domesticShorthairs = petService.findByFilter(null, null, null, null, "Domestic Shorthair", null);
+        List<PetDTO> domesticShorthairs = petService.findByFilter(null, null, null, null, "Domestic Shorthair", null, null, null);
         assertTrue(domesticShorthairs.size() >= 2, "Expected at least 2 seeded pets, got: " + domesticShorthairs.size());
     }
 
@@ -200,10 +210,10 @@ class PetServiceTest extends PfaBase {
     @Test
     @Transactional
     void findByFilter_ShouldReturnPetsBySize() {
-        List<PetDTO> mediumPets = petService.findByFilter(null, null, null, null, null, "Medium");
+        List<PetDTO> mediumPets = petService.findByFilter(null, null, null, null, null, "Medium", null, null);
         assertTrue(mediumPets.size() >= 2, "Expected at least 2 seeded pets, got: " + mediumPets.size());
 
-        List<PetDTO> largePets = petService.findByFilter(null, null, null, null, null, "Large");
+        List<PetDTO> largePets = petService.findByFilter(null, null, null, null, null, "Large", null, null);
         assertTrue(largePets.size() >= 2, "Expected at least 2 seeded pets, got: " + largePets.size());
     }
 
@@ -213,14 +223,75 @@ class PetServiceTest extends PfaBase {
     @Test
     @Transactional
     void findByFilter_ShouldReturnPetsByMixedFilters() {
-        List<PetDTO> youngCats = petService.findByFilter("Cat", null, null, 20, null, null);
+        List<PetDTO> youngCats = petService.findByFilter("Cat", null, null, 20, null, null, null, null);
         assertTrue(youngCats.size() >= 1, "Expected at least 1 seeded pets, got: " + youngCats.size());
 
-        List<PetDTO> mediumDogs = petService.findByFilter("Dog", null, null, null, null, "Medium");
+        List<PetDTO> mediumDogs = petService.findByFilter("Dog", null, null, null, null, "Medium", null, null);
         assertTrue(mediumDogs.size() >= 1, "Expected at least 1 seeded pets, got: " + mediumDogs.size());
 
-        List<PetDTO> femaleDomesticShorthair = petService.findByFilter(null, "F", null, null, "Domestic Shorthair", null);
+        List<PetDTO> femaleDomesticShorthair = petService.findByFilter(null, "F", null, null, "Domestic Shorthair", null, null, null);
         assertTrue(femaleDomesticShorthair.size() >= 1, "Expected at least 1 seeded pets, got: " + femaleDomesticShorthair.size());
+    }
+
+    //* FILTER PREF TESTER */
+
+    private int scoreTestHelper(PetDTO pet, List<UserPreferences> prefs) {
+    int score = 0;
+
+        for (UserPreferences pref : prefs) {
+            String val = pref.getPrefValue();
+
+            switch (pref.getPrefTrait()) {
+                case BREED -> {
+                    if (pet.breed().toLowerCase().contains(val.toLowerCase())) 
+                        score++;
+                }
+
+                case PET_TYPE -> {
+                    if (pet.pet_type().equalsIgnoreCase(val)) 
+                        score++;
+                }
+
+                default -> {}
+            }
+        }
+
+        return score;
+    }
+
+    @Test
+    @Transactional
+    void findByFilter_WithPrefs_ShouldSortResults() {
+        // Mock authenticated user
+        SeededUser mockUser = getRandUserAndPassByRole(User.Role.ROLE_USER);
+
+        // Preferences: prefer SMALL dogs
+        List<UserPreferences> prefs = List.of(
+            new UserPreferences(UserPreferences.Preference.SIZE, "Small"),
+            new UserPreferences(UserPreferences.Preference.PET_TYPE, "Dog")
+        );
+
+        List<PetDTO> result = petService.findByFilter(null, null, null, null, null, null, true, mockUser.user().getUserId());
+
+        assertTrue(result.size() > 1);
+
+        // First pet should match more preferences than last
+        PetDTO first = result.get(0);
+        PetDTO last  = result.get(result.size() - 1);
+
+        int firstScore = scoreTestHelper(first, prefs);
+        int lastScore  = scoreTestHelper(last, prefs);
+
+        assertTrue(firstScore >= lastScore, "Expected sorted order by preference score");
+    }
+
+    @Test
+    @Transactional
+    void findByFilter_NoUser_ShouldFallbackToUnsorted() {
+        List<PetDTO> result = petService.findByFilter(null, null, null, null, null, null, true, null);
+
+        assertNotNull(result);
+        assertTrue(!result.isEmpty());
     }
 
     /*----------------------------------*\
@@ -232,15 +303,15 @@ class PetServiceTest extends PfaBase {
     @Test
     @Transactional
     void trySync_threePets_oneDupe() {
-        List<AdoptionSite> sites = List.of(new AdoptionSite("Dallas County", "", "", 0, "https://hsdallascounty.org", 'A', LocalDate.now()));
+        List<AdoptionSite> sites = List.of(new AdoptionSite("Dallas County", "", "", "https://hsdallascounty.org", 'A', LocalDate.now()));
 
         // Mock some data to avoid scraping for real
         List<Pet> mockData = List.of(
             // This pet is already seeded, but the location is changed
-            new Pet("Buddy", "Labrador Retriever", 24, 'M', "Dog", "Lubbock, TX", 150.0, "Medium", "available", 85, "placeholder", LocalDate.now()),
+            new Pet("Buddy", "Labrador Retriever", 24, 'M', "Dog", "Lubbock, TX", 150.0, "Medium", "available", "placeholder", LocalDate.now()),
             // ...while these are new
-            new Pet("Mulch", "Toy Poodle", 2, 'F', "dog", "Austin, TX", 150.0, "Small", "available", 85, "placeholder", LocalDate.now()),
-            new Pet("Pibble", "Pit Bull", 1, 'M', "dog", "Austin, TX", 150.0, "Large", "available", 85, "placeholder", LocalDate.now())
+            new Pet("Mulch", "Toy Poodle", 2, 'F', "dog", "Austin, TX", 150.0, "Small", "available", "placeholder", LocalDate.now()),
+            new Pet("Pibble", "Pit Bull", 1, 'M', "dog", "Austin, TX", 150.0, "Large", "available", "placeholder", LocalDate.now())
         );
 
         // ...and set their site to the one the other seeded animals use

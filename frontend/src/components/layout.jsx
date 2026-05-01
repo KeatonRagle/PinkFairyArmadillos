@@ -1,3 +1,4 @@
+// Layout wrapper for authentication pages
 export function AuthLayout({ children, ...props }) {
   return (
     <main

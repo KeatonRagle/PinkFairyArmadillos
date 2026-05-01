@@ -1,14 +1,47 @@
+/* Main body for specific animal page */
 .specificanimal-body {
 	background: #f8f8f8;
 	font-family: 'Hind Kochi', sans-serif;
 }
 
+/* Container for the specific animal page */
 .specificanimal-page {
 	min-height: 100vh;
 	position: relative;
 	padding-bottom: 170px;
 }
 
+/* Row for back button (hidden on desktop) */
+.specificanimal-back-row {
+	display: none;
+}
+
+/* Top back button (visible on mobile) */
+.specificanimal-top-back-button {
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+	width: 44px;
+	height: 44px;
+	border-radius: 999px;
+	background: #b44b25;
+	color: #ffffff;
+	text-decoration: none;
+	font-size: 1.35rem;
+	line-height: 1;
+	box-shadow: 0 8px 22px rgba(180, 75, 37, 0.28);
+	transition: background-color 0.2s ease, transform 0.2s ease;
+}
+
+/* Hover/focus state for top back button */
+.specificanimal-top-back-button:hover,
+.specificanimal-top-back-button:focus-visible {
+	background: #943b19;
+	transform: translateX(-2px);
+	outline: none;
+}
+
+/* Main content area grid */
 .specificanimal-main {
 	max-width: 1280px;
 	margin: 2rem auto;
@@ -19,6 +52,7 @@
 	align-items: start;
 }
 
+/* Media and details columns */
 .specificanimal-media-column,
 .specificanimal-details-column {
 	display: flex;
@@ -26,6 +60,7 @@
 	gap: 1.25rem;
 }
 
+/* Card containers for main sections */
 .specificanimal-main-image-wrap,
 .specificanimal-adoption-card,
 .specificanimal-about-card,
@@ -36,16 +71,19 @@
 	padding: 1.25rem;
 }
 
+/* Adoption card styling */
 .specificanimal-adoption-card {
 	text-align: center;
 }
 
+/* Main image wrapper */
 .specificanimal-main-image-wrap {
 	padding: 0;
 	overflow: hidden;
 	aspect-ratio: 1 / 1;
 }
 
+/* Main image for animal */
 .specificanimal-main-image {
 	width: 100%;
 	height: 100%;
@@ -53,12 +91,14 @@
 	display: block;
 }
 
+/* Gallery row for additional images */
 .specificanimal-gallery-row {
 	display: grid;
 	grid-template-columns: repeat(3, minmax(0, 1fr));
 	gap: 0.9rem;
 }
 
+/* Placeholder for missing gallery images */
 .specificanimal-gallery-placeholder {
 	aspect-ratio: 1 / 1;
 	border-radius: 18px;
@@ -73,6 +113,7 @@
 	text-transform: uppercase;
 }
 
+/* Headings in cards */
 .specificanimal-adoption-card h1,
 .specificanimal-about-card h2,
 .specificanimal-empty-card h1 {
@@ -81,6 +122,7 @@
 	font-weight: 400;
 }
 
+/* Site name in adoption card */
 .specificanimal-site-name {
 	margin: 0;
 	font-size: 1.1rem;
@@ -88,17 +130,20 @@
 	line-height: 1.5;
 }
 
+/* Preview/copy text in adoption card */
 .specificanimal-preview-copy {
 	margin: 0.9rem 0 0;
 	color: #5b5b5b;
 	line-height: 1.6;
 }
 
+/* List of animal details */
 .specificanimal-detail-list {
 	display: grid;
 	gap: 0.85rem;
 }
 
+/* Individual detail item */
 .specificanimal-detail-item {
 	display: grid;
 	grid-template-columns: 120px 1fr;
@@ -109,16 +154,19 @@
 	line-height: 1.5;
 }
 
+/* Last detail item (no border) */
 .specificanimal-detail-item:last-child {
 	border-bottom: none;
 	padding-bottom: 0;
 }
 
+/* Label for detail item */
 .specificanimal-detail-label {
 	color: #b44b25;
 	font-weight: 600;
 }
 
+/* Back button and link */
 .specificanimal-back-button,
 .specificanimal-back-link {
 	margin-top: 1.25rem;
@@ -138,28 +186,37 @@
 	width: fit-content;
 }
 
+/* Hover state for back button/link */
 .specificanimal-back-button:hover,
 .specificanimal-back-link:hover {
 	background: #943b19;
 }
 
+/* Main container for empty state */
 .specificanimal-empty-main {
 	display: flex;
 	justify-content: center;
 }
 
+/* Card for empty state */
 .specificanimal-empty-card {
 	max-width: 520px;
 	text-align: center;
 }
 
+/* Paragraph in empty card */
 .specificanimal-empty-card p {
 	margin: 0;
 	color: #4b4b4b;
 	line-height: 1.6;
 }
 
+/* Responsive adjustments for tablets */
 @media (max-width: 900px) {
+	.specificanimal-back-row {
+		padding: 0 1rem;
+	}
+
 	.specificanimal-main {
 		grid-template-columns: 1fr;
 		padding: 0 1rem;

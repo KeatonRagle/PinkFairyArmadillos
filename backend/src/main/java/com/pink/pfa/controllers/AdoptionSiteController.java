@@ -75,8 +75,6 @@ public class AdoptionSiteController {
         }
     }
 
-
-    @PreAuthorize("hasRole('ADMIN')")
     @GetMapping("/getApprovedSites")
     public ResponseEntity<List<AdoptionSiteDTO>> getApprovedSites() {
         try {

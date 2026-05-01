@@ -3,6 +3,5 @@ import jakarta.validation.constraints.NotNull;
 
 public record FeaturedPetRequest(
     @NotNull
-    int petId,
-    String reason
+    int petId
 ) {}

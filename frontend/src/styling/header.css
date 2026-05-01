@@ -1,3 +1,4 @@
+/* Main header container */
 .site-header {
   width: 100%;
   height: 80px;
@@ -19,14 +20,41 @@
 }
 
 
+/* Left section of header (logo, nav) */
 .header-left {
   display: flex;
   align-items: center;
+  gap: 12px;
   position: relative;
   z-index: 1002;
   flex: 0 0 auto;
 }
 
+/* Back arrow button in header */
+.header-nav-back-arrow {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 36px;
+  height: 36px;
+  border-radius: 999px;
+  text-decoration: none;
+  background: #b44b25;
+  color: #ffffff;
+  font-size: 1.1rem;
+  line-height: 1;
+  transition: background-color 0.2s ease, transform 0.2s ease;
+}
+
+/* Hover/focus effect for back arrow */
+.header-nav-back-arrow:hover,
+.header-nav-back-arrow:focus-visible {
+  background: #943b19;
+  transform: translateX(-1px);
+  outline: none;
+}
+
+/* Logo link in header */
 .site-header .header-left .logo {
   display: inline-flex;
   align-items: center;
@@ -35,11 +63,13 @@
   cursor: pointer;
 }
 
+/* Logo image in header */
 .site-header .header-left img {
   width: 80px;
   height: auto;
 }
 
+/* Navigation bar in header */
 .header-nav {
   display: flex;
   flex: 1;
@@ -55,31 +85,37 @@
   min-width: 0;
 }
 
+/* Each nav item in header */
 .header-nav > * {
   flex: 0 0 auto;
 }
 
+/* Navigation links container */
 .header-nav-links {
   display: flex;
   align-items: center;
   gap: 100px;
 }
 
+/* Account section in header */
 .header-account-section {
   display: inline-flex;
   align-items: center;
   gap: 100px;
 }
 
+/* Nav span clickable style */
 .header-nav span {
   cursor: pointer;
   transition: 0.2s ease;
 }
 
+/* Hover effect for nav span */
 .header-nav span:hover {
   color: #b44b25;
 }
 
+/* Main navigation link style */
 .header-link {
   display: inline-flex;
   align-items: center;
@@ -91,8 +127,17 @@
   font-weight: inherit;
   line-height: 1;
   white-space: nowrap;
+  transition: color 0.2s ease;
 }
 
+/* Hover/focus effect for nav link */
+.header-link:hover,
+.header-link:focus-visible {
+  color: #b44b25;
+  outline: none;
+}
+
+/* Account menu container */
 .account-menu {
   position: relative;
   display: inline-flex;
@@ -102,6 +147,7 @@
   line-height: 1;
 }
 
+/* Username display in header */
 .header-username {
   display: inline-flex;
   align-items: center;
@@ -113,6 +159,7 @@
   text-transform: uppercase;
 }
 
+/* Account button style */
 .account-button {
   border: none;
   background: transparent;
@@ -138,12 +185,14 @@
   justify-content: center;
 }
 
+/* Hover/focus effect for account button */
 .account-button:hover,
 .account-button:focus-visible {
   color: #b44b25;
   outline: none;
 }
 
+/* Dropdown menu for account */
 .account-dropdown {
   position: absolute;
   top: calc(100% + 12px);
@@ -161,6 +210,7 @@
   z-index: 1001;
 }
 
+/* Link in account dropdown */
 .account-dropdown-link {
   width: 100%;
   min-width: 0;
@@ -185,6 +235,7 @@
   -webkit-appearance: none;
 }
 
+/* Hover/focus effect for dropdown link */
 .account-dropdown-link:hover,
 .account-dropdown-link:focus-visible {
   background-color: #f7efe9;
@@ -192,6 +243,7 @@
   outline: none;
 }
 
+/* Placeholder style for dropdown link */
 .account-dropdown-link.is-placeholder {
   display: block;
   color: #8f847d;
@@ -199,12 +251,14 @@
   opacity: 1;
 }
 
+/* Hover/focus for placeholder dropdown link */
 .account-dropdown-link.is-placeholder:hover,
 .account-dropdown-link.is-placeholder:focus-visible {
   background-color: transparent;
   color: #8f847d;
 }
 
+/* Responsive styles for header */
 @media (max-width: 1200px) {
   .site-header {
     height: auto;

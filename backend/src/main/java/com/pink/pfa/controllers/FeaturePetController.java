@@ -1,6 +1,5 @@
 package com.pink.pfa.controllers;
 
-import java.util.ArrayList;
 import java.util.List;
 
 import org.springframework.http.HttpStatus;
@@ -75,7 +74,7 @@ public class FeaturePetController {
         @PathVariable Integer id
     ) {
         try {
-            return ResponseEntity.ok().body(featuredPetService.findById(id));
+            return ResponseEntity.ok().body(featuredPetService.findByPetId(id));
         } catch (ResourceNotFoundException e) {
             return ResponseEntity.notFound().build();
         } catch (Exception e) {
@@ -90,19 +89,8 @@ public class FeaturePetController {
         @RequestParam Integer dogCount,
         @RequestParam Integer catCount
     ) {
-        featuredPetService.findAll()
-            .forEach(fPet -> featuredPetService.deleteByPetId(fPet.petId()));
-
-        List<FeaturedPetDTO> newlyAdded = new ArrayList<>();
-
         try {
-            for (int i = 0; i < dogCount; i++) {
-                newlyAdded.add(featuredPetService.addFRandomPetByType("Dog", "Chosen randomly"));
-            }
-            for (int i = 0; i < catCount; i++) {
-                newlyAdded.add(featuredPetService.addFRandomPetByType("Cat", "Chosen randomly"));
-            }
-            return ResponseEntity.ok().body(newlyAdded);
+            return ResponseEntity.ok().body(featuredPetService.setupFeaturedByCount(dogCount, catCount));
         } catch (ResourceNotFoundException e) {
             return ResponseEntity.notFound().build();
         } catch (Exception e) {

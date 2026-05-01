@@ -1,3 +1,4 @@
+/* Main profile body background and layout */
 .profile-body {
 	margin: 0;
 	background:
@@ -6,6 +7,7 @@
 	min-height: 100vh;
 }
 
+/* Container for the entire profile page */
 .profile-page {
 	min-height: 100vh;
 	display: flex;
@@ -13,6 +15,7 @@
 	font-family: 'Hind Kochi', sans-serif;
 }
 
+/* Main content area of the profile page */
 .profile-main {
 	flex: 1;
 	display: flex;
@@ -21,8 +24,9 @@
 	box-sizing: border-box;
 }
 
+/* Card container for profile details */
 .profile-card {
-	width: min(720px, 100%);
+	width: min(900px, 100%);
 	background-color: rgba(255, 255, 255, 0.88);
 	border: 1px solid rgba(201, 188, 177, 0.7);
 	border-radius: 28px;
@@ -32,6 +36,7 @@
 	flex-direction: column;
 }
 
+/* Profile card heading */
 .profile-card h1 {
 	margin: 0;
 	color: #2f2520;
@@ -39,6 +44,7 @@
 	text-align: center;
 }
 
+/* Intro text under profile heading */
 .profile-intro {
 	margin: 18px 0 0;
 	text-align: center;
@@ -46,13 +52,15 @@
 	font-size: 16px;
 }
 
+/* Grid layout for profile fields */
 .profile-grid {
 	display: grid;
-	grid-template-columns: repeat(2, minmax(0, 1fr));
+	grid-template-columns: repeat(3, minmax(0, 1fr));
 	gap: 18px;
 	margin-top: 34px;
 }
 
+/* Individual profile field box */
 .profile-field {
 	display: grid;
 	gap: 8px;
@@ -62,6 +70,7 @@
 	border-radius: 18px;
 }
 
+/* Label for profile fields */
 .profile-label {
 	font-size: 12px;
 	letter-spacing: 0.12em;
@@ -69,12 +78,14 @@
 	color: #8a7669;
 }
 
+/* Value for profile fields */
 .profile-value {
 	color: #2f2520;
 	font-size: 18px;
 	word-break: break-word;
 }
 
+/* Status message box */
 .profile-status {
 	margin: 24px 0 0;
 	padding: 14px 16px;
@@ -86,6 +97,7 @@
 	text-align: center;
 }
 
+/* Grid for profile settings sections */
 .profile-settings-sections {
 	display: grid;
 	grid-template-columns: repeat(2, minmax(0, 1fr));
@@ -93,7 +105,10 @@
 	margin-top: 28px;
 }
 
+/* Panel for each settings section */
 .profile-settings-panel {
+	margin-bottom: 40px; 
+    padding-bottom: 20px;
 	display: flex;
 	flex-direction: column;
 	gap: 16px;
@@ -103,6 +118,7 @@
 	border-radius: 20px;
 }
 
+/* Heading for settings panel */
 .profile-settings-panel h2 {
 	margin: 0;
 	color: #2f2520;
@@ -110,15 +126,18 @@
 	font-weight: 500;
 }
 
+/* Wide settings panel spanning columns */
 .profile-settings-panel-wide {
 	grid-column: 1 / -1;
 }
 
+/* Group for profile input fields */
 .profile-input-group {
 	display: grid;
 	gap: 8px;
 }
 
+/* Input fields inside input group */
 .profile-input-group input {
 	width: 100%;
 	height: 46px;
@@ -134,17 +153,14 @@
 	transition: border-color 0.2s ease, box-shadow 0.2s ease;
 }
 
-.profile-input-group input:focus {
-	border-color: #b44b25;
-	box-shadow: 0 0 0 3px rgba(180, 75, 37, 0.14);
-}
-
+/* Grid for password fields */
 .profile-password-grid {
 	display: grid;
 	grid-template-columns: repeat(3, minmax(0, 1fr));
 	gap: 16px;
 }
 
+/* Button for profile actions */
 .profile-button {
 	align-self: flex-start;
 	min-width: 170px;
@@ -160,15 +176,18 @@
 	transition: background-color 0.2s ease, transform 0.2s ease;
 }
 
+/* Hover state for profile button */
 .profile-button:hover {
 	background-color: #973a18;
 	transform: translateY(-1px);
 }
 
+/* Button for password actions */
 .profile-password-button {
 	margin-top: 10px;
 }
 
+/* Container for profile action buttons */
 .profile-actions {
 	margin-top: auto;
 	padding-top: 30px;
@@ -176,6 +195,7 @@
 	justify-content: center;
 }
 
+/* Link style for profile actions */
 .profile-action-link {
 	display: inline-flex;
 	align-items: center;
@@ -189,11 +209,184 @@
 	transition: background-color 0.2s ease, transform 0.2s ease;
 }
 
+/* Hover state for action link */
 .profile-action-link:hover {
 	background-color: #973a18;
 	transform: translateY(-1px);
 }
 
+/* Read-only input field styling */
+.profile-input-readonly {
+    width: 100%;
+    padding: 12px;
+    background: rgba(255, 255, 255, 0.5); /* Slightly transparent like your card */
+    border: 1px solid rgba(201, 188, 177, 0.7);
+    border-radius: 12px;
+    font-size: 15px;
+    color: #4f3829;
+    outline: none;
+}
+
+/* The X button inside the read-only input */
+/* Delete (X) button inside read-only input */
+.pref-delete-x {
+    position: absolute;
+    right: 50px;
+    background: none;
+    border: none;
+    color: #a39489;
+    font-size: 22px;
+    cursor: pointer;
+    line-height: 1;
+    display: flex;
+    align-items: center;
+    transition: color 0.2s;
+}
+
+/* Hover state for delete (X) button */
+.pref-delete-x:hover {
+    color: #ff4d4d;
+}
+
+/* The Add button at the bottom */
+/* Add preference button at bottom */
+.add-pref-bottom-btn {
+    margin-top: 24px;
+    background-color: transparent;
+    border: 1px dashed #4f3829;
+    color: #4f3829;
+    width: auto; /* Don't make it full width unless you want to */
+    padding: 10px 20px;
+}
+
+/* Hover state for add preference button */
+.add-pref-bottom-btn:hover {
+    background-color: rgba(79, 56, 41, 0.05);
+    border-style: solid;
+}
+
+/* Message when no preferences are set */
+.no-prefs {
+    grid-column: span 3;
+    color: #a39489;
+    font-style: italic;
+    padding: 10px 0;
+}
+
+/* Header for preferences section */
+.pref-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-top: 40px;
+    margin-bottom: 20px;
+}
+
+/* Button to trigger add preference */
+.add-pref-trigger {
+    background: #4f3829;
+    color: white;
+    border: none;
+    padding: 8px 16px;
+    border-radius: 20px;
+    font-weight: 600;
+    cursor: pointer;
+    font-size: 14px;
+}
+
+/* Chip item for each preference */
+.pref-chip-item {
+    background: white;
+    border: 1px solid rgba(201, 188, 177, 0.5);
+    padding: 16px;
+    border-radius: 16px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.03);
+    transition: transform 0.2s;
+}
+
+/* Hover state for preference chip */
+.pref-chip-item:hover {
+    transform: translateY(-2px);
+    border-color: rgba(79, 56, 41, 0.4);
+}
+
+/* Info section inside preference chip */
+.pref-info {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+}
+
+/* Label for preference trait */
+.pref-trait-label {
+    font-size: 10px;
+    text-transform: uppercase;
+    color: #a39489;
+    font-weight: 700;
+    letter-spacing: 0.5px;
+}
+
+/* 1. Anchor the X to this box */
+/* Container for preference input and delete X */
+.pref-input-container {
+    position: relative;
+    display: block;
+    align-items: center;
+    width: 100%;
+    margin-top: 8px; /* Match the spacing of your other form labels */
+	overflow: hidden;
+}
+
+/* 2. Style the input to make room for the X */
+/* Read-only input field inside preference input container */
+.profile-input-readonly {
+    width: 100%;
+    padding: 12px;
+    padding-right: 35px; /* Critical: keeps text from overlapping the X */
+    background: rgba(255, 255, 255, 0.5);
+    border: 1px solid rgba(201, 188, 177, 0.7);
+    border-radius: 12px;
+    font-size: 15px;
+    color: #4f3829;
+    box-sizing: border-box; /* Ensures padding doesn't grow the box */
+}
+
+/* 3. Position the X perfectly */
+/* Delete (X) button inside preference input container */
+.pref-delete-x {
+    position: absolute;
+    right: 12px; /* Distance from the right inner edge */
+    top: 50%; /* Move to middle */
+	width: 30px;
+    transform: translate(25%, -50%);
+    background: rgb(255, 255, 255);;
+    border-radius: 10px;
+    border: none;
+    color: #a39489;
+    font-size: 20px;
+    font-weight: bold;
+    cursor: pointer;
+    line-height: 1;
+    padding: 0;
+    margin: 0;
+    transition: color 0.2s;
+}
+
+.pref-delete-x:hover {
+    color: #ff4d4d;
+}
+
+/* Value display for preference */
+.pref-value {
+    font-size: 15px;
+    font-weight: 600;
+    color: #4f3829;
+}
+
+/* Responsive adjustments for mobile screens */
 @media (max-width: 700px) {
 	.profile-main {
 		padding: 32px 16px 64px;

@@ -4,6 +4,7 @@ import { Link, useNavigate } from 'react-router-dom'
 import { useEffect, useRef, useState } from 'react'
 import { useAuth } from '../auth/AuthContext.jsx'
 
+// Header component for the site
 export default function HomeHeader({ backLink = null }) {
   const navigate = useNavigate()
   const menuRef = useRef(null)
@@ -58,15 +59,25 @@ export default function HomeHeader({ backLink = null }) {
 
       <nav className="header-nav">
         <div className="header-nav-links">
-          {backLink ? (
+          {backLink?.renderAsArrow ? (
+            <Link
+              to={backLink.to}
+              state={backLink.state}
+              className="header-nav-back-arrow"
+              aria-label={backLink.ariaLabel || backLink.label || 'Back'}
+            >
+              <span aria-hidden="true">←</span>
+            </Link>
+          ) : null}
+          {backLink && !backLink.renderAsArrow ? (
             <Link to={backLink.to} state={backLink.state} className="header-link">
               {backLink.label}
             </Link>
           ) : null}
           <Link to="/home" className="header-link">HOME</Link>
-          <Link to="/help" className="header-link">HELP</Link>
-          <Link to="/discussion-board" className="header-link">DISCUSSION BOARD</Link>
           <Link to="/select-animal" className="header-link">FIND A PET</Link>
+          <Link to="/shelter-info" className="header-link">ADOPTION SITES</Link>
+          <Link to="/discussion-board" className="header-link">DISCUSSION BOARD</Link>
           {!username && (
             <Link to="/login" className="header-link">LOG IN</Link>
           )}

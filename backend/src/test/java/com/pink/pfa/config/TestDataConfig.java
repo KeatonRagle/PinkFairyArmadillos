@@ -11,7 +11,6 @@ import org.springframework.boot.test.context.TestConfiguration;
 import org.springframework.context.annotation.Bean;
 
 import com.pink.pfa.controllers.requests.CommentRequest;
-import com.pink.pfa.controllers.requests.FeaturedPetRequest;
 import com.pink.pfa.controllers.requests.PostRequest;
 import com.pink.pfa.controllers.requests.UserRequest;
 import com.pink.pfa.exceptions.ResourceNotFoundException;
@@ -29,7 +28,6 @@ import com.pink.pfa.repos.PetRepository;
 import com.pink.pfa.repos.PostsRepository;
 import com.pink.pfa.repos.UserRepository;
 import com.pink.pfa.services.CommentsService;
-import com.pink.pfa.services.FeaturedPetService;
 import com.pink.pfa.services.PostsService;
 import com.pink.pfa.services.UserService;
 
@@ -111,7 +109,6 @@ public class TestDataConfig {
                 "Dallas County",
                 "",
                 "",
-                0,
                 "https://hsdallascounty.org",
                 'A',
                 LocalDate.now()
@@ -122,30 +119,30 @@ public class TestDataConfig {
             site.setUser(userRepository.findByEmail(listUsers.get(0)).orElseThrow());
             site = siteRepo.save(site);
 
-            Pet dog = new Pet("Buddy", "Labrador Retriever", 24, 'M', "Dog", "Austin, TX", 150.0, "Medium", "available", 85, "Placeholder", LocalDate.now());
+            Pet dog = new Pet("Buddy", "Labrador Retriever", 24, 'M', "Dog", "Austin, TX", 150.0, "Medium", "available", "Placeholder", LocalDate.now());
             dog.setSite(site);
             petRepo.save(dog);
 
-            Pet dog2 = new Pet("Rex", "Golden Retriever", 104, 'F', "Dog", "Austin, TX", 150.0, "Large", "pending", 85, "Placeholder", LocalDate.now());
+            Pet dog2 = new Pet("Rex", "Golden Retriever", 104, 'F', "Dog", "Austin, TX", 150.0, "Large", "pending", "Placeholder", LocalDate.now());
             dog2.setSite(site);
             petRepo.save(dog2);
 
-            Pet dog3 = new Pet("Pal", "German Shephard", 50, 'M', "Dog", "Austin, TX", 150.0, "Large", "available", 85, "Placeholder", LocalDate.now());
+            Pet dog3 = new Pet("Pal", "German Shephard", 50, 'M', "Dog", "Austin, TX", 150.0, "Large", "available", "Placeholder", LocalDate.now());
             dog3.setSite(site);
             petRepo.save(dog3);
 
-            Pet cat = new Pet("Luna", "Domestic Shorthair", 12, 'F', "Cat", "Austin, TX", 75.0, "Small", "available", 90, "Placeholder", LocalDate.now());
+            Pet cat = new Pet("Luna", "Domestic Shorthair", 12, 'F', "Cat", "Austin, TX", 75.0, "Small", "available", "Placeholder", LocalDate.now());
             cat.setSite(site);
             petRepo.save(cat);
 
-            Pet cat2 = new Pet("Sol", "Domestic Shorthair", 36, 'M', "Cat", "Austin, TX", 75.0, "Medium", "available", 90, "Placeholder", LocalDate.now());
+            Pet cat2 = new Pet("Sol", "Domestic Shorthair", 36, 'M', "Cat", "Austin, TX", 75.0, "Medium", "available", "Placeholder", LocalDate.now());
             cat2.setSite(site);
             petRepo.save(cat2);
 
-            FeaturedPets dogF = new FeaturedPets(LocalDate.now(), LocalDate.now().plusDays(1), "Manually added");
+            FeaturedPets dogF = new FeaturedPets();
             dogF.setPet(dog);
 
-            FeaturedPets catF = new FeaturedPets(LocalDate.now(), LocalDate.now().plusDays(1), "Manually added");
+            FeaturedPets catF = new FeaturedPets();
             catF.setPet(cat);
 
             try {

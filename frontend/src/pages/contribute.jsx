@@ -5,6 +5,7 @@ import { submitSite } from '../fetch/api'
 import '../styling/contribute.css'
 
 
+// Contribute page component
 export default function Contribute() {
 
 	const [formData, setFormData] = useState({
@@ -17,24 +18,52 @@ export default function Contribute() {
 	const [error, setError] = useState('')
 	const [success, setSuccess] = useState('')
 
+  // Set up body class for Contribute page
 	useEffect(() => {
 		document.body.classList.add('contribute-body')
 		return () => document.body.classList.remove('contribute-body')
 	}, [])
 
 
-	const handleChange = (event) => {
-		const { name, value } = event.target
-		setFormData((current) => ({ ...current, [name]: value }))
+  // Format phone number for input
+	const formatPhoneNumber = (value) => {
+		// Remove all non-digit characters
+		const digitsOnly = value.replace(/\D/g, '')
+		
+		// Limit to 10 digits
+		const limitedDigits = digitsOnly.slice(0, 10)
+		
+		// Format as (XXX) XXX-XXXX
+		if (limitedDigits.length === 0) return ''
+		if (limitedDigits.length <= 3) return `(${limitedDigits}`
+		if (limitedDigits.length <= 6) return `(${limitedDigits.slice(0, 3)}) ${limitedDigits.slice(3)}`
+		return `(${limitedDigits.slice(0, 3)}) ${limitedDigits.slice(3, 6)}-${limitedDigits.slice(6)}`
 	}
 
+  // Handle input changes in form
+	const handleChange = (event) => {
+		const { name, value } = event.target
+		if (name === 'phone') {
+			const formattedPhone = formatPhoneNumber(value)
+			setFormData((current) => ({ ...current, [name]: formattedPhone }))
+		} else {
+			setFormData((current) => ({ ...current, [name]: value }))
+		}
+	}
+
+  // Handle form submission
 	const handleSubmit = async (event) => {
 		event.preventDefault()
 		setError('')
 		setSuccess('')
 		setLoading(true)
 		try {
-            await submitSite(formData)
+			// Strip formatting from phone before submitting
+			const submissionData = {
+				...formData,
+				phone: formData.phone.replace(/\D/g, '')
+			}
+            await submitSite(submissionData)
 			setSuccess('Contribution submitted for admin review.')
 			setFormData({ url: '', name: '', email: '', phone: '' })
 		} catch (err) {
@@ -48,6 +77,7 @@ export default function Contribute() {
 		}
 	}
 
+  // Render Contribute page content
 	return (
 		<div className="contribute-page">
 			<HomeHeader />

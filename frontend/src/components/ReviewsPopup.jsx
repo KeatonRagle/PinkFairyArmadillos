@@ -1,32 +1,10 @@
 import { createPortal } from 'react-dom'
 import { useEffect, useState } from 'react'
+import { useAuth } from '../auth/AuthContext.jsx'
+import { getAllReviews, getApprovedSites, submitReview, deleteReview } from '../fetch/api'
 import '../styling/ReviewsPopup.css'
 
-// --- Placeholder data (replace with API calls once backend is ready) ---
-const PLACEHOLDER_REVIEWS = [
-	{
-		reviewId: 1,
-		username: 'Jane D.',
-		rating: 5,
-		rwComment: 'Amazing shelter — the staff were so helpful and the animals were well cared for.',
-		rwDate: '2026-03-10',
-	},
-	{
-		reviewId: 2,
-		username: 'Marcus T.',
-		rating: 4,
-		rwComment: 'Great experience overall. The adoption process was smooth and fast.',
-		rwDate: '2026-02-22',
-	},
-	{
-		reviewId: 3,
-		username: 'Priya S.',
-		rating: 3,
-		rwComment: 'Decent place. Could improve communication but the animals looked happy.',
-		rwDate: '2026-01-05',
-	},
-]
-
+// Star rating input component
 function StarRating({ value, onChange }) {
 	const [hovered, setHovered] = useState(0)
 	return (
@@ -48,6 +26,7 @@ function StarRating({ value, onChange }) {
 	)
 }
 
+// Star display component for ratings
 function StarDisplay({ value }) {
 	return (
 		<span className="reviews-star-display" aria-label={`${value} out of 5 stars`}>
@@ -58,15 +37,49 @@ function StarDisplay({ value }) {
 	)
 }
 
-export default function ReviewsPopup({ isOpen, onClose, shelterName }) {
-	const [view, setView] = useState('list') // 'list' | 'add'
+// Reviews popup modal for displaying and submitting reviews
+export default function ReviewsPopup({ isOpen, onClose, shelterName, siteInfo = {}, hideInfoTab = false }) {
+	const { id: currentUserId } = useAuth()
+	const [activeTab, setActiveTab] = useState('reviews')
+	const [view, setView] = useState('list')
 	const [rating, setRating] = useState(0)
 	const [comment, setComment] = useState('')
 	const [isSubmitting, setIsSubmitting] = useState(false)
+	const [reviews, setReviews] = useState([])
+	const [loadingReviews, setLoadingReviews] = useState(false)
+	const [reviewsError, setReviewsError] = useState('')
+	const [resolvedSiteId, setResolvedSiteId] = useState(siteInfo.siteId || null)
+	const [siteRating, setSiteRating] = useState(null)
+
+	// ✅ Uses siteInfo.siteId directly — infoContent doesn't exist yet at hook call time
+	useEffect(() => {
+		let isMounted = true
+		const loadRating = async () => {
+			try {
+				const siteId = siteInfo.siteId
+				if (!siteId) return
+				const allReviews = await getAllReviews()
+				const filtered = Array.isArray(allReviews)
+					? allReviews.filter(r => String(r.siteId ?? r.site?.siteId) === String(siteId))
+					: []
+				if (filtered.length === 0) {
+					if (isMounted) setSiteRating(null)
+					return
+				}
+				const avg = filtered.reduce((sum, r) => sum + Number(r.rating || 0), 0) / filtered.length
+				if (isMounted) setSiteRating(avg)
+			} catch {
+				if (isMounted) setSiteRating(null)
+			}
+		}
+		loadRating()
+		return () => { isMounted = false }
+	}, [siteInfo.siteId]) // ✅ stable prop dependency
 
 	// Reset add-review form whenever popup opens/closes
 	useEffect(() => {
 		if (isOpen) {
+			setActiveTab('reviews')
 			setView('list')
 			setRating(0)
 			setComment('')
@@ -85,60 +98,267 @@ export default function ReviewsPopup({ isOpen, onClose, shelterName }) {
 
 	if (!isOpen) return null
 
-	const handleSubmit = (e) => {
-		e.preventDefault()
-		if (!rating || !comment.trim()) return
-		setIsSubmitting(true)
-
-		// TODO: replace with real API call
-		// submitReview({ siteID: animal.siteId, userID: currentUser.id, rating, comment })
-		//   .then(() => setView('list'))
-		//   .finally(() => setIsSubmitting(false))
-
-		// Placeholder: just go back to list
-		setTimeout(() => {
-			setIsSubmitting(false)
-			setView('list')
-		}, 600)
+	const infoContent = {
+		siteId: siteInfo.siteId || null,
+		name: siteInfo.name || shelterName || 'Adoption site name coming soon.',
+		url: siteInfo.url || 'https://example-adoption-site.org',
+		email: siteInfo.email || 'info@example-adoption-site.org',
+		phone: siteInfo.phone || '(555) 123-4567',
 	}
 
-	return createPortal(
-		<div className="reviews-overlay" onClick={onClose}>
-			<div className="reviews-modal" onClick={(e) => e.stopPropagation()}>
-				<div className="reviews-modal-header">
-					<h3>Reviews</h3>
-					<button className="reviews-close-btn" onClick={onClose} aria-label="Close">✕</button>
-				</div>
+	const effectiveSiteId = infoContent.siteId || resolvedSiteId
 
-				{view === 'list' && (
+	const resolveSiteIdFromApprovedSites = async () => {
+		if (infoContent.siteId) {
+			setResolvedSiteId(infoContent.siteId)
+			return
+		}
+
+		try {
+			const sites = await getApprovedSites()
+			const siteList = Array.isArray(sites) ? sites : []
+			const normalizedName = String(infoContent.name || '').trim().toLowerCase()
+			const normalizedUrl = String(infoContent.url || '').trim().toLowerCase()
+
+			const matched = siteList.find((site) => {
+				const siteName = String(site?.name || '').trim().toLowerCase()
+				const siteUrl = String(site?.url || '').trim().toLowerCase()
+				return (normalizedName && siteName === normalizedName)
+					|| (normalizedUrl && siteUrl === normalizedUrl)
+			})
+
+			setResolvedSiteId(matched?.siteId || null)
+		} catch {
+			setResolvedSiteId(null)
+		}
+	}
+
+	const normalizeReview = (review, index) => {
+		if (!review || typeof review !== 'object') {
+			return {
+				reviewId: `invalid-${index}`,
+				username: 'Anonymous',
+				rating: 0,
+				rwComment: '',
+				rwDate: null,
+				siteId: null,
+				siteName: '',
+			}
+		}
+
+		const parsedRating = Number(review.rating)
+		const siteId = review.site?.siteId ?? review.siteId ?? null
+
+		return {
+			reviewId: review.reviewId ?? review.id ?? `${siteId || 'site'}-${index}`,
+			username: review.user?.name || review.username || 'Anonymous',
+			userId: review.userId,
+			rating: Number.isFinite(parsedRating) ? parsedRating : 0,
+			rwComment: String(review.rwComment || review.comment || ''),
+			rwDate: review.rwDate || review.date || null,
+			siteId,
+			siteName: review.site?.name || '',
+		}
+	}
+
+	const loadReviews = async () => {
+		setLoadingReviews(true)
+		setReviewsError('')
+
+		try {
+			const response = await getAllReviews()
+			const reviewList = Array.isArray(response)
+				? response.map((review, index) => normalizeReview(review, index))
+				: []
+
+			let filteredReviews = reviewList
+			if (effectiveSiteId) {
+				filteredReviews = reviewList.filter((review) => String(review.siteId) === String(effectiveSiteId))
+			} else {
+				const normalizedName = String(infoContent.name || '').trim().toLowerCase()
+				if (normalizedName) {
+					filteredReviews = reviewList.filter((review) => String(review.siteName || '').trim().toLowerCase() === normalizedName)
+				}
+			}
+
+			setReviews(filteredReviews)
+		} catch {
+			setReviewsError('Unable to load reviews right now.')
+			setReviews([])
+		} finally {
+			setLoadingReviews(false)
+		}
+	}
+
+	useEffect(() => {
+		if (isOpen && activeTab === 'reviews' && view === 'list') {
+			loadReviews()
+		}
+	}, [isOpen, activeTab, view, effectiveSiteId])
+
+	useEffect(() => {
+		if (isOpen) {
+			resolveSiteIdFromApprovedSites()
+		}
+	}, [isOpen, infoContent.siteId, infoContent.name, infoContent.url])
+
+	const handleSubmit = async (e) => {
+		e.preventDefault()
+		if (!rating || !comment.trim()) return
+		if (!currentUserId) {
+			setReviewsError('Please log in to submit a review.')
+			return
+		}
+		if (!effectiveSiteId) {
+			setReviewsError('This pet is missing a site reference, so a review cannot be submitted yet.')
+			return
+		}
+
+		setIsSubmitting(true)
+		setReviewsError('')
+
+		try {
+			await submitReview({
+				userID: Number(currentUserId),
+				siteId: Number(effectiveSiteId),
+				rating: Number(rating),
+				comment: comment.trim(),
+			})
+
+			await loadReviews()
+			setComment('')
+			setRating(0)
+			setActiveTab('reviews')
+			setView('list')
+		} catch {
+			setReviewsError('Failed to submit review.')
+		} finally {
+			setIsSubmitting(false)
+		}
+	}
+
+	const handleDeleteReview = async (reviewId) => {
+		if (!currentUserId) {
+			setReviewsError('Please log in to delete a review.')
+			return
+		}
+		if (!effectiveSiteId) {
+			setReviewsError('This pet is missing a site reference, so a review cannot be submitted yet.')
+			return
+		}
+
+		setIsSubmitting(true)
+		setReviewsError('')
+
+		try {
+			await deleteReview(reviewId)
+
+			await loadReviews()
+			setComment('')
+			setRating(0)
+			setActiveTab('reviews')
+			setView('list')
+		} catch {
+			setReviewsError('Failed to delete review.')
+		} finally {
+			setIsSubmitting(false)
+		}
+	}
+
+	const formatReviewDate = (rawDate) => {
+		if (!rawDate) return 'No date'
+
+		const parsedDate = new Date(rawDate)
+		if (Number.isNaN(parsedDate.getTime())) return 'No date'
+
+		return parsedDate.toLocaleDateString('en-US', {
+			month: '2-digit',
+			day: '2-digit',
+			year: 'numeric',
+		})
+	}
+
+		       return createPortal(
+			       <div className="reviews-overlay" onClick={onClose}>
+				       <div className="reviews-modal" onClick={(e) => e.stopPropagation()}>
+					       <div className="reviews-modal-header">
+						       <h3>Reviews</h3>
+						       <button className="reviews-close-btn" onClick={onClose} aria-label="Close">✕</button>
+					       </div>
+
+					       {!hideInfoTab && (
+						       <div className="reviews-tab-row" role="tablist" aria-label="Reviews tabs">
+							       <button
+								       type="button"
+								       className={`reviews-tab-btn ${activeTab === 'reviews' ? 'active' : ''}`}
+								       onClick={() => {
+									       setActiveTab('reviews')
+									       setView('list')
+								       }}
+								       role="tab"
+								       aria-selected={activeTab === 'reviews'}
+							       >
+								       Reviews
+							       </button>
+							       <button
+								       type="button"
+								       className={`reviews-tab-btn ${activeTab === 'info' ? 'active' : ''}`}
+								       onClick={() => setActiveTab('info')}
+								       role="tab"
+								       aria-selected={activeTab === 'info'}
+							       >
+								       Info
+							       </button>
+						       </div>
+					       )}
+
+				{activeTab === 'reviews' && view === 'list' && (
 					<>
 						<div className="reviews-list">
-							{PLACEHOLDER_REVIEWS.length === 0 ? (
+							{loadingReviews ? (
+								<p className="reviews-empty">Loading reviews...</p>
+							) : reviewsError ? (
+								<p className="reviews-empty">{reviewsError}</p>
+							) : reviews.length === 0 ? (
 								<p className="reviews-empty">No reviews yet. Be the first!</p>
 							) : (
-								PLACEHOLDER_REVIEWS.map((r) => (
+								reviews.map((r, index) => (
 									<div key={r.reviewId} className="reviews-item">
 										<div className="reviews-item-header">
-											<span className="reviews-item-username">{r.username}</span>
-											<StarDisplay value={r.rating} />
+											<span className="reviews-item-username">{String(`${r?.username}` || `User ${index + 1}`)}</span>
+											<StarDisplay value={Number(r?.rating) || 0} />
 										</div>
-										<p className="reviews-item-comment">{r.rwComment}</p>
-										<span className="reviews-item-date">{new Date(r.rwDate).toLocaleDateString('en-US', { month: '2-digit', day: '2-digit', year: 'numeric' })}</span>
+										{currentUserId == r.userId && (
+											<button className="delete-icon-btn" onClick={() => handleDeleteReview(r.reviewId)}>
+												<i className="fa-regular fa-trash-can"></i>
+											</button>
+										)}
+										<p className="reviews-item-comment">{String(r?.rwComment || '')}</p>
+										<span className="reviews-item-date">{formatReviewDate(r?.rwDate)}</span>
 									</div>
 								))
 							)}
 						</div>
 
 						<div className="reviews-modal-footer">
-							<button className="reviews-add-btn" onClick={() => setView('add')}>
-								+ Add a Review
-							</button>
+							
+								<button
+									className="reviews-add-btn"
+									type="button"
+									onClick={() => setView('add')}
+									disabled={!currentUserId}
+								>
+									{currentUserId ? "+ Add a Review" : "Log in to Add a Review!"}
+								</button>
+								
+							
 						</div>
 					</>
 				)}
 
-				{view === 'add' && (
+				{activeTab === 'reviews' && view === 'add' && (
 					<form className="reviews-add-form" onSubmit={handleSubmit}>
+						{reviewsError ? <p className="reviews-empty">{reviewsError}</p> : null}
 						<label className="reviews-form-label">Your Rating</label>
 						<StarRating value={rating} onChange={setRating} />
 
@@ -171,6 +391,33 @@ export default function ReviewsPopup({ isOpen, onClose, shelterName }) {
 						</div>
 					</form>
 				)}
+
+				       {!hideInfoTab && activeTab === 'info' && (
+					      <div className="reviews-info-panel">
+						      <div className="reviews-info-row">
+							      <span className="reviews-info-label">Name</span>
+							      <span>{infoContent.name}</span>
+						      </div>
+						      <div className="reviews-info-row site-rating-row">
+							      <span className="reviews-info-label">Rating</span>
+							      <span>{siteRating !== null ? `${siteRating.toFixed(1)} / 5` : '0.0 / 5'}</span>
+						      </div>
+						      <div className="reviews-info-row">
+							      <span className="reviews-info-label">Link</span>
+							      <a href={infoContent.url} target="_blank" rel="noreferrer" className="reviews-info-link">
+								      {infoContent.url}
+							      </a>
+						      </div>
+						      <div className="reviews-info-row">
+							      <span className="reviews-info-label">Email</span>
+							      <span>{infoContent.email}</span>
+						      </div>
+						      <div className="reviews-info-row">
+							      <span className="reviews-info-label">Phone</span>
+							      <span>{infoContent.phone}</span>
+						      </div>
+					      </div>
+				      )}
 			</div>
 		</div>,
 		document.body

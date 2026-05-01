@@ -7,19 +7,33 @@ import { useNavigate } from 'react-router-dom'
 import { getFeaturedPets, getFilteredPets } from '../fetch/api'
 
 function mapPetToAnimal(pet) {
+  const site = pet.site || {}
+  const siteId = pet.site_id ?? pet.siteId ?? site.siteId ?? null
+  const siteName = pet.adoption_site_name || pet.adoptionSite || site.name || null
+  const siteUrl = pet.adoption_site_url || pet.adoptionSiteUrl || site.url || null
+  const siteEmail = pet.adoption_site_email || pet.adoptionSiteEmail || site.email || null
+  const sitePhone = pet.adoption_site_phone || pet.adoptionSitePhone || site.phone || null
+
   return {
     id: pet.id,
     name: pet.name,
     breed: pet.breed,
     age: pet.age,
+    size: pet.size || pet.pet_size,
     gender: pet.gender === 'M' ? 'Male' : pet.gender === 'F' ? 'Female' : pet.gender,
     location: pet.location,
     misc: pet.pet_status || pet.pet_type || 'More details coming soon.',
-    adoptionSite: 'Adoption site information coming soon.',
+    adoptionSite: siteName || 'Adoption site information coming soon.',
+    site_id: siteId,
+    adoption_site_url: siteUrl,
+    adoption_site_email: siteEmail,
+    adoption_site_phone: sitePhone,
     image: pet.img_url || '/images/waveShort.png',
+		secondaryImages: pet.secondary_images || []
   }
 }
 
+// Home page component
 export default function Home() {
 
   const navigate = useNavigate()
@@ -27,11 +41,13 @@ export default function Home() {
   const [featuredError, setFeaturedError] = useState('')
   const [featuredLoading, setFeaturedLoading] = useState(true)
 
+    // Set up body class for Home page
   useEffect(() => {
     document.body.classList.add('home-body')
     return () => document.body.classList.remove('home-body')
   }, [])
 
+    // Load featured pets for homepage
   useEffect(() => {
     let isCancelled = false
 
@@ -84,6 +100,7 @@ export default function Home() {
     navigate('/select-animal')
   }
 
+    // Render Home page content
   return (
     <div className="home-page">
 

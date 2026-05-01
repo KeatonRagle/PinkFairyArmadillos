@@ -1,6 +1,7 @@
 package com.pink.pfa.services;
 
 import java.util.List;
+import java.util.Map;
 
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -11,7 +12,9 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.web.bind.annotation.RequestMapping;
 
+import com.pink.pfa.controllers.requests.UpdateUserEmailRequest;
 import com.pink.pfa.controllers.requests.UpdateUserNameRequest;
+import com.pink.pfa.controllers.requests.UpdateUserPasswordRequest;
 import com.pink.pfa.controllers.requests.UserRequest;
 import com.pink.pfa.exceptions.ActionNotAllowedException;
 import com.pink.pfa.exceptions.ResourceNotFoundException;
@@ -176,6 +179,38 @@ public class UserService {
         return UserDTO.fromEntity(user);
     }
 
+    @Transactional
+    public UserDTO updateEmailByJWT(UpdateUserEmailRequest updateRequest) {
+        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+        if (auth == null) throw new ResourceNotFoundException("User", "Token either unreadable or not provided");
+        String email = ((UserPrincipal) auth.getPrincipal()).getUsername();
+        User user = userRepository.findByEmail(email)
+                .orElseThrow(() -> new ResourceNotFoundException("User", email));
+
+        if (userRepository.existsByEmail(updateRequest.email())) {
+            throw new UserAlreadyExistsException(updateRequest.email());
+        }
+
+        user.setEmail(updateRequest.email().trim().toLowerCase());
+        return UserDTO.fromEntity(user);
+    }
+
+    @Transactional
+    public Map<String, Object> updatePasswordByJWT(UpdateUserPasswordRequest updateRequest) {
+        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+        if (auth == null) throw new ResourceNotFoundException("User", "Token either unreadable or not provided");
+        String email = ((UserPrincipal) auth.getPrincipal()).getUsername();
+        User user = userRepository.findByEmail(email)
+                .orElseThrow(() -> new ResourceNotFoundException("User", email));
+
+        user.setPassword(
+            passwordEncoder.encode(updateRequest.password())
+        );
+        return Map.of(
+            "user", UserDTO.fromEntity(user),
+            "token", jwtService.generateToken(email)
+        );
+    }
 
     /**
      * Creates a new user account from a {@link CreateUserRequest}.<br>
@@ -216,6 +251,7 @@ public class UserService {
         );
         if (authentication.isAuthenticated()) 
             return jwtService.generateToken(userRequest.email().trim().toLowerCase());
+
         return "Nope";
     }
 

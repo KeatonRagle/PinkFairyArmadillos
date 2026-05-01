@@ -33,9 +33,10 @@ function roleLabel(role) {
 	return ROLE_OPTIONS.find((o) => o.value === role)?.label || role
 }
 
+// User management page component
 export default function UserManage() {
 	const navigate = useNavigate()
-	const { username, role } = useAuth()
+	const { username, id, role } = useAuth()
 	const [activeFilter, setActiveFilter] = useState('WHITELISTED')
 	const [whitelistedUsers, setWhitelistedUsers] = useState([])
 	const [blacklistedUsers, setBlacklistedUsers] = useState([])
@@ -44,11 +45,13 @@ export default function UserManage() {
 	const [loading, setLoading] = useState(true)
 	const [error, setError] = useState(null)
 
+  // Set up body class for User Manage page
 	useEffect(() => {
 		document.body.classList.add('usermanage-body')
 		return () => document.body.classList.remove('usermanage-body')
 	}, [])
 
+  // Redirect if not admin or not logged in
 	useEffect(() => {
 		if (!username) {
 			navigate('/login')
@@ -59,6 +62,7 @@ export default function UserManage() {
 		}
 	}, [navigate, role, username])
 
+  // Load user data for management
 	const loadData = useCallback(async () => {
 		if (role !== 'ROLE_ADMIN') return
 		setLoading(true)
@@ -170,6 +174,7 @@ export default function UserManage() {
 					? 'No pending contributor applications.'
 					: 'No denied contributor applications.'
 
+  // Render User Manage page content
 	return (
 		<div className="usermanage-page">
 			<HomeHeader />
@@ -246,6 +251,7 @@ export default function UserManage() {
 													<select
 														value={entry.role}
 														onChange={(e) => handleRoleChange(entry, e.target.value)}
+														disabled={id === entry.id}
 													>
 														{ROLE_OPTIONS.map((option) => (
 															<option key={option.value} value={option.value}>

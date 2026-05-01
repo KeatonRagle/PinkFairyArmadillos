@@ -13,6 +13,7 @@ import com.pink.pfa.models.Pet;
  */
 public record PetDTO(
         Integer id,
+        AdoptionSiteDTO site,
         String name,
         String breed,
         int age,
@@ -21,9 +22,9 @@ public record PetDTO(
         String location,
         double price,
         String pet_status,
-        int compatibility_score,
         String img_url,
-        List<String> secondary_images
+        List<String> secondary_images,
+        String size
 ) {
     /**
      * Maps a {@link Pet} entity to a {@link PetDTO}.
@@ -34,6 +35,7 @@ public record PetDTO(
     public static PetDTO fromEntity(Pet pet) {
         return new PetDTO(
             pet.getPetId(),
+            AdoptionSiteDTO.fromEntity(pet.getSite()),
             pet.getName(),
             pet.getBreed(), 
             pet.getAge(), 
@@ -42,11 +44,11 @@ public record PetDTO(
             pet.getLocation(), 
             pet.getPrice(), 
             pet.getPetStatus(), 
-            pet.getCompatibilityScore(),
             pet.getImgUrl(),
             pet.getSecondaryImages()
                 .stream().map(image -> image.getImageUrl())
-                .toList()
+                .toList(),
+            pet.getSize()
         );
     }
 }

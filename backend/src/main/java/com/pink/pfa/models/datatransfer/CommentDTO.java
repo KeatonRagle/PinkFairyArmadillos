@@ -4,7 +4,6 @@ import java.time.LocalDateTime;
 
 import com.pink.pfa.models.AdoptionSite;
 import com.pink.pfa.models.Comments;
-import com.pink.pfa.models.Posts;
 
 /**
  * Data Transfer Object representing an {@link AdoptionSite} exposed across the API boundary.
@@ -13,7 +12,7 @@ import com.pink.pfa.models.Posts;
  * ensuring only intended fields are serialized and returned to the client.
  */
 public record CommentDTO(
-    Posts post,
+    PostDTO post,
     Integer commentID,
     Integer userID,
     String username,
@@ -28,7 +27,7 @@ public record CommentDTO(
      */
     public static CommentDTO fromEntity(Comments comment) {
         return new CommentDTO(
-            comment.getPost(),
+            PostDTO.fromEntity(comment.getPost()),
             comment.getCommentId(),
             comment.getUser().getUserId(),
             comment.getUser().getName(),

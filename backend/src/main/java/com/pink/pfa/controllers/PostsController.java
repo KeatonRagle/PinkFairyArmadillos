@@ -21,7 +21,7 @@ import com.pink.pfa.services.CommentsService;
 import com.pink.pfa.services.PostsService;
 
 /**
- * REST controller exposing the {@code /api/comments} API surface for the Pets for All platform.
+ * REST controller exposing the {@code /api/posts} API surface for the Pets for All platform.
  *
  * <p>This controller serves as the primary entry point for comment interactions,
  * handling database-backed retrieval of comment information. 
@@ -31,7 +31,7 @@ import com.pink.pfa.services.PostsService;
  * <p>Use this controller when you need to:
  * <ul>
  *   <li>Fetch all comment listings stored in the database</li>
- *   <li>Search for comments by characteristics</li>
+ *   <li>Search for posts by characteristics</li>
  *   <li>Look up a comment by its unique post ID</li>
  * </ul>
  *
@@ -44,12 +44,12 @@ public class PostsController {
     @Autowired private PostsService postsService; 
 
     /**
-     * Returns all comments currently stored in the database, along with a UTC timestamp.
+     * Returns all posts currently stored in the database, along with a UTC timestamp.
      *
-     * @return a map containing a {@code Comments} list and a {@code Timestamp} string
+     * @return a map containing a {@code posts} list and a {@code Timestamp} string
      */
     @GetMapping("/getAll")
-    public ResponseEntity<List<PostDTO>> getAllComments() {
+    public ResponseEntity<List<PostDTO>> getAllPosts() {
         try {
             return ResponseEntity.ok().body(postsService.findAll());
         } catch (Exception e) {
@@ -64,7 +64,7 @@ public class PostsController {
      * @return a map containing the matched {@code Comment} and a {@code Timestamp} string
      */
     @GetMapping("/{id}")
-    public ResponseEntity<PostDTO> getCommentById(
+    public ResponseEntity<PostDTO> getPostById(
         @PathVariable Integer id
     ) {
         try {
